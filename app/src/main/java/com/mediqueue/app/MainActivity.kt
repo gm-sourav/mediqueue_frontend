@@ -1,7 +1,8 @@
 package com.mediqueue.app
 
 import com.mediqueue.app.ui.screens.auth.LanguageScreen
-
+import com.mediqueue.app.ui.screens.auth.ProfileScreen
+import android.content.Context
 import android.graphics.Color as AndroidColor
 import android.os.Bundle
 import android.widget.Toast
@@ -25,6 +26,9 @@ import com.mediqueue.app.ui.screens.auth.SplashScreen
 import com.mediqueue.app.ui.theme.MediColors
 
 class MainActivity : ComponentActivity() {
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.wrap(newBase))
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(
@@ -49,9 +53,11 @@ class MainActivity : ComponentActivity() {
                     color = MediColors.Bg
                 ) {
                     // Temporary shorol navigation: "splash", "login", "register"
-                    var screen by rememberSaveable { mutableStateOf("splash") }
+                    var screen by rememberSaveable { mutableStateOf("profile") }
 
-                    BackHandler(enabled = screen == "register" || screen == "language") { screen = "login" }
+                    BackHandler(enabled = screen != "splash" && screen != "login") {
+                        screen = if (screen == "language") "profile" else "login"
+                    }
 
                     when (screen) {
                         "splash" -> SplashScreen(onFinished = { screen = "login" })
@@ -71,7 +77,15 @@ class MainActivity : ComponentActivity() {
                             onSignInClick = { screen = "login" }
                         )
 
-                        "language" -> LanguageScreen(onSaved = { screen = "login" })
+                        "language" -> LanguageScreen(onSaved = { screen = "profile" })
+
+                        "profile" -> ProfileScreen(
+                            name = "Nila Akter",
+                            email = "nila@example.com",
+                            role = "PATIENT",
+                            onLanguageClick = { screen = "language" },
+                            onLogout = { screen = "login" }
+                        )
                     }
                 }
             }

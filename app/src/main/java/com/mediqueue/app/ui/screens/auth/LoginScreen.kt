@@ -1,7 +1,8 @@
 package com.mediqueue.app.ui.screens.auth
 
 import android.util.Patterns
-import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.ui.platform.LocalContext
+import com.mediqueue.app.LocaleHelper
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -53,7 +54,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.os.LocaleListCompat
+
 import com.mediqueue.app.R
 import com.mediqueue.app.ui.theme.MediColors
 import kotlinx.coroutines.delay
@@ -63,9 +64,11 @@ private val LinkLight = Color(0xFFC9D8D4)
 
 @Composable
 fun LoginScreen(
+
     onLoginSuccess: () -> Unit,
     onCreateAccount: () -> Unit
 ) {
+    val context = LocalContext.current
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var showPassword by rememberSaveable { mutableStateOf(false) }
@@ -126,9 +129,7 @@ fun LoginScreen(
                     text = stringResource(R.string.lang_toggle),
                     modifier = Modifier.clickable {
                         val next = if (currentLang == "bn") "en" else "bn"
-                        AppCompatDelegate.setApplicationLocales(
-                            LocaleListCompat.forLanguageTags(next)
-                        )
+                        LocaleHelper.apply(context, next)
                     }
                 )
             }

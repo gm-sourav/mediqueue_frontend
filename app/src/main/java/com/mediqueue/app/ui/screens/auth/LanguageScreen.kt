@@ -1,6 +1,6 @@
 package com.mediqueue.app.ui.screens.auth
 
-import androidx.appcompat.app.AppCompatDelegate
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -38,7 +38,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.os.LocaleListCompat
+import androidx.compose.ui.platform.LocalContext
+import com.mediqueue.app.LocaleHelper
 import com.mediqueue.app.R
 import com.mediqueue.app.ui.theme.MediColors
 
@@ -48,6 +49,7 @@ private val BadgeText = Color(0xFF55D6A0)
 
 @Composable
 fun LanguageScreen(onSaved: () -> Unit) {
+    val context = LocalContext.current
     // Ekhon app e kon language chalu ache
     val appLang = LocalConfiguration.current.locales[0].language
     val currentTag = if (appLang == "bn") "bn" else "en"
@@ -149,13 +151,10 @@ fun LanguageScreen(onSaved: () -> Unit) {
         Spacer(Modifier.height(16.dp))
         Button(
             onClick = {
-                if (pending != currentTag) {
-                    // Device e save hoy (manifest er autoStoreLocales er karone)
-                    AppCompatDelegate.setApplicationLocales(
-                        LocaleListCompat.forLanguageTags(pending)
-                    )
-                }
                 onSaved()
+                if (pending != currentTag) {
+                    LocaleHelper.apply(context, pending)
+                }
             },
             shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(

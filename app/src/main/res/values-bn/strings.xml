@@ -50,4 +50,13 @@
     <string name="preview_note">সংখ্যা নির্বাচিত ভাষা অনুসরণ করে</string>
     <string name="save_language">ভাষা সংরক্ষণ করুন</string>`
 
+    <string name="profile_pill">আমার অ্যাকাউন্ট</string>
+    <string name="personal_details">ব্যক্তিগত তথ্য</string>
+    <string name="profile_language">ভাষা · %1$s</string>
+    <string name="help_support">সাহায্য ও সহায়তা</string>
+    <string name="log_out">লগ আউট</string>
+    <string name="role_patient">রোগী</string>
+    <string name="role_doctor">ডাক্তার</string>
+    <string name="role_admin">অ্যাডমিন</string>
+
 </resources>

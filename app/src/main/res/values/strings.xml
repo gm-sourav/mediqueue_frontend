@@ -52,4 +52,13 @@
     <string name="preview_note">Numbers follow the selected language</string>
     <string name="save_language">Save language</string>
 
+    <string name="profile_pill">My account</string>
+    <string name="personal_details">Personal details</string>
+    <string name="profile_language">Language · %1$s</string>
+    <string name="help_support">Help and support</string>
+    <string name="log_out">Log out</string>
+    <string name="role_patient">Patient</string>
+    <string name="role_doctor">Doctor</string>
+    <string name="role_admin">Admin</string>
+
 </resources>
