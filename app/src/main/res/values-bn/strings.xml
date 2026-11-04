@@ -20,4 +20,26 @@
 
     <string name="splash_tagline">যত্ন চলে নিরন্তর।</string>
     <string name="splash_preparing">আপনার কেয়ার স্পেস প্রস্তুত হচ্ছে</string>
+
+
+    <string name="register_step">১ এর ১</string>
+    <string name="register_title">মেডিকিউতে যোগ দিন</string>
+    <string name="register_subtitle">আপনার রোগীর অ্যাকাউন্ট তৈরি করুন।</string>
+    <string name="full_name">পুরো নাম</string>
+    <string name="full_name_hint">নীলা আক্তার</string>
+    <string name="reg_email_hint">nila@example.com</string>
+    <string name="phone">ফোন</string>
+    <string name="phone_hint">+880 1XXX-XXXXXX</string>
+    <string name="reg_password_hint">কমপক্ষে ৬ অক্ষর</string>
+    <string name="confirm_password">পাসওয়ার্ড নিশ্চিত করুন</string>
+    <string name="confirm_password_hint">আবার পাসওয়ার্ড দিন</string>
+    <string name="already_registered">আগেই অ্যাকাউন্ট আছে?</string>
+    <string name="sign_in_link">সাইন ইন</string>
+    <string name="err_name">আপনার পুরো নাম লিখুন</string>
+    <string name="err_email">সঠিক ইমেইল দিন</string>
+    <string name="err_phone">সঠিক বাংলাদেশি ফোন নম্বর দিন</string>
+    <string name="err_password_short">কমপক্ষে ৬ অক্ষর দিন</string>
+    <string name="err_password_mismatch">পাসওয়ার্ড মিলছে না</string>
+
+
 </resources>

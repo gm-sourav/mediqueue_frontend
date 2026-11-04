@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +18,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.mediqueue.app.ui.screens.auth.LoginScreen
+import com.mediqueue.app.ui.screens.auth.RegisterScreen
 import com.mediqueue.app.ui.screens.auth.SplashScreen
 import com.mediqueue.app.ui.theme.MediColors
 
@@ -44,18 +46,27 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MediColors.Bg
                 ) {
-                    var splashDone by rememberSaveable { mutableStateOf(false) }
+                    // Temporary shorol navigation: "splash", "login", "register"
+                    var screen by rememberSaveable { mutableStateOf("splash") }
 
-                    if (!splashDone) {
-                        SplashScreen(onFinished = { splashDone = true })
-                    } else {
-                        LoginScreen(
+                    BackHandler(enabled = screen == "register") { screen = "login" }
+
+                    when (screen) {
+                        "splash" -> SplashScreen(onFinished = { screen = "login" })
+
+                        "login" -> LoginScreen(
                             onLoginSuccess = {
                                 Toast.makeText(this, "Login OK (demo)", Toast.LENGTH_SHORT).show()
                             },
-                            onCreateAccount = {
-                                Toast.makeText(this, "Register screen next", Toast.LENGTH_SHORT).show()
-                            }
+                            onCreateAccount = { screen = "register" }
+                        )
+
+                        "register" -> RegisterScreen(
+                            onRegistered = {
+                                Toast.makeText(this, "Account created (demo)", Toast.LENGTH_SHORT).show()
+                                screen = "login"
+                            },
+                            onSignInClick = { screen = "login" }
                         )
                     }
                 }

@@ -20,4 +20,24 @@
 
     <string name="splash_tagline">Care that keeps moving.</string>
     <string name="splash_preparing">Preparing your care space</string>
+
+    <string name="register_step">1 of 1</string>
+    <string name="register_title">Join MediQueue</string>
+    <string name="register_subtitle">Create your patient account.</string>
+    <string name="full_name">Full name</string>
+    <string name="full_name_hint">Nila Akter</string>
+    <string name="reg_email_hint">nila@example.com</string>
+    <string name="phone">Phone</string>
+    <string name="phone_hint">+880 1XXX-XXXXXX</string>
+    <string name="reg_password_hint">At least 6 characters</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="confirm_password_hint">Enter password again</string>
+    <string name="already_registered">Already registered?</string>
+    <string name="sign_in_link">Sign in</string>
+    <string name="err_name">Enter your full name</string>
+    <string name="err_email">Enter a valid email</string>
+    <string name="err_phone">Enter a valid Bangladeshi phone number</string>
+    <string name="err_password_short">Use at least 6 characters</string>
+    <string name="err_password_mismatch">Passwords do not match</string>
+
 </resources>
