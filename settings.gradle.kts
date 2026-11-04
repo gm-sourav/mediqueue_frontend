@@ -1,3 +1,4 @@
+
 pluginManagement {
     repositories {
         google {
@@ -24,3 +25,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "MediQueue"
 include(":app")
+

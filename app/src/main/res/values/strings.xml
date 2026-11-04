@@ -1,3 +1,23 @@
 <resources>
     <string name="app_name">MediQueue</string>
+    <string name="brand_pill">MEDIQUEUE</string>
+    <string name="lang_toggle">EN · বাং</string>
+    <string name="login_title">Welcome back</string>
+    <string name="login_subtitle">Sign in to continue your care journey.</string>
+    <string name="email">Email</string>
+    <string name="email_hint">name@example.com</string>
+    <string name="password">Password</string>
+    <string name="show">Show</string>
+    <string name="hide">Hide</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="sign_in">Sign in</string>
+    <string name="new_to">New to MediQueue?</string>
+    <string name="create_account">Create account</string>
+    <string name="err_check_fields">Enter a valid email and a password of at least 6 characters.</string>
+    <string name="err_login_failed">Login failed. Check your email and password.</string>
+    <string name="err_network">Cannot reach the server. Check your connection.</string>
+    <string name="err_server">Something went wrong. Please try again.</string>
+
+    <string name="splash_tagline">Care that keeps moving.</string>
+    <string name="splash_preparing">Preparing your care space</string>
 </resources>
