@@ -42,4 +42,12 @@
     <string name="err_password_mismatch">পাসওয়ার্ড মিলছে না</string>
 
 
+    <string name="language_pill">পছন্দসমূহ</string>
+    <string name="language_title">আপনার ভাষা বেছে নিন</string>
+    <string name="language_subtitle">আপনি যেকোনো সময় এটি বদলাতে পারবেন।</string>
+    <string name="selected">নির্বাচিত</string>
+    <string name="live_preview">লাইভ প্রিভিউ</string>
+    <string name="preview_note">সংখ্যা নির্বাচিত ভাষা অনুসরণ করে</string>
+    <string name="save_language">ভাষা সংরক্ষণ করুন</string>`
+
 </resources>

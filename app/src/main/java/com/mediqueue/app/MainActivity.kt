@@ -1,5 +1,7 @@
 package com.mediqueue.app
 
+import com.mediqueue.app.ui.screens.auth.LanguageScreen
+
 import android.graphics.Color as AndroidColor
 import android.os.Bundle
 import android.widget.Toast
@@ -49,7 +51,7 @@ class MainActivity : ComponentActivity() {
                     // Temporary shorol navigation: "splash", "login", "register"
                     var screen by rememberSaveable { mutableStateOf("splash") }
 
-                    BackHandler(enabled = screen == "register") { screen = "login" }
+                    BackHandler(enabled = screen == "register" || screen == "language") { screen = "login" }
 
                     when (screen) {
                         "splash" -> SplashScreen(onFinished = { screen = "login" })
@@ -68,6 +70,8 @@ class MainActivity : ComponentActivity() {
                             },
                             onSignInClick = { screen = "login" }
                         )
+
+                        "language" -> LanguageScreen(onSaved = { screen = "login" })
                     }
                 }
             }

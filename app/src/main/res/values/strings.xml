@@ -40,4 +40,16 @@
     <string name="err_password_short">Use at least 6 characters</string>
     <string name="err_password_mismatch">Passwords do not match</string>
 
+    <string name="language_pill">Preferences</string>
+    <string name="language_title">Choose your language</string>
+    <string name="language_subtitle">You can change this any time.</string>
+    <string name="lang_english" translatable="false">English</string>
+    <string name="lang_english_desc" translatable="false">English interface</string>
+    <string name="lang_bangla" translatable="false">বাংলা</string>
+    <string name="lang_bangla_desc" translatable="false">বাংলা ইন্টারফেস</string>
+    <string name="selected">Selected</string>
+    <string name="live_preview">LIVE PREVIEW</string>
+    <string name="preview_note">Numbers follow the selected language</string>
+    <string name="save_language">Save language</string>
+
 </resources>
