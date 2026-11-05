@@ -1,5 +1,8 @@
 package com.mediqueue.app
 
+
+import com.mediqueue.app.ui.screens.patient.DoctorDetail
+import com.mediqueue.app.ui.screens.patient.DoctorDetailScreen
 import com.mediqueue.app.ui.screens.patient.DoctorItem
 import com.mediqueue.app.ui.screens.patient.DoctorsListScreen
 import com.mediqueue.app.ui.screens.patient.Department
@@ -32,6 +35,14 @@ import com.mediqueue.app.ui.components.PatientTab
 import com.mediqueue.app.ui.screens.patient.NextAppointment
 import com.mediqueue.app.ui.screens.patient.PatientHomeScreen
 import com.mediqueue.app.ui.screens.patient.QueueInfo
+
+private val dummyDoctors = listOf(
+    DoctorItem(1, "Dr. Ayesha Rahman", 12, "Cardiologist", 1000, "Today · 10:30 AM", true),
+    DoctorItem(2, "Dr. Samiul Haque", 8, "Cardiologist", 800, "Tomorrow · 9:00 AM", false),
+    DoctorItem(3, "Dr. Tasnim Noor", 6, "Cardiologist", 700, "Wed · 11:00 AM", false)
+)
+
+
 class MainActivity : ComponentActivity() {
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHelper.wrap(newBase))
@@ -62,12 +73,14 @@ class MainActivity : ComponentActivity() {
                     // Temporary shorol navigation: "splash", "login", "register"
                     var screen by rememberSaveable { mutableStateOf("splash") }
                     var selectedDepartment by rememberSaveable { mutableStateOf("") }
+                    var selectedDoctorName by rememberSaveable { mutableStateOf("") }
 
                     BackHandler(enabled = screen !in listOf("splash", "login", "patient_home")) {
                         screen = when (screen) {
                             "language" -> "profile"
                             "profile", "departments" -> "patient_home"
                             "doctors" -> "departments"
+                            "doctor_detail" -> "doctors"
                             else -> "login"
                         }
                     }
@@ -155,13 +168,10 @@ class MainActivity : ComponentActivity() {
                         "doctors" -> DoctorsListScreen(
                             departmentName = selectedDepartment,
                             searchHint = "Search cardiologists",
-                            doctors = listOf(
-                                DoctorItem(1, "Dr. Ayesha Rahman", 12, "Cardiologist", 1000, "Today · 10:30 AM", true),
-                                DoctorItem(2, "Dr. Samiul Haque", 8, "Cardiologist", 800, "Tomorrow · 9:00 AM", false),
-                                DoctorItem(3, "Dr. Tasnim Noor", 6, "Cardiologist", 700, "Wed · 11:00 AM", false)
-                            ),
+                            doctors = dummyDoctors,
                             onDoctorClick = { doctor ->
-                                Toast.makeText(this, "${doctor.name} details next", Toast.LENGTH_SHORT).show()
+                                selectedDoctorName = doctor.name
+                                screen = "doctor_detail"
                             },
                             onTabSelected = { tab ->
                                 when (tab) {
@@ -172,6 +182,32 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         )
+
+                        "doctor_detail" -> {
+                            val d = dummyDoctors.firstOrNull { it.name == selectedDoctorName } ?: dummyDoctors.first()
+                            DoctorDetailScreen(
+                                doctor = DoctorDetail(
+                                    id = d.id,
+                                    name = d.name,
+                                    specialty = d.specialty,
+                                    department = selectedDepartment,
+                                    experienceYears = d.experienceYears,
+                                    fee = d.fee,
+                                    rating = 4.9,
+                                    about = "Experienced cardiologist focused on clear, patient-centred care.",
+                                    availableToday = d.availableToday,
+                                    nextSlots = listOfNotNull(d.nextSlot)
+                                ),
+                                onBack = { screen = "doctors" },
+                                onBookClick = {
+                                    Toast.makeText(this, "Pick slot next", Toast.LENGTH_SHORT).show()
+                                },
+                                onSeeAllClick = {
+                                    Toast.makeText(this, "Pick slot next", Toast.LENGTH_SHORT).show()
+                                }
+                            )
+                        }
+
 
                     }
                 }
