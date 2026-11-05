@@ -83,7 +83,7 @@ fun StatusBadge(status: String, modifier: Modifier = Modifier) {
 enum class PatientTab { Home, Doctors, Bookings, Profile }
 
 @Composable
-fun PatientBottomBar(selected: PatientTab, onSelect: (PatientTab) -> Unit) {
+fun PatientBottomBar(selected: PatientTab?, onSelect: (PatientTab) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
