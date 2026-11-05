@@ -1,6 +1,7 @@
 package com.mediqueue.app
 
-
+import com.mediqueue.app.ui.screens.patient.DoctorItem
+import com.mediqueue.app.ui.screens.patient.DoctorsListScreen
 import com.mediqueue.app.ui.screens.patient.Department
 import com.mediqueue.app.ui.screens.patient.DepartmentsScreen
 import com.mediqueue.app.ui.screens.auth.LanguageScreen
