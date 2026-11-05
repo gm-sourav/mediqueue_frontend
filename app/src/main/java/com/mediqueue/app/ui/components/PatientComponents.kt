@@ -34,6 +34,15 @@ fun localizedNumber(value: Int): String {
     return NumberFormat.getInstance(locale).format(value)
 }
 
+@Composable
+fun localizedDecimal(value: Double): String {
+    val locale = LocalConfiguration.current.locales[0]
+    val nf = NumberFormat.getInstance(locale)
+    nf.minimumFractionDigits = 1
+    nf.maximumFractionDigits = 1
+    return nf.format(value)
+}
+
 // "Nila Akter" -> "NA"
 fun initialsOf(name: String): String {
     val parts = name.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
