@@ -61,4 +61,28 @@
     <string name="role_doctor">Doctor</string>
     <string name="role_admin">Admin</string>
 
+    <string name="good_morning">Good morning, %1$s</string>
+    <string name="good_afternoon">Good afternoon, %1$s</string>
+    <string name="good_evening">Good evening, %1$s</string>
+    <string name="live_queue">LIVE QUEUE</string>
+    <string name="on_track">On track</string>
+    <string name="your_token">YOUR TOKEN</string>
+    <string name="now_serving">NOW SERVING</string>
+    <string name="patients_ahead">%1$s patients ahead</string>
+    <string name="wait_minutes">~%1$s min</string>
+    <string name="next_appointment">Next appointment</string>
+    <string name="view_details">View details</string>
+    <string name="token_chip">Token #%1$s</string>
+    <string name="book_appointment">Book an appointment</string>
+    <string name="tab_home">Home</string>
+    <string name="tab_doctors">Doctors</string>
+    <string name="tab_bookings">Bookings</string>
+    <string name="tab_profile">Profile</string>
+    <string name="status_pending">Pending</string>
+    <string name="status_confirmed">Confirmed</string>
+    <string name="status_completed">Completed</string>
+    <string name="status_cancelled">Cancelled</string>
+    <string name="status_rejected">Rejected</string>
+
+
 </resources>

@@ -59,4 +59,27 @@
     <string name="role_doctor">ডাক্তার</string>
     <string name="role_admin">অ্যাডমিন</string>
 
+    <string name="good_morning">শুভ সকাল, %1$s</string>
+    <string name="good_afternoon">শুভ দুপুর, %1$s</string>
+    <string name="good_evening">শুভ সন্ধ্যা, %1$s</string>
+    <string name="live_queue">লাইভ কিউ</string>
+    <string name="on_track">ঠিক সময়ে</string>
+    <string name="your_token">আপনার টোকেন</string>
+    <string name="now_serving">এখন চলছে</string>
+    <string name="patients_ahead">আপনার আগে %1$s জন</string>
+    <string name="wait_minutes">~%1$s মিনিট</string>
+    <string name="next_appointment">পরবর্তী অ্যাপয়েন্টমেন্ট</string>
+    <string name="view_details">বিস্তারিত দেখুন</string>
+    <string name="token_chip">টোকেন #%1$s</string>
+    <string name="book_appointment">অ্যাপয়েন্টমেন্ট নিন</string>
+    <string name="tab_home">হোম</string>
+    <string name="tab_doctors">ডাক্তার</string>
+    <string name="tab_bookings">বুকিং</string>
+    <string name="tab_profile">প্রোফাইল</string>
+    <string name="status_pending">অপেক্ষমাণ</string>
+    <string name="status_confirmed">নিশ্চিত</string>
+    <string name="status_completed">সম্পন্ন</string>
+    <string name="status_cancelled">বাতিল</string>
+    <string name="status_rejected">প্রত্যাখ্যাত</string>
+
 </resources>

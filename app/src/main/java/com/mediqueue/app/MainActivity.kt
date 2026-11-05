@@ -24,7 +24,10 @@ import com.mediqueue.app.ui.screens.auth.LoginScreen
 import com.mediqueue.app.ui.screens.auth.RegisterScreen
 import com.mediqueue.app.ui.screens.auth.SplashScreen
 import com.mediqueue.app.ui.theme.MediColors
-
+import com.mediqueue.app.ui.components.PatientTab
+import com.mediqueue.app.ui.screens.patient.NextAppointment
+import com.mediqueue.app.ui.screens.patient.PatientHomeScreen
+import com.mediqueue.app.ui.screens.patient.QueueInfo
 class MainActivity : ComponentActivity() {
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHelper.wrap(newBase))
@@ -53,9 +56,9 @@ class MainActivity : ComponentActivity() {
                     color = MediColors.Bg
                 ) {
                     // Temporary shorol navigation: "splash", "login", "register"
-                    var screen by rememberSaveable { mutableStateOf("profile") }
+                    var screen by rememberSaveable { mutableStateOf("splash") }
 
-                    BackHandler(enabled = screen != "splash" && screen != "login") {
+                    BackHandler(enabled = screen !in listOf("splash", "login", "patient_home")) {
                         screen = if (screen == "language") "profile" else "login"
                     }
 
@@ -63,9 +66,7 @@ class MainActivity : ComponentActivity() {
                         "splash" -> SplashScreen(onFinished = { screen = "login" })
 
                         "login" -> LoginScreen(
-                            onLoginSuccess = {
-                                Toast.makeText(this, "Login OK (demo)", Toast.LENGTH_SHORT).show()
-                            },
+                            onLoginSuccess = { screen = "patient_home" },
                             onCreateAccount = { screen = "register" }
                         )
 
@@ -85,6 +86,36 @@ class MainActivity : ComponentActivity() {
                             role = "PATIENT",
                             onLanguageClick = { screen = "language" },
                             onLogout = { screen = "login" }
+                        )
+
+                        "patient_home" -> PatientHomeScreen(
+                            patientName = "Nila Akter",
+                            queue = QueueInfo(
+                                myToken = 28,
+                                nowServing = 21,
+                                patientsAhead = 7,
+                                estimatedMinutes = 25,
+                                progress = 0.68f,
+                                onTrack = true
+                            ),
+                            nextAppointment = NextAppointment(
+                                doctorName = "Dr. Ayesha Rahman",
+                                department = "Cardiology",
+                                whenText = "Today, 10:30 AM",
+                                token = 28,
+                                status = "CONFIRMED"
+                            ),
+                            onBookClick = {
+                                Toast.makeText(this, "Book flow next", Toast.LENGTH_SHORT).show()
+                            },
+                            onAppointmentClick = {
+                                Toast.makeText(this, "Appointment details next", Toast.LENGTH_SHORT).show()
+                            },
+                            onAvatarClick = { screen = "profile" },
+                            onTabSelected = { tab ->
+                                if (tab == PatientTab.Profile) screen = "profile"
+                                else Toast.makeText(this, "$tab screen next", Toast.LENGTH_SHORT).show()
+                            }
                         )
                     }
                 }
