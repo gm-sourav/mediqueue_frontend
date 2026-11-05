@@ -82,4 +82,10 @@
     <string name="status_cancelled">বাতিল</string>
     <string name="status_rejected">প্রত্যাখ্যাত</string>
 
+    <string name="find_care">চিকিৎসা খুঁজুন</string>
+    <string name="departments_title">বিভাগসমূহ</string>
+    <string name="search_hint">ডাক্তার বা বিভাগ খুঁজুন</string>
+    <string name="doctors_count">%1$s জন ডাক্তার</string>
+    <string name="no_departments">কোনো বিভাগ পাওয়া যায়নি</string>
+
 </resources>

@@ -84,5 +84,11 @@
     <string name="status_cancelled">Cancelled</string>
     <string name="status_rejected">Rejected</string>
 
+    <string name="find_care">FIND CARE</string>
+    <string name="departments_title">Departments</string>
+    <string name="search_hint">Search doctor or department</string>
+    <string name="doctors_count">%1$s doctors</string>
+    <string name="no_departments">No departments found</string>
+
 
 </resources>

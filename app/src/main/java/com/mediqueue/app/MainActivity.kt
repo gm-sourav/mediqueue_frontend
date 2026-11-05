@@ -1,5 +1,8 @@
 package com.mediqueue.app
 
+
+import com.mediqueue.app.ui.screens.patient.Department
+import com.mediqueue.app.ui.screens.patient.DepartmentsScreen
 import com.mediqueue.app.ui.screens.auth.LanguageScreen
 import com.mediqueue.app.ui.screens.auth.ProfileScreen
 import android.content.Context
@@ -59,7 +62,11 @@ class MainActivity : ComponentActivity() {
                     var screen by rememberSaveable { mutableStateOf("splash") }
 
                     BackHandler(enabled = screen !in listOf("splash", "login", "patient_home")) {
-                        screen = if (screen == "language") "profile" else "login"
+                        screen = when (screen) {
+                            "language" -> "profile"
+                            "profile", "departments" -> "patient_home"
+                            else -> "login"
+                        }
                     }
 
                     when (screen) {
@@ -105,16 +112,39 @@ class MainActivity : ComponentActivity() {
                                 token = 28,
                                 status = "CONFIRMED"
                             ),
-                            onBookClick = {
-                                Toast.makeText(this, "Book flow next", Toast.LENGTH_SHORT).show()
-                            },
+                            onBookClick = { screen = "departments" },
                             onAppointmentClick = {
                                 Toast.makeText(this, "Appointment details next", Toast.LENGTH_SHORT).show()
                             },
                             onAvatarClick = { screen = "profile" },
                             onTabSelected = { tab ->
-                                if (tab == PatientTab.Profile) screen = "profile"
-                                else Toast.makeText(this, "$tab screen next", Toast.LENGTH_SHORT).show()
+                                when (tab) {
+                                    PatientTab.Profile -> screen = "profile"
+                                    PatientTab.Doctors -> screen = "departments"
+                                    else -> Toast.makeText(this, "$tab screen next", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        )
+
+                        "departments" -> DepartmentsScreen(
+                            departments = listOf(
+                                Department(1, "Cardiology", 12, "♡"),
+                                Department(2, "Neurology", 8, "✳"),
+                                Department(3, "Dental", 10, "+"),
+                                Department(4, "Eye", 6, "◉"),
+                                Department(5, "Pediatrics", 9, "⌂"),
+                                Department(6, "Orthopedics", 7, "+")
+                            ),
+                            onDepartmentClick = { dept ->
+                                Toast.makeText(this, "${dept.name} doctors next", Toast.LENGTH_SHORT).show()
+                            },
+                            onTabSelected = { tab ->
+                                when (tab) {
+                                    PatientTab.Home -> screen = "patient_home"
+                                    PatientTab.Profile -> screen = "profile"
+                                    PatientTab.Doctors -> Unit
+                                    else -> Toast.makeText(this, "$tab screen next", Toast.LENGTH_SHORT).show()
+                                }
                             }
                         )
                     }
