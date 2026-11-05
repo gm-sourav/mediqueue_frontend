@@ -61,11 +61,13 @@ class MainActivity : ComponentActivity() {
                 ) {
                     // Temporary shorol navigation: "splash", "login", "register"
                     var screen by rememberSaveable { mutableStateOf("splash") }
+                    var selectedDepartment by rememberSaveable { mutableStateOf("") }
 
                     BackHandler(enabled = screen !in listOf("splash", "login", "patient_home")) {
                         screen = when (screen) {
                             "language" -> "profile"
                             "profile", "departments" -> "patient_home"
+                            "doctors" -> "departments"
                             else -> "login"
                         }
                     }
@@ -137,7 +139,8 @@ class MainActivity : ComponentActivity() {
                                 Department(6, "Orthopedics", 7, "+")
                             ),
                             onDepartmentClick = { dept ->
-                                Toast.makeText(this, "${dept.name} doctors next", Toast.LENGTH_SHORT).show()
+                                selectedDepartment = dept.name
+                                screen = "doctors"
                             },
                             onTabSelected = { tab ->
                                 when (tab) {
@@ -148,6 +151,28 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         )
+
+                        "doctors" -> DoctorsListScreen(
+                            departmentName = selectedDepartment,
+                            searchHint = "Search cardiologists",
+                            doctors = listOf(
+                                DoctorItem(1, "Dr. Ayesha Rahman", 12, "Cardiologist", 1000, "Today · 10:30 AM", true),
+                                DoctorItem(2, "Dr. Samiul Haque", 8, "Cardiologist", 800, "Tomorrow · 9:00 AM", false),
+                                DoctorItem(3, "Dr. Tasnim Noor", 6, "Cardiologist", 700, "Wed · 11:00 AM", false)
+                            ),
+                            onDoctorClick = { doctor ->
+                                Toast.makeText(this, "${doctor.name} details next", Toast.LENGTH_SHORT).show()
+                            },
+                            onTabSelected = { tab ->
+                                when (tab) {
+                                    PatientTab.Home -> screen = "patient_home"
+                                    PatientTab.Profile -> screen = "profile"
+                                    PatientTab.Doctors -> screen = "departments"
+                                    else -> Toast.makeText(this, "$tab screen next", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        )
+
                     }
                 }
             }
