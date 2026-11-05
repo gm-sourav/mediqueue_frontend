@@ -100,4 +100,15 @@
     <string name="no_slots">No slots available</string>
     <string name="no_doctors">No doctors found</string>
 
+    <string name="back">Back</string>
+    <string name="available_today">Available today</string>
+    <string name="experience">Experience</string>
+    <string name="patient_rating">Patient rating</string>
+    <string name="years_short">%1$s yrs</string>
+    <string name="fee_compact">৳%1$s</string>
+    <string name="about">About</string>
+    <string name="next_available">Next available</string>
+    <string name="see_all">See all</string>
+    <string name="book_now">Book now</string>
+
 </resources>
