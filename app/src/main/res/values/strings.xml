@@ -91,4 +91,13 @@
     <string name="no_departments">No departments found</string>
 
 
+    <string name="department_label">DEPARTMENT</string>
+    <string name="search_doctors">Search doctors</string>
+    <string name="consultation">Consultation</string>
+    <string name="years_experience">%1$s years</string>
+    <string name="fee_format">৳ %1$s</string>
+    <string name="view_action">View</string>
+    <string name="no_slots">No slots available</string>
+    <string name="no_doctors">No doctors found</string>
+
 </resources>
