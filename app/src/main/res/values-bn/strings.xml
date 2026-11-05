@@ -88,4 +88,13 @@
     <string name="doctors_count">%1$s জন ডাক্তার</string>
     <string name="no_departments">কোনো বিভাগ পাওয়া যায়নি</string>
 
+    <string name="department_label">বিভাগ</string>
+    <string name="search_doctors">ডাক্তার খুঁজুন</string>
+    <string name="consultation">পরামর্শ ফি</string>
+    <string name="years_experience">%1$s বছর</string>
+    <string name="fee_format">৳ %1$s</string>
+    <string name="view_action">দেখুন</string>
+    <string name="no_slots">কোনো স্লট নেই</string>
+    <string name="no_doctors">কোনো ডাক্তার পাওয়া যায়নি</string>
+
 </resources>
