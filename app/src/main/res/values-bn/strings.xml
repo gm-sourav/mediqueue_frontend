@@ -97,6 +97,15 @@
     <string name="no_slots">কোনো স্লট নেই</string>
     <string name="no_doctors">কোনো ডাক্তার পাওয়া যায়নি</string>
 
-
+    <string name="back">পেছনে</string>
+    <string name="available_today">আজ পাওয়া যাবে</string>
+    <string name="experience">অভিজ্ঞতা</string>
+    <string name="patient_rating">রোগীর রেটিং</string>
+    <string name="years_short">%1$s বছর</string>
+    <string name="fee_compact">৳%1$s</string>
+    <string name="about">পরিচিতি</string>
+    <string name="next_available">পরবর্তী সময়</string>
+    <string name="see_all">সব দেখুন</string>
+    <string name="book_now">এখনই বুক করুন</string>
 
 </resources>
