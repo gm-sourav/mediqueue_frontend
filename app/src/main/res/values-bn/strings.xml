@@ -108,4 +108,12 @@
     <string name="see_all">সব দেখুন</string>
     <string name="book_now">এখনই বুক করুন</string>
 
+    <string name="choose_time">সময় বেছে নিন</string>
+    <string name="today">আজ</string>
+    <string name="reason_for_visit">ভিজিটের কারণ</string>
+    <string name="reason_hint">ডাক্তারকে জানান কী সমস্যা</string>
+    <string name="confirm_booking">বুকিং নিশ্চিত করুন</string>
+    <string name="slot_taken_note">স্লট নেওয়া হয়ে গেলে অন্য সময় বেছে নিন।</string>
+    <string name="select_slot_first">আগে একটি সময় বেছে নিন।</string>
+
 </resources>

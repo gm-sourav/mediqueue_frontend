@@ -111,4 +111,13 @@
     <string name="see_all">See all</string>
     <string name="book_now">Book now</string>
 
+
+    <string name="choose_time">Choose a time</string>
+    <string name="today">Today</string>
+    <string name="reason_for_visit">Reason for visit</string>
+    <string name="reason_hint">Tell the doctor what you need help with</string>
+    <string name="confirm_booking">Confirm booking</string>
+    <string name="slot_taken_note">If a slot is taken, choose another time.</string>
+    <string name="select_slot_first">Please choose a time first.</string>
+
 </resources>
