@@ -1,4 +1,7 @@
 package com.mediqueue.app
+import com.mediqueue.app.ui.screens.patient.MedicineItem
+import com.mediqueue.app.ui.screens.patient.PrescriptionItem
+import com.mediqueue.app.ui.screens.patient.PrescriptionsScreen
 import com.mediqueue.app.ui.screens.patient.LiveQueueInfo
 import com.mediqueue.app.ui.screens.patient.LiveQueueScreen
 import com.mediqueue.app.ui.screens.patient.PickSlotScreen
@@ -39,6 +42,7 @@ import com.mediqueue.app.ui.theme.MediColors
 import com.mediqueue.app.ui.components.PatientTab
 import com.mediqueue.app.ui.screens.patient.NextAppointment
 import com.mediqueue.app.ui.screens.patient.PatientHomeScreen
+import com.mediqueue.app.ui.screens.patient.PrescriptionsScreen
 import com.mediqueue.app.ui.screens.patient.QueueInfo
 
 private val dummyDoctors = listOf(
@@ -66,6 +70,26 @@ private fun routeFor(tab: PatientTab): String = when (tab) {
     PatientTab.Bookings -> "my_appointments"
     PatientTab.Profile -> "profile"
 }
+
+private val dummyPrescriptions = listOf(
+    PrescriptionItem(
+        1, "Nov 02", "Cardiology", "Dr. Ayesha Rahman", "Follow-up and medication plan", true,
+        listOf(
+            MedicineItem("Medicine A", "1 tablet", "After food"),
+            MedicineItem("Medicine B", "1 tablet", "Night")
+        ),
+        "Take as directed by your doctor. Contact the clinic if you have questions."
+    ),
+    PrescriptionItem(
+        2, "Oct 11", "General Medicine", "Dr. Farhan Kabir", "Prescription and visit notes", false,
+        listOf(
+            MedicineItem("Medicine C", "1 capsule", "Before food"),
+            MedicineItem("Medicine D", "1 tablet", "After food"),
+            MedicineItem("Medicine E", "5 ml", "Morning")
+        ),
+        null
+    )
+)
 
 
 class MainActivity : ComponentActivity() {
@@ -112,6 +136,7 @@ class MainActivity : ComponentActivity() {
                             "doctor_detail" -> "doctors"
                             "pick_slot" -> "doctor_detail"
                             "live_queue" -> "my_appointments"
+                            "prescriptions" -> "my_appointments"
 
                             else -> "login"
                         }
@@ -230,7 +255,9 @@ class MainActivity : ComponentActivity() {
                                 }
                                 Toast.makeText(this, getString(R.string.booking_cancelled), Toast.LENGTH_SHORT).show()
                             },
-                            onDetailsClick = { screen = "live_queue" },
+                            onDetailsClick = { item ->
+                                screen = if (item.status == "COMPLETED") "prescriptions" else "live_queue"
+                            },
                             onTabSelected = { screen = routeFor(it) }
                         )
 
@@ -249,6 +276,11 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
                             }
+                        )
+
+                        "prescriptions" -> PrescriptionsScreen(
+                            prescriptions = dummyPrescriptions,
+                            onTabSelected = { screen = routeFor(it) }
                         )
 
                     }
