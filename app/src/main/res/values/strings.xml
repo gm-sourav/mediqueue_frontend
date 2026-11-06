@@ -120,4 +120,14 @@
     <string name="slot_taken_note">If a slot is taken, choose another time.</string>
     <string name="select_slot_first">Please choose a time first.</string>
 
+    <string name="my_appointments">My appointments</string>
+    <string name="tab_upcoming">Upcoming</string>
+    <string name="tab_past">Past</string>
+    <string name="cancel_booking">Cancel booking</string>
+    <string name="details_action">Details</string>
+    <string name="awaiting_confirmation">Awaiting confirmation</string>
+    <string name="no_upcoming">No upcoming appointments.</string>
+    <string name="no_past">No past appointments.</string>
+    <string name="booking_cancelled">Booking cancelled.</string>
+
 </resources>
