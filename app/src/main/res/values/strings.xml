@@ -147,4 +147,21 @@
         <item quantity="other">%1$s people</item>
     </plurals>
 
+
+    <string name="prescriptions_title">Prescriptions</string>
+    <string name="prescriptions_subtitle">Your care notes in one place.</string>
+    <string name="rx_badge">Rx</string>
+    <string name="new_badge">New</string>
+    <string name="open_action">Open</string>
+    <string name="prescription_detail">Prescription detail</string>
+    <string name="no_prescriptions">No prescriptions yet.</string>
+    <plurals name="medicines_count">
+        <item quantity="one">%1$s medicine</item>
+        <item quantity="other">%1$s medicines</item>
+    </plurals>
+    <plurals name="notes_count">
+        <item quantity="one">%1$s note</item>
+        <item quantity="other">%1$s notes</item>
+    </plurals>
+
 </resources>

@@ -144,4 +144,21 @@
         <item quantity="other">%1$s জন</item>
     </plurals>
 
+
+    <string name="prescriptions_title">প্রেসক্রিপশন</string>
+    <string name="prescriptions_subtitle">আপনার চিকিৎসা নোট এক জায়গায়।</string>
+    <string name="rx_badge">Rx</string>
+    <string name="new_badge">নতুন</string>
+    <string name="open_action">খুলুন</string>
+    <string name="prescription_detail">প্রেসক্রিপশনের বিস্তারিত</string>
+    <string name="no_prescriptions">এখনো কোনো প্রেসক্রিপশন নেই।</string>
+    <plurals name="medicines_count">
+        <item quantity="one">%1$sটি ওষুধ</item>
+        <item quantity="other">%1$sটি ওষুধ</item>
+    </plurals>
+    <plurals name="notes_count">
+        <item quantity="one">%1$sটি নোট</item>
+        <item quantity="other">%1$sটি নোট</item>
+    </plurals>
+
 </resources>
