@@ -1,9 +1,9 @@
 package com.mediqueue.app
 
-
 import com.mediqueue.app.ui.screens.patient.PickSlotScreen
 import com.mediqueue.app.ui.screens.patient.SlotItem
-
+import com.mediqueue.app.ui.screens.patient.AppointmentItem
+import com.mediqueue.app.ui.screens.patient.MyAppointmentsScreen
 import com.mediqueue.app.ui.screens.patient.DoctorDetail
 import com.mediqueue.app.ui.screens.patient.DoctorDetailScreen
 import com.mediqueue.app.ui.screens.patient.DoctorItem
@@ -27,6 +27,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -50,6 +51,20 @@ private val dummySlots = listOf(
     SlotItem(4, "10:30 AM", false), SlotItem(5, "11:00 AM", true), SlotItem(6, "11:30 AM", false),
     SlotItem(7, "12:00 PM", false), SlotItem(8, "12:30 PM", false), SlotItem(9, "1:00 PM", false)
 )
+
+private val dummyAppointments = listOf(
+    AppointmentItem(1, "CONFIRMED", 28, "Dr. Ayesha Rahman", "Cardiology", "Today", "10:30 AM", "Nov 2", 1000),
+    AppointmentItem(2, "PENDING", null, "Dr. Samiul Haque", "Neurology", "Nov 5", "9:00 AM", "Nov 5", 800),
+    AppointmentItem(3, "COMPLETED", 12, "Dr. Rafiq Ahmed", "Orthopedics", "Oct 28", "11:00 AM", "Oct 28", 900),
+    AppointmentItem(4, "CANCELLED", null, "Dr. Nusrat Jahan", "Medicine", "Oct 2", "4:00 PM", "Oct 2", 700)
+)
+
+private fun routeFor(tab: PatientTab): String = when (tab) {
+    PatientTab.Home -> "patient_home"
+    PatientTab.Doctors -> "departments"
+    PatientTab.Bookings -> "my_appointments"
+    PatientTab.Profile -> "profile"
+}
 
 
 class MainActivity : ComponentActivity() {
@@ -81,13 +96,14 @@ class MainActivity : ComponentActivity() {
                 ) {
                     // Temporary shorol navigation: "splash", "login", "register"
                     var screen by rememberSaveable { mutableStateOf("splash") }
+                    var appointments by remember { mutableStateOf(dummyAppointments) }
                     var selectedDepartment by rememberSaveable { mutableStateOf("") }
                     var selectedDoctorName by rememberSaveable { mutableStateOf("") }
 
                     BackHandler(enabled = screen !in listOf("splash", "login", "patient_home")) {
                         screen = when (screen) {
                             "language" -> "profile"
-                            "profile", "departments" -> "patient_home"
+                            "profile", "departments", "my_appointments" -> "patient_home"
                             "doctors" -> "departments"
                             "doctor_detail" -> "doctors"
                             "pick_slot" -> "doctor_detail"
@@ -140,17 +156,9 @@ class MainActivity : ComponentActivity() {
                                 status = "CONFIRMED"
                             ),
                             onBookClick = { screen = "departments" },
-                            onAppointmentClick = {
-                                Toast.makeText(this, "Appointment details next", Toast.LENGTH_SHORT).show()
-                            },
+                            onAppointmentClick = { screen = "my_appointments" },
                             onAvatarClick = { screen = "profile" },
-                            onTabSelected = { tab ->
-                                when (tab) {
-                                    PatientTab.Profile -> screen = "profile"
-                                    PatientTab.Doctors -> screen = "departments"
-                                    else -> Toast.makeText(this, "$tab screen next", Toast.LENGTH_SHORT).show()
-                                }
-                            }
+                            onTabSelected = { screen = routeFor(it) }
                         )
 
                         "departments" -> DepartmentsScreen(
@@ -166,14 +174,7 @@ class MainActivity : ComponentActivity() {
                                 selectedDepartment = dept.name
                                 screen = "doctors"
                             },
-                            onTabSelected = { tab ->
-                                when (tab) {
-                                    PatientTab.Home -> screen = "patient_home"
-                                    PatientTab.Profile -> screen = "profile"
-                                    PatientTab.Doctors -> Unit
-                                    else -> Toast.makeText(this, "$tab screen next", Toast.LENGTH_SHORT).show()
-                                }
-                            }
+                            onTabSelected = { screen = routeFor(it) }
                         )
 
                         "doctors" -> DoctorsListScreen(
@@ -184,14 +185,7 @@ class MainActivity : ComponentActivity() {
                                 selectedDoctorName = doctor.name
                                 screen = "doctor_detail"
                             },
-                            onTabSelected = { tab ->
-                                when (tab) {
-                                    PatientTab.Home -> screen = "patient_home"
-                                    PatientTab.Profile -> screen = "profile"
-                                    PatientTab.Doctors -> screen = "departments"
-                                    else -> Toast.makeText(this, "$tab screen next", Toast.LENGTH_SHORT).show()
-                                }
-                            }
+                            onTabSelected = { screen = routeFor(it) }
                         )
 
                         "doctor_detail" -> {
@@ -221,6 +215,18 @@ class MainActivity : ComponentActivity() {
                                 Toast.makeText(this, "Booked ${slot.time} on $date (demo)", Toast.LENGTH_LONG).show()
                                 screen = "patient_home"
                             }
+                        )
+
+                        "my_appointments" -> MyAppointmentsScreen(
+                            appointments = appointments,
+                            onCancel = { item ->
+                                appointments = appointments.map {
+                                    if (it.id == item.id) it.copy(status = "CANCELLED") else it
+                                }
+                                Toast.makeText(this, getString(R.string.booking_cancelled), Toast.LENGTH_SHORT).show()
+                            },
+                            onDetailsClick = { /* porer screen e */ },
+                            onTabSelected = { screen = routeFor(it) }
                         )
 
                     }
