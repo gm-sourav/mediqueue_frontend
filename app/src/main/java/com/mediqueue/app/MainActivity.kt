@@ -234,6 +234,23 @@ class MainActivity : ComponentActivity() {
                             onTabSelected = { screen = routeFor(it) }
                         )
 
+                        "live_queue" -> LiveQueueScreen(
+                            info = liveQueue,
+                            onBack = { screen = "my_appointments" },
+                            onRefresh = {
+                                // DEMO: protibar refresh e ekta token egiye jabe
+                                if (liveQueue.nowServing < liveQueue.myToken) {
+                                    val now = liveQueue.nowServing + 1
+                                    liveQueue = liveQueue.copy(
+                                        nowServing = now,
+                                        waiting = (liveQueue.myToken - now - 1).coerceAtLeast(0),
+                                        progress = now / liveQueue.myToken.toFloat(),
+                                        minutesRemaining = ((liveQueue.myToken - now) * 3).coerceAtLeast(0)
+                                    )
+                                }
+                            }
+                        )
+
                     }
                 }
             }
