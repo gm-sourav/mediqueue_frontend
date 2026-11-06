@@ -127,4 +127,21 @@
     <string name="no_past">কোনো আগের অ্যাপয়েন্টমেন্ট নেই।</string>
     <string name="booking_cancelled">বুকিং বাতিল হয়েছে।</string>
 
+    <string name="back_label">পেছনে</string>
+    <string name="live_badge">লাইভ</string>
+    <string name="your_queue">আপনার সিরিয়াল</string>
+    <string name="your_token">আপনার টোকেন</string>
+    <string name="keep_handy">এই স্ক্রিন খোলা রাখুন</string>
+    <string name="now_serving">এখন চলছে</string>
+    <string name="waiting_label">অপেক্ষায়</string>
+    <string name="queue_progress">কিউ অগ্রগতি</string>
+    <string name="updated_just_now">এইমাত্র আপডেট হয়েছে</string>
+    <string name="updated_seconds_ago">%1$s সেকেন্ড আগে আপডেট</string>
+    <string name="queue_minutes_remaining">আনুমানিক %1$s মিনিট বাকি</string>
+    <string name="refreshes_auto">এই স্ক্রিন নিজে থেকেই রিফ্রেশ হয়।</string>
+    <plurals name="people_count">
+        <item quantity="one">%1$s জন</item>
+        <item quantity="other">%1$s জন</item>
+    </plurals>
+
 </resources>

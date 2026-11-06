@@ -130,4 +130,21 @@
     <string name="no_past">No past appointments.</string>
     <string name="booking_cancelled">Booking cancelled.</string>
 
+    <string name="back_label">Back</string>
+    <string name="live_badge">LIVE</string>
+    <string name="your_queue">Your queue</string>
+<!--    <string name="your_token">YOUR TOKEN</string>-->
+    <string name="keep_handy">Keep this screen handy</string>
+<!--    <string name="now_serving">NOW SERVING</string>-->
+    <string name="waiting_label">WAITING</string>
+    <string name="queue_progress">Queue progress</string>
+    <string name="updated_just_now">Updated just now</string>
+    <string name="updated_seconds_ago">Updated %1$s sec ago</string>
+    <string name="queue_minutes_remaining">About %1$s minutes remaining</string>
+    <string name="refreshes_auto">This screen refreshes automatically.</string>
+    <plurals name="people_count">
+        <item quantity="one">%1$s person</item>
+        <item quantity="other">%1$s people</item>
+    </plurals>
+
 </resources>
