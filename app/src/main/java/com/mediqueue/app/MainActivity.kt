@@ -1,5 +1,6 @@
 package com.mediqueue.app
-
+import com.mediqueue.app.ui.screens.patient.LiveQueueInfo
+import com.mediqueue.app.ui.screens.patient.LiveQueueScreen
 import com.mediqueue.app.ui.screens.patient.PickSlotScreen
 import com.mediqueue.app.ui.screens.patient.SlotItem
 import com.mediqueue.app.ui.screens.patient.AppointmentItem
@@ -97,6 +98,9 @@ class MainActivity : ComponentActivity() {
                     // Temporary shorol navigation: "splash", "login", "register"
                     var screen by rememberSaveable { mutableStateOf("splash") }
                     var appointments by remember { mutableStateOf(dummyAppointments) }
+                    var liveQueue by remember {
+                        mutableStateOf(LiveQueueInfo("Cardiology", "Dr. Ayesha Rahman", "10:30 AM", 28, 21, 7, 0.68f, 25))
+                    }
                     var selectedDepartment by rememberSaveable { mutableStateOf("") }
                     var selectedDoctorName by rememberSaveable { mutableStateOf("") }
 
@@ -107,6 +111,7 @@ class MainActivity : ComponentActivity() {
                             "doctors" -> "departments"
                             "doctor_detail" -> "doctors"
                             "pick_slot" -> "doctor_detail"
+                            "live_queue" -> "my_appointments"
 
                             else -> "login"
                         }
@@ -225,7 +230,7 @@ class MainActivity : ComponentActivity() {
                                 }
                                 Toast.makeText(this, getString(R.string.booking_cancelled), Toast.LENGTH_SHORT).show()
                             },
-                            onDetailsClick = { /* porer screen e */ },
+                            onDetailsClick = { screen = "live_queue" },
                             onTabSelected = { screen = routeFor(it) }
                         )
 
