@@ -65,7 +65,7 @@
     <string name="live_queue">লাইভ কিউ</string>
     <string name="on_track">ঠিক সময়ে</string>
     <string name="your_token">আপনার টোকেন</string>
-    <string name="now_serving">এখন চলছে</string>
+<!--    <string name="now_serving">এখন চলছে</string>-->
     <string name="patients_ahead">আপনার আগে %1$s জন</string>
     <string name="wait_minutes">~%1$s মিনিট</string>
     <string name="next_appointment">পরবর্তী অ্যাপয়েন্টমেন্ট</string>
@@ -130,7 +130,7 @@
     <string name="back_label">পেছনে</string>
     <string name="live_badge">লাইভ</string>
     <string name="your_queue">আপনার সিরিয়াল</string>
-    <string name="your_token">আপনার টোকেন</string>
+<!--    <string name="your_token">আপনার টোকেন</string>-->
     <string name="keep_handy">এই স্ক্রিন খোলা রাখুন</string>
     <string name="now_serving">এখন চলছে</string>
     <string name="waiting_label">অপেক্ষায়</string>
