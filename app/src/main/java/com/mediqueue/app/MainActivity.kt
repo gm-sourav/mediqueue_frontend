@@ -1,6 +1,9 @@
 package com.mediqueue.app
 
 
+import com.mediqueue.app.ui.screens.patient.PickSlotScreen
+import com.mediqueue.app.ui.screens.patient.SlotItem
+
 import com.mediqueue.app.ui.screens.patient.DoctorDetail
 import com.mediqueue.app.ui.screens.patient.DoctorDetailScreen
 import com.mediqueue.app.ui.screens.patient.DoctorItem
@@ -42,6 +45,12 @@ private val dummyDoctors = listOf(
     DoctorItem(3, "Dr. Tasnim Noor", 6, "Cardiologist", 700, "Wed · 11:00 AM", false)
 )
 
+private val dummySlots = listOf(
+    SlotItem(1, "9:00 AM", false), SlotItem(2, "9:30 AM", true), SlotItem(3, "10:00 AM", false),
+    SlotItem(4, "10:30 AM", false), SlotItem(5, "11:00 AM", true), SlotItem(6, "11:30 AM", false),
+    SlotItem(7, "12:00 PM", false), SlotItem(8, "12:30 PM", false), SlotItem(9, "1:00 PM", false)
+)
+
 
 class MainActivity : ComponentActivity() {
     override fun attachBaseContext(newBase: Context) {
@@ -81,6 +90,8 @@ class MainActivity : ComponentActivity() {
                             "profile", "departments" -> "patient_home"
                             "doctors" -> "departments"
                             "doctor_detail" -> "doctors"
+                            "pick_slot" -> "doctor_detail"
+
                             else -> "login"
                         }
                     }
@@ -207,7 +218,14 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         }
-
+                        "pick_slot" -> PickSlotScreen(
+                            doctorName = selectedDoctorName,
+                            slotsForDate = { _ -> dummySlots },
+                            onConfirm = { date, slot, reason ->
+                                Toast.makeText(this, "Booked ${slot.time} on $date (demo)", Toast.LENGTH_LONG).show()
+                                screen = "patient_home"
+                            }
+                        )
 
                     }
                 }
