@@ -210,12 +210,8 @@ class MainActivity : ComponentActivity() {
                                     nextSlots = listOfNotNull(d.nextSlot)
                                 ),
                                 onBack = { screen = "doctors" },
-                                onBookClick = {
-                                    Toast.makeText(this, "Pick slot next", Toast.LENGTH_SHORT).show()
-                                },
-                                onSeeAllClick = {
-                                    Toast.makeText(this, "Pick slot next", Toast.LENGTH_SHORT).show()
-                                }
+                                onBookClick = { screen = "pick_slot" },
+                                onSeeAllClick = { screen = "pick_slot" }
                             )
                         }
                         "pick_slot" -> PickSlotScreen(
