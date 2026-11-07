@@ -164,4 +164,16 @@
         <item quantity="other">%1$s notes</item>
     </plurals>
 
+
+    <string name="doc_good_morning">Good morning, Doctor</string>
+    <string name="doc_good_afternoon">Good afternoon, Doctor</string>
+    <string name="doc_good_evening">Good evening, Doctor</string>
+    <string name="stat_done">Done</string>
+    <string name="appointments_title">Appointments</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="reject_action">Reject</string>
+    <string name="confirm_action">Confirm</string>
+    <string name="mark_complete">Mark as complete</string>
+    <string name="no_appointments_day">No appointments for this day.</string>
+
 </resources>
