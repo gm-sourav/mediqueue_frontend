@@ -161,4 +161,15 @@
         <item quantity="other">%1$sটি নোট</item>
     </plurals>
 
+    <string name="doc_good_morning">শুভ সকাল, ডাক্তার</string>
+    <string name="doc_good_afternoon">শুভ অপরাহ্ন, ডাক্তার</string>
+    <string name="doc_good_evening">শুভ সন্ধ্যা, ডাক্তার</string>
+    <string name="stat_done">সম্পন্ন</string>
+    <string name="appointments_title">অ্যাপয়েন্টমেন্ট</string>
+    <string name="tomorrow">আগামীকাল</string>
+    <string name="reject_action">বাতিল করুন</string>
+    <string name="confirm_action">নিশ্চিত করুন</string>
+    <string name="mark_complete">সম্পন্ন করুন</string>
+    <string name="no_appointments_day">এই দিনে কোনো অ্যাপয়েন্টমেন্ট নেই।</string>
+
 </resources>
