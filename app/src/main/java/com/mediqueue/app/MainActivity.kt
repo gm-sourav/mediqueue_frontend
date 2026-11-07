@@ -40,6 +40,8 @@ import com.mediqueue.app.ui.screens.auth.RegisterScreen
 import com.mediqueue.app.ui.screens.auth.SplashScreen
 import com.mediqueue.app.ui.theme.MediColors
 import com.mediqueue.app.ui.components.PatientTab
+import com.mediqueue.app.ui.screens.doctor.DoctorAppointment
+import com.mediqueue.app.ui.screens.doctor.DoctorDashboardScreen
 import com.mediqueue.app.ui.screens.patient.NextAppointment
 import com.mediqueue.app.ui.screens.patient.PatientHomeScreen
 import com.mediqueue.app.ui.screens.patient.PrescriptionsScreen
@@ -91,6 +93,12 @@ private val dummyPrescriptions = listOf(
     )
 )
 
+private val dummyDoctorAppointments = listOf(
+    DoctorAppointment(1, "10:00", "Nila Akter", "Follow-up", "Cardiology", "PENDING", null),
+    DoctorAppointment(2, "10:30", "Rafi Ahmed", "New consultation", "Cardiology", "CONFIRMED", 28),
+    DoctorAppointment(3, "09:30", "Sabina Yasmin", "Check-up", "Cardiology", "COMPLETED", 27)
+)
+
 
 class MainActivity : ComponentActivity() {
     override fun attachBaseContext(newBase: Context) {
@@ -125,10 +133,11 @@ class MainActivity : ComponentActivity() {
                     var liveQueue by remember {
                         mutableStateOf(LiveQueueInfo("Cardiology", "Dr. Ayesha Rahman", "10:30 AM", 28, 21, 7, 0.68f, 25))
                     }
+                    var doctorAppointments by remember { mutableStateOf(dummyDoctorAppointments) }
                     var selectedDepartment by rememberSaveable { mutableStateOf("") }
                     var selectedDoctorName by rememberSaveable { mutableStateOf("") }
 
-                    BackHandler(enabled = screen !in listOf("splash", "login", "patient_home")) {
+                    BackHandler(enabled = screen !in listOf("splash", "login", "patient_home", "doctor_dashboard")) {
                         screen = when (screen) {
                             "language" -> "profile"
                             "profile", "departments", "my_appointments" -> "patient_home"
@@ -146,7 +155,7 @@ class MainActivity : ComponentActivity() {
                         "splash" -> SplashScreen(onFinished = { screen = "login" })
 
                         "login" -> LoginScreen(
-                            onLoginSuccess = { screen = "patient_home" },
+                            onLoginSuccess = { screen = "doctor_dashboard" },
                             onCreateAccount = { screen = "register" }
                         )
 
@@ -281,6 +290,29 @@ class MainActivity : ComponentActivity() {
                         "prescriptions" -> PrescriptionsScreen(
                             prescriptions = dummyPrescriptions,
                             onTabSelected = { screen = routeFor(it) }
+                        )
+
+
+                        "doctor_dashboard" -> DoctorDashboardScreen(
+                            doctorName = "Dr. Ayesha Rahman",
+                            appointments = doctorAppointments,
+                            onDateChange = { /* backend e GET /api/doctor/appointments?date= */ },
+                            onConfirm = { a ->
+                                doctorAppointments = doctorAppointments.map {
+                                    if (it.id == a.id) it.copy(status = "CONFIRMED", token = 29) else it
+                                }
+                            },
+                            onReject = { a ->
+                                doctorAppointments = doctorAppointments.map {
+                                    if (it.id == a.id) it.copy(status = "REJECTED") else it
+                                }
+                            },
+                            onComplete = { a ->
+                                doctorAppointments = doctorAppointments.map {
+                                    if (it.id == a.id) it.copy(status = "COMPLETED") else it
+                                }
+                            },
+                            onAvatarClick = { screen = "profile" }
                         )
 
                     }
