@@ -74,7 +74,8 @@ fun DoctorDashboardScreen(
     onConfirm: (DoctorAppointment) -> Unit,
     onReject: (DoctorAppointment) -> Unit,
     onComplete: (DoctorAppointment) -> Unit,
-    onAvatarClick: () -> Unit
+    onAvatarClick: () -> Unit,
+    onAppointmentClick: (DoctorAppointment) -> Unit = {}
 ) {
     val locale = LocalConfiguration.current.locales[0]
     val today = remember { LocalDate.now() }
@@ -229,7 +230,8 @@ fun DoctorDashboardScreen(
                     item = a,
                     onConfirm = { onConfirm(a) },
                     onReject = { onReject(a) },
-                    onComplete = { onComplete(a) }
+                    onComplete = { onComplete(a) },
+                    onClick = { onAppointmentClick(a) }
                 )
             }
             Spacer(Modifier.height(8.dp))
@@ -268,7 +270,8 @@ private fun DoctorAppointmentCard(
     item: DoctorAppointment,
     onConfirm: () -> Unit,
     onReject: () -> Unit,
-    onComplete: () -> Unit
+    onComplete: () -> Unit,
+    onClick: () -> Unit
 ) {
     val shape = RoundedCornerShape(16.dp)
     Column(
@@ -277,6 +280,10 @@ private fun DoctorAppointmentCard(
             .clip(shape)
             .background(MediColors.Card)
             .border(1.dp, MediColors.Border, shape)
+            .clickable(
+                enabled = item.status == "CONFIRMED" || item.status == "COMPLETED",
+                onClick = onClick
+            )
             .padding(14.dp)
     ) {
         Row(
