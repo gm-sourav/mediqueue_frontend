@@ -1,8 +1,6 @@
 package com.mediqueue.app.ui.screens.auth
 
 import android.util.Patterns
-import androidx.compose.ui.platform.LocalContext
-import com.mediqueue.app.LocaleHelper
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -31,6 +29,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -54,32 +54,43 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mediqueue.app.LocaleHelper
 import com.mediqueue.app.R
+import com.mediqueue.app.data.AuthResponse
 import com.mediqueue.app.ui.theme.MediColors
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 private val LinkLight = Color(0xFFC9D8D4)
 
 @Composable
 fun LoginScreen(
-
-    onLoginSuccess: () -> Unit,
-    onCreateAccount: () -> Unit
+    onLoginSuccess: (AuthResponse) -> Unit,
+    onCreateAccount: () -> Unit,
+    viewModel: LoginViewModel = viewModel()
 ) {
     val context = LocalContext.current
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var showPassword by rememberSaveable { mutableStateOf(false) }
-    var loading by remember { mutableStateOf(false) }
     var emailError by remember { mutableStateOf(false) }
     var passwordError by remember { mutableStateOf(false) }
+
+    val loading = viewModel.isLoading
+    val errorRes = viewModel.errorRes
 
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val currentLang = LocalConfiguration.current.locales[0].language
     val checkFieldsMsg = stringResource(R.string.err_check_fields)
+
+    // Server error (wrong password, network...) snackbar e dekhao
+    LaunchedEffect(errorRes) {
+        if (errorRes != null) {
+            snackbar.showSnackbar(context.getString(errorRes))
+            viewModel.clearError()
+        }
+    }
 
     fun signIn() {
         if (loading) return
@@ -91,13 +102,7 @@ fun LoginScreen(
             scope.launch { snackbar.showSnackbar(checkFieldsMsg) }
             return
         }
-        // DUMMY: pore ekhane backend login call boshbe
-        scope.launch {
-            loading = true
-            delay(1200)
-            loading = false
-            onLoginSuccess()
-        }
+        viewModel.login(email, password) { auth -> onLoginSuccess(auth) }
     }
 
     Scaffold(
@@ -309,5 +314,5 @@ private fun FieldCard(
 @Preview(showBackground = true, widthDp = 390, heightDp = 844)
 @Composable
 private fun LoginScreenPreview() {
-    LoginScreen(onLoginSuccess = {}, onCreateAccount = {})
+    LoginScreen(onLoginSuccess = {}, onCreateAccount = {}, viewModel = LoginViewModel())
 }
