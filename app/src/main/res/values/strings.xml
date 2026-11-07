@@ -226,4 +226,9 @@
     <string name="save_prescription">Save prescription</string>
     <string name="add_medicine_first">Please add at least one medicine name.</string>
 
+
+    <string name="error_invalid_credentials">Incorrect email or password.</string>
+    <string name="error_network">Can\'t reach the server. Check your connection.</string>
+    <string name="error_generic">Something went wrong. Please try again.</string>
+
 </resources>

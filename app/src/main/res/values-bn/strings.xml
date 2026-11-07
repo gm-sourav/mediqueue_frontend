@@ -221,4 +221,8 @@
     <string name="save_prescription">প্রেসক্রিপশন সংরক্ষণ করুন</string>
     <string name="add_medicine_first">অন্তত একটি ওষুধের নাম দিন।</string>
 
+    <string name="error_invalid_credentials">ইমেইল বা পাসওয়ার্ড ভুল।</string>
+    <string name="error_network">সার্ভারে যাওয়া যাচ্ছে না। ইন্টারনেট চেক করুন।</string>
+    <string name="error_generic">কিছু একটা সমস্যা হয়েছে। আবার চেষ্টা করুন।</string>
+
 </resources>
