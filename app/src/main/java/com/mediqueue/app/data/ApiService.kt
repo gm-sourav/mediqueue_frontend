@@ -9,5 +9,8 @@ interface ApiService {
     @POST("api/auth/login")
     suspend fun login(@Body body: LoginRequest): Response<AuthResponse>
 
-    // Register, departments, doctors, appointments... porer step e ekta ekta kore jog hobe
+    @POST("api/auth/register")
+    suspend fun register(@Body body: RegisterRequest): Response<RegisterResponse>
+
+    // departments, doctors, appointments... porer step e ekta ekta kore jog hobe
 }
