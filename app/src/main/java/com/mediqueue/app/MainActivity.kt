@@ -1,4 +1,5 @@
 package com.mediqueue.app
+import com.mediqueue.app.ui.screens.doctor.CreateSlotsScreen
 import com.mediqueue.app.ui.screens.patient.MedicineItem
 import com.mediqueue.app.ui.screens.patient.PrescriptionItem
 import com.mediqueue.app.ui.screens.patient.PrescriptionsScreen
@@ -146,6 +147,7 @@ class MainActivity : ComponentActivity() {
                             "pick_slot" -> "doctor_detail"
                             "live_queue" -> "my_appointments"
                             "prescriptions" -> "my_appointments"
+                            "create_slots" -> "doctor_dashboard"
 
                             else -> "login"
                         }
@@ -313,6 +315,13 @@ class MainActivity : ComponentActivity() {
                                 }
                             },
                             onAvatarClick = { screen = "profile" }
+                        )
+
+                        "create_slots" -> CreateSlotsScreen(
+                            onCreate = { date, start, end, length, slots ->
+                                Toast.makeText(this, "Created ${slots.size} slots on $date (demo)", Toast.LENGTH_LONG).show()
+                                screen = "doctor_dashboard"
+                            }
                         )
 
                     }
