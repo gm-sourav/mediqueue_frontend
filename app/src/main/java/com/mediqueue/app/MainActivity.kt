@@ -1,4 +1,8 @@
 package com.mediqueue.app
+
+import com.mediqueue.app.ui.screens.doctor.QueueControlInfo
+import com.mediqueue.app.ui.screens.doctor.QueueControlScreen
+import com.mediqueue.app.ui.screens.doctor.QueueEntry
 import com.mediqueue.app.ui.screens.doctor.CreateSlotsScreen
 import com.mediqueue.app.ui.screens.patient.MedicineItem
 import com.mediqueue.app.ui.screens.patient.PrescriptionItem
@@ -100,6 +104,22 @@ private val dummyDoctorAppointments = listOf(
     DoctorAppointment(3, "09:30", "Sabina Yasmin", "Check-up", "Cardiology", "COMPLETED", 27)
 )
 
+private val dummyQueueControl = QueueControlInfo(
+    department = "Cardiology",
+    nowServingToken = 21,
+    nowServingName = "Nila Akter",
+    nowServingTime = "10:00 AM",
+    waiting = listOf(
+        QueueEntry(22, "Rafi Ahmed", "10:15"),
+        QueueEntry(23, "Tania Noor", "10:30"),
+        QueueEntry(24, "Sabina Yasmin", "10:45"),
+        QueueEntry(25, "Imran Hossain", "11:00"),
+        QueueEntry(26, "Mitu Akter", "11:15"),
+        QueueEntry(27, "Jahid Hasan", "11:30"),
+        QueueEntry(28, "Farzana Islam", "11:45")
+    )
+)
+
 
 class MainActivity : ComponentActivity() {
     override fun attachBaseContext(newBase: Context) {
@@ -135,6 +155,7 @@ class MainActivity : ComponentActivity() {
                         mutableStateOf(LiveQueueInfo("Cardiology", "Dr. Ayesha Rahman", "10:30 AM", 28, 21, 7, 0.68f, 25))
                     }
                     var doctorAppointments by remember { mutableStateOf(dummyDoctorAppointments) }
+                    var queueControl by remember { mutableStateOf(dummyQueueControl) }
                     var selectedDepartment by rememberSaveable { mutableStateOf("") }
                     var selectedDoctorName by rememberSaveable { mutableStateOf("") }
 
@@ -148,6 +169,7 @@ class MainActivity : ComponentActivity() {
                             "live_queue" -> "my_appointments"
                             "prescriptions" -> "my_appointments"
                             "create_slots" -> "doctor_dashboard"
+                            "queue_control" -> "doctor_dashboard"
 
                             else -> "login"
                         }
@@ -321,6 +343,21 @@ class MainActivity : ComponentActivity() {
                             onCreate = { date, start, end, length, slots ->
                                 Toast.makeText(this, "Created ${slots.size} slots on $date (demo)", Toast.LENGTH_LONG).show()
                                 screen = "doctor_dashboard"
+                            }
+                        )
+
+                        "queue_control" -> QueueControlScreen(
+                            info = queueControl,
+                            onCallNext = {
+                                val next = queueControl.waiting.firstOrNull()
+                                if (next != null) {
+                                    queueControl = queueControl.copy(
+                                        nowServingToken = next.token,
+                                        nowServingName = next.patientName,
+                                        nowServingTime = next.time,
+                                        waiting = queueControl.waiting.drop(1)
+                                    )
+                                }
                             }
                         )
 
