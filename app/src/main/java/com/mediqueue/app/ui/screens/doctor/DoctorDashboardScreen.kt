@@ -1,5 +1,6 @@
 package com.mediqueue.app.ui.screens.doctor
-
+import com.mediqueue.app.ui.components.DoctorBottomBar
+import com.mediqueue.app.ui.components.DoctorTab
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -75,7 +76,8 @@ fun DoctorDashboardScreen(
     onReject: (DoctorAppointment) -> Unit,
     onComplete: (DoctorAppointment) -> Unit,
     onAvatarClick: () -> Unit,
-    onAppointmentClick: (DoctorAppointment) -> Unit = {}
+    onAppointmentClick: (DoctorAppointment) -> Unit = {},
+    onTabSelected: (DoctorTab) -> Unit = {}
 ) {
     val locale = LocalConfiguration.current.locales[0]
     val today = remember { LocalDate.now() }
@@ -97,7 +99,10 @@ fun DoctorDashboardScreen(
     val confirmedCount = appointments.count { it.status == "CONFIRMED" }
     val doneCount = appointments.count { it.status == "COMPLETED" }
 
-    Scaffold(containerColor = MediColors.Bg) { pad ->
+    Scaffold(
+        containerColor = MediColors.Bg,
+        bottomBar = { DoctorBottomBar(DoctorTab.Today, onTabSelected) }
+    ) { pad ->
         Column(
             modifier = Modifier
                 .padding(pad)
