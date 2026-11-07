@@ -204,4 +204,21 @@
         <item quantity="other">%1$s জন রোগী</item>
     </plurals>
 
+
+    <string name="appointment_back">অ্যাপয়েন্টমেন্ট</string>
+    <string name="write_prescription_title">প্রেসক্রিপশন লিখুন</string>
+    <string name="medicines_title">ওষুধ</string>
+    <string name="add_action">+ যোগ করুন</string>
+    <string name="medicine_name">ওষুধের নাম</string>
+    <string name="rx_dosage">ডোজ</string>
+    <string name="rx_dosage_hint">১টি ট্যাবলেট</string>
+    <string name="rx_frequency">কতবার</string>
+    <string name="rx_frequency_hint">দিনে দুইবার</string>
+    <string name="rx_duration">কতদিন</string>
+    <string name="rx_duration_hint">৭ দিন</string>
+    <string name="notes_for_patient">রোগীর জন্য নোট</string>
+    <string name="notes_for_patient_hint">যত্নের নির্দেশনা বা ফলো-আপ নোট লিখুন</string>
+    <string name="save_prescription">প্রেসক্রিপশন সংরক্ষণ করুন</string>
+    <string name="add_medicine_first">অন্তত একটি ওষুধের নাম দিন।</string>
+
 </resources>

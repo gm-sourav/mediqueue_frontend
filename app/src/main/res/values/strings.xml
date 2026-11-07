@@ -209,4 +209,21 @@
         <item quantity="other">%1$s patients</item>
     </plurals>
 
+
+    <string name="appointment_back">Appointment</string>
+    <string name="write_prescription_title">Write prescription</string>
+    <string name="medicines_title">Medicines</string>
+    <string name="add_action">+ Add</string>
+    <string name="medicine_name">Medicine name</string>
+    <string name="rx_dosage">Dosage</string>
+    <string name="rx_dosage_hint">1 tablet</string>
+    <string name="rx_frequency">Frequency</string>
+    <string name="rx_frequency_hint">Twice daily</string>
+    <string name="rx_duration">Duration</string>
+    <string name="rx_duration_hint">7 days</string>
+    <string name="notes_for_patient">Notes for patient</string>
+    <string name="notes_for_patient_hint">Write care instructions or follow-up notes</string>
+    <string name="save_prescription">Save prescription</string>
+    <string name="add_medicine_first">Please add at least one medicine name.</string>
+
 </resources>
