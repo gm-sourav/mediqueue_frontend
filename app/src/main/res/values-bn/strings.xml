@@ -172,4 +172,24 @@
     <string name="mark_complete">সম্পন্ন করুন</string>
     <string name="no_appointments_day">এই দিনে কোনো অ্যাপয়েন্টমেন্ট নেই।</string>
 
+
+    <string name="availability_label">প্রাপ্যতা</string>
+    <string name="create_slots_title">অ্যাপয়েন্টমেন্ট স্লট তৈরি করুন</string>
+    <string name="create_slots_subtitle">সময়ের সীমা দিন, আমরা স্লট বানিয়ে দেব।</string>
+    <string name="field_date">তারিখ</string>
+    <string name="start_time">শুরুর সময়</string>
+    <string name="end_time">শেষের সময়</string>
+    <string name="slot_length">স্লটের দৈর্ঘ্য</string>
+    <string name="minutes_format">%1$s মিনিট</string>
+    <string name="preview_label">প্রিভিউ</string>
+    <string name="invalid_time_window">শেষের সময় শুরুর পরে হতে হবে, অন্তত একটি স্লটের জায়গা থাকতে হবে।</string>
+    <plurals name="slots_count">
+        <item quantity="one">%1$sটি স্লট</item>
+        <item quantity="other">%1$sটি স্লট</item>
+    </plurals>
+    <plurals name="create_slots_button">
+        <item quantity="one">%1$sটি স্লট তৈরি করুন</item>
+        <item quantity="other">%1$sটি স্লট তৈরি করুন</item>
+    </plurals>
+
 </resources>

@@ -176,4 +176,24 @@
     <string name="mark_complete">Mark as complete</string>
     <string name="no_appointments_day">No appointments for this day.</string>
 
+
+    <string name="availability_label">Availability</string>
+    <string name="create_slots_title">Create appointment slots</string>
+    <string name="create_slots_subtitle">Set a time window and we\'ll build the slots.</string>
+    <string name="field_date">Date</string>
+    <string name="start_time">Start time</string>
+    <string name="end_time">End time</string>
+    <string name="slot_length">Slot length</string>
+    <string name="minutes_format">%1$s minutes</string>
+    <string name="preview_label">Preview</string>
+    <string name="invalid_time_window">End time must be after start time, with room for at least one slot.</string>
+    <plurals name="slots_count">
+        <item quantity="one">%1$s slot</item>
+        <item quantity="other">%1$s slots</item>
+    </plurals>
+    <plurals name="create_slots_button">
+        <item quantity="one">Create %1$s slot</item>
+        <item quantity="other">Create %1$s slots</item>
+    </plurals>
+
 </resources>
