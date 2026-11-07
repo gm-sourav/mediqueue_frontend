@@ -1,5 +1,5 @@
 package com.mediqueue.app
-
+import com.mediqueue.app.ui.screens.doctor.WritePrescriptionScreen
 import com.mediqueue.app.ui.screens.doctor.QueueControlInfo
 import com.mediqueue.app.ui.screens.doctor.QueueControlScreen
 import com.mediqueue.app.ui.screens.doctor.QueueEntry
@@ -156,6 +156,7 @@ class MainActivity : ComponentActivity() {
                     }
                     var doctorAppointments by remember { mutableStateOf(dummyDoctorAppointments) }
                     var queueControl by remember { mutableStateOf(dummyQueueControl) }
+                    var selectedDocAppt by remember { mutableStateOf<DoctorAppointment?>(null) }
                     var selectedDepartment by rememberSaveable { mutableStateOf("") }
                     var selectedDoctorName by rememberSaveable { mutableStateOf("") }
 
@@ -170,6 +171,7 @@ class MainActivity : ComponentActivity() {
                             "prescriptions" -> "my_appointments"
                             "create_slots" -> "doctor_dashboard"
                             "queue_control" -> "doctor_dashboard"
+                            "write_prescription" -> "doctor_dashboard"
 
                             else -> "login"
                         }
@@ -336,7 +338,11 @@ class MainActivity : ComponentActivity() {
                                     if (it.id == a.id) it.copy(status = "COMPLETED") else it
                                 }
                             },
-                            onAvatarClick = { screen = "profile" }
+                            onAvatarClick = { screen = "profile" },
+                            onAppointmentClick = { a ->
+                                selectedDocAppt = a
+                                screen = "write_prescription"
+                            }
                         )
 
                         "create_slots" -> CreateSlotsScreen(
