@@ -1,7 +1,5 @@
 package com.mediqueue.app.data
 
-package com.mediqueue.app.data
-
 data class LoginRequest(
     val email: String,
     val password: String
