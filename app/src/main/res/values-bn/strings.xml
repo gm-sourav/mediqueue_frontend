@@ -228,4 +228,8 @@
     <string name="error_register_failed">অ্যাকাউন্ট তৈরি করা যায়নি। এই ইমেইল আগে থেকেই নিবন্ধিত হতে পারে।</string>
     <string name="error_account_created">অ্যাকাউন্ট তৈরি হয়েছে। এখন সাইন ইন করুন।</string>
 
+    <string name="doc_tab_today">আজ</string>
+    <string name="doc_tab_slots">স্লট</string>
+    <string name="doc_tab_queue">কিউ</string>
+
 </resources>
