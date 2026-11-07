@@ -192,4 +192,16 @@
         <item quantity="other">%1$sটি স্লট তৈরি করুন</item>
     </plurals>
 
+    <string name="queue_control_badge">কিউ কন্ট্রোল</string>
+    <string name="live_status">লাইভ</string>
+    <string name="todays_queue">আজকের কিউ</string>
+    <string name="next_token">পরবর্তী টোকেন</string>
+    <string name="call_next">পরবর্তী রোগীকে ডাকুন →</string>
+    <string name="waiting_next">পরবর্তী অপেক্ষায়</string>
+    <string name="nobody_waiting">কেউ অপেক্ষায় নেই।</string>
+    <plurals name="patients_count">
+        <item quantity="one">%1$s জন রোগী</item>
+        <item quantity="other">%1$s জন রোগী</item>
+    </plurals>
+
 </resources>

@@ -196,4 +196,17 @@
         <item quantity="other">Create %1$s slots</item>
     </plurals>
 
+
+    <string name="queue_control_badge">QUEUE CONTROL</string>
+    <string name="live_status">Live</string>
+    <string name="todays_queue">Today\'s queue</string>
+    <string name="next_token">NEXT TOKEN</string>
+    <string name="call_next">Call next patient →</string>
+    <string name="waiting_next">Waiting next</string>
+    <string name="nobody_waiting">No patients waiting.</string>
+    <plurals name="patients_count">
+        <item quantity="one">%1$s patient</item>
+        <item quantity="other">%1$s patients</item>
+    </plurals>
+
 </resources>
