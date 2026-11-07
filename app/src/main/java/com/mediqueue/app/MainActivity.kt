@@ -181,7 +181,7 @@ class MainActivity : ComponentActivity() {
                         "splash" -> SplashScreen(onFinished = { screen = "login" })
 
                         "login" -> LoginScreen(
-                            onLoginSuccess = { screen = "queue_control" },
+                            onLoginSuccess = { screen = "doctor_dashboard" },
                             onCreateAccount = { screen = "register" }
                         )
 
@@ -366,6 +366,27 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         )
+
+                        "write_prescription" -> {
+                            val a = selectedDocAppt
+                            if (a != null) {
+                                WritePrescriptionScreen(
+                                    patientName = a.patientName,
+                                    department = a.department,
+                                    time = a.time,
+                                    status = a.status,
+                                    onBack = { screen = "doctor_dashboard" },
+                                    onSave = { medicines, notes ->
+                                        Toast.makeText(
+                                            this@MainActivity,
+                                            "Prescription saved: ${medicines.size} medicine(s) (demo)",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                        screen = "doctor_dashboard"
+                                    }
+                                )
+                            }
+                        }
 
                     }
                 }
