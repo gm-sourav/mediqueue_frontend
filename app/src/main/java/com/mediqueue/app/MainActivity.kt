@@ -157,7 +157,7 @@ class MainActivity : ComponentActivity() {
                         "splash" -> SplashScreen(onFinished = { screen = "login" })
 
                         "login" -> LoginScreen(
-                            onLoginSuccess = { screen = "doctor_dashboard" },
+                            onLoginSuccess = { screen = "create_slots" },
                             onCreateAccount = { screen = "register" }
                         )
 
