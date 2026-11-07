@@ -1,4 +1,5 @@
 package com.mediqueue.app
+import com.mediqueue.app.data.ApiClient
 import com.mediqueue.app.ui.screens.doctor.WritePrescriptionScreen
 import com.mediqueue.app.ui.screens.doctor.QueueControlInfo
 import com.mediqueue.app.ui.screens.doctor.QueueControlScreen
@@ -78,6 +79,12 @@ private fun routeFor(tab: PatientTab): String = when (tab) {
     PatientTab.Profile -> "profile"
 }
 
+private fun homeFor(role: String?): String = when (role) {
+    "DOCTOR" -> "doctor_dashboard"
+    "ADMIN" -> "admin_home"
+    else -> "patient_home"
+}
+
 private val dummyPrescriptions = listOf(
     PrescriptionItem(
         1, "Nov 02", "Cardiology", "Dr. Ayesha Rahman", "Follow-up and medication plan", true,
@@ -121,6 +128,8 @@ private val dummyQueueControl = QueueControlInfo(
 )
 
 
+
+
 class MainActivity : ComponentActivity() {
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHelper.wrap(newBase))
@@ -160,47 +169,51 @@ class MainActivity : ComponentActivity() {
                     var selectedDepartment by rememberSaveable { mutableStateOf("") }
                     var selectedDoctorName by rememberSaveable { mutableStateOf("") }
 
-                    BackHandler(enabled = screen !in listOf("splash", "login", "patient_home", "doctor_dashboard")) {
+                    BackHandler(
+                        enabled = screen !in listOf("splash", "login", "patient_home", "doctor_dashboard", "admin_home")
+                    ) {
                         screen = when (screen) {
                             "language" -> "profile"
-                            "profile", "departments", "my_appointments" -> "patient_home"
+                            "profile" -> homeFor(ApiClient.session.role)
+                            "departments", "my_appointments" -> "patient_home"
                             "doctors" -> "departments"
                             "doctor_detail" -> "doctors"
                             "pick_slot" -> "doctor_detail"
-                            "live_queue" -> "my_appointments"
-                            "prescriptions" -> "my_appointments"
-                            "create_slots" -> "doctor_dashboard"
-                            "queue_control" -> "doctor_dashboard"
-                            "write_prescription" -> "doctor_dashboard"
-
+                            "live_queue", "prescriptions" -> "my_appointments"
+                            "create_slots", "queue_control", "write_prescription" -> "doctor_dashboard"
+                            "register" -> "login"
                             else -> "login"
                         }
                     }
 
                     when (screen) {
-                        "splash" -> SplashScreen(onFinished = { screen = "login" })
+                        "splash" -> SplashScreen(
+                            onFinished = {
+                                screen = if (ApiClient.session.isLoggedIn) homeFor(ApiClient.session.role) else "login"
+                            }
+                        )
 
                         "login" -> LoginScreen(
-                            onLoginSuccess = { screen = "doctor_dashboard" },
+                            onLoginSuccess = { auth -> screen = homeFor(auth.role) },
                             onCreateAccount = { screen = "register" }
                         )
 
                         "register" -> RegisterScreen(
-                            onRegistered = {
-                                Toast.makeText(this, "Account created (demo)", Toast.LENGTH_SHORT).show()
-                                screen = "login"
-                            },
+                            onRegistered = { auth -> screen = homeFor(auth.role) },
                             onSignInClick = { screen = "login" }
                         )
 
                         "language" -> LanguageScreen(onSaved = { screen = "profile" })
 
-                        "profile" -> ProfileScreen(
-                            name = "Nila Akter",
-                            email = "nila@example.com",
-                            role = "PATIENT",
+                        "profile", "admin_home" -> ProfileScreen(
+                            name = ApiClient.session.name,
+                            email = ApiClient.session.email,
+                            role = ApiClient.session.role ?: "",
                             onLanguageClick = { screen = "language" },
-                            onLogout = { screen = "login" }
+                            onLogout = {
+                                ApiClient.session.clear()
+                                screen = "login"
+                            }
                         )
 
                         "patient_home" -> PatientHomeScreen(

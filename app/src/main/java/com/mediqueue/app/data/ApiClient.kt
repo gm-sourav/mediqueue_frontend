@@ -9,7 +9,15 @@ import retrofit2.converter.gson.GsonConverterFactory
 object ApiClient {
 
     // Emulator theke PC er localhost
-    const val BASE_URL = "http://10.0.2.2:8080/"
+    val BASE_URL: String =
+        if (isEmulator()) "http://10.0.2.2:8080/" else "http://localhost:8080/"
+
+    private fun isEmulator(): Boolean =
+        android.os.Build.FINGERPRINT.contains("generic") ||
+                android.os.Build.FINGERPRINT.contains("emulator") ||
+                android.os.Build.HARDWARE.contains("ranchu") ||
+                android.os.Build.HARDWARE.contains("goldfish") ||
+                android.os.Build.PRODUCT.contains("sdk")
 
     lateinit var session: SessionManager
         private set

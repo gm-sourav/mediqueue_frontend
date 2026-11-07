@@ -1,5 +1,6 @@
 package com.mediqueue.app.ui.screens.auth
 
+import android.util.Patterns
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,7 +27,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -39,22 +39,22 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import android.util.Patterns
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mediqueue.app.R
+import com.mediqueue.app.data.AuthResponse
 import com.mediqueue.app.ui.components.MediFieldCard
 import com.mediqueue.app.ui.components.MediInput
 import com.mediqueue.app.ui.components.MediPill
 import com.mediqueue.app.ui.theme.MediColors
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 private val LinkLight = Color(0xFFC9D8D4)
 private val PhoneRegex = Regex("^(\\+?88)?01[3-9]\\d{8}$")
 
 @Composable
 fun RegisterScreen(
-    onRegistered: () -> Unit,
-    onSignInClick: () -> Unit
+    onRegistered: (AuthResponse) -> Unit,
+    onSignInClick: () -> Unit,
+    viewModel: RegisterViewModel = viewModel()
 ) {
     var name by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
@@ -63,12 +63,13 @@ fun RegisterScreen(
     var confirm by rememberSaveable { mutableStateOf("") }
 
     var submitted by remember { mutableStateOf(false) }
-    var loading by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
+    val loading = viewModel.isLoading
+    val errorRes = viewModel.errorRes
 
+    val cleanPhone = phone.replace(Regex("[\\s-]"), "")
     val nameError = submitted && name.isBlank()
     val emailError = submitted && !Patterns.EMAIL_ADDRESS.matcher(email.trim()).matches()
-    val phoneError = submitted && !PhoneRegex.matches(phone.replace(Regex("[\\s-]"), ""))
+    val phoneError = submitted && !PhoneRegex.matches(cleanPhone)
     val passError = submitted && password.length < 6
     // Mismatch: confirm e kichu lekha shuru korlei dekhabe
     val confirmError = (submitted || confirm.isNotEmpty()) && confirm != password
@@ -78,17 +79,11 @@ fun RegisterScreen(
         submitted = true
         val ok = name.isNotBlank() &&
                 Patterns.EMAIL_ADDRESS.matcher(email.trim()).matches() &&
-                PhoneRegex.matches(phone.replace(Regex("[\\s-]"), "")) &&
+                PhoneRegex.matches(cleanPhone) &&
                 password.length >= 6 &&
                 confirm == password
         if (!ok) return
-        // DUMMY: pore ekhane backend register call boshbe
-        scope.launch {
-            loading = true
-            delay(1200)
-            loading = false
-            onRegistered()
-        }
+        viewModel.register(name, email, cleanPhone, password) { auth -> onRegistered(auth) }
     }
 
     Column(
@@ -201,6 +196,16 @@ fun RegisterScreen(
             )
         }
 
+        // Server error (email already registered, network...)
+        if (errorRes != null) {
+            Spacer(Modifier.height(12.dp))
+            Text(
+                text = stringResource(errorRes),
+                color = MediColors.Danger,
+                fontSize = 12.5.sp
+            )
+        }
+
         Spacer(Modifier.height(16.dp))
         Button(
             onClick = { submit() },
@@ -252,5 +257,5 @@ fun RegisterScreen(
 @Preview(showBackground = true, widthDp = 390, heightDp = 844)
 @Composable
 private fun RegisterScreenPreview() {
-    RegisterScreen(onRegistered = {}, onSignInClick = {})
+    RegisterScreen(onRegistered = {}, onSignInClick = {}, viewModel = RegisterViewModel())
 }
