@@ -48,6 +48,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mediqueue.app.R
+import com.mediqueue.app.ui.components.DoctorBottomBar
 import com.mediqueue.app.ui.components.DoctorTab
 import com.mediqueue.app.ui.components.localizedNumber
 import com.mediqueue.app.ui.theme.MediColors
@@ -121,11 +122,7 @@ fun CreateSlotsScreen(
 
     Scaffold(
         containerColor = MediColors.Bg,
-        snackbarHost = {
-            SnackbarHost(snackbar) { data ->
-                Snackbar(snackbarData = data, containerColor = MediColors.Card, contentColor = MediColors.Text)
-            }
-        }
+        bottomBar = { DoctorBottomBar(DoctorTab.Queue, onTabSelected) }
     ) { pad ->
         Column(
             modifier = Modifier

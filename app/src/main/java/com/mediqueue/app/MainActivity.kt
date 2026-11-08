@@ -1,4 +1,7 @@
 package com.mediqueue.app
+
+import com.mediqueue.app.ui.components.DoctorTab
+import com.mediqueue.app.ui.screens.auth.ProfileWithBottomBar
 import com.mediqueue.app.data.ApiClient
 import com.mediqueue.app.ui.screens.doctor.WritePrescriptionScreen
 import com.mediqueue.app.ui.screens.doctor.QueueControlInfo
@@ -83,6 +86,13 @@ private fun homeFor(role: String?): String = when (role) {
     "DOCTOR" -> "doctor_dashboard"
     "ADMIN" -> "admin_home"
     else -> "patient_home"
+}
+
+private fun doctorRouteFor(tab: DoctorTab): String = when (tab) {
+    DoctorTab.Today -> "doctor_dashboard"
+    DoctorTab.Slots -> "create_slots"
+    DoctorTab.Queue -> "queue_control"
+    DoctorTab.Profile -> "profile"
 }
 
 private val dummyPrescriptions = listOf(
