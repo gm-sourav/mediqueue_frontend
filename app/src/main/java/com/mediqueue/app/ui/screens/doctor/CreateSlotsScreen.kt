@@ -48,6 +48,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mediqueue.app.R
+import com.mediqueue.app.ui.components.DoctorTab
 import com.mediqueue.app.ui.components.localizedNumber
 import com.mediqueue.app.ui.theme.MediColors
 import kotlinx.coroutines.launch
@@ -63,7 +64,8 @@ private val lengthOptions = listOf(15, 20, 30, 45, 60)
 @Composable
 fun CreateSlotsScreen(
     onCreate: (date: LocalDate, start: LocalTime, end: LocalTime, lengthMin: Int, slots: List<LocalTime>) -> Unit,
-    isSubmitting: Boolean = false
+    isSubmitting: Boolean = false,
+            onTabSelected: (DoctorTab) -> Unit = {}
 ) {
     val context = LocalContext.current
     val resources = context.resources
