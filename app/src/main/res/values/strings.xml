@@ -238,4 +238,9 @@
     <string name="doc_tab_slots">Slots</string>
     <string name="doc_tab_queue">Queue</string>
 
+    <string name="error_booking_failed">Couldn\'t book this slot. It may already be taken. Please choose another time.</string>
+    <string name="booking_requested">Appointment requested. Waiting for the doctor to confirm.</string>
+    <string name="retry">Retry</string>
+    <string name="search_doctors">Search doctors</string>
+
 </resources>

@@ -232,4 +232,9 @@
     <string name="doc_tab_slots">স্লট</string>
     <string name="doc_tab_queue">কিউ</string>
 
+    <string name="error_booking_failed">এই স্লট বুক করা যায়নি। হয়তো আগেই নেওয়া হয়ে গেছে। অন্য সময় বেছে নিন।</string>
+    <string name="booking_requested">অ্যাপয়েন্টমেন্টের অনুরোধ পাঠানো হয়েছে। ডাক্তারের নিশ্চিতকরণের অপেক্ষায়।</string>
+    <string name="retry">আবার চেষ্টা করুন</string>
+
+
 </resources>
