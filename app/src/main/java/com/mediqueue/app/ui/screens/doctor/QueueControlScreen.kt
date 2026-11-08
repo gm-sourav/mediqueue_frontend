@@ -1,5 +1,6 @@
 package com.mediqueue.app.ui.screens.doctor
-
+import com.mediqueue.app.ui.components.DoctorBottomBar
+import com.mediqueue.app.ui.components.DoctorTab
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -60,7 +61,8 @@ fun QueueControlScreen(
     info: QueueControlInfo,
     onCallNext: () -> Unit,
     date: LocalDate = LocalDate.now(),
-    isCalling: Boolean = false
+    isCalling: Boolean = false,
+    onTabSelected: (DoctorTab) -> Unit = {}
 ) {
     val resources = LocalContext.current.resources
     val locale = resources.configuration.locales[0]
@@ -69,7 +71,10 @@ fun QueueControlScreen(
     )
     val next = info.waiting.firstOrNull()
 
-    Scaffold(containerColor = MediColors.Bg) { pad ->
+    Scaffold(
+        containerColor = MediColors.Bg,
+        bottomBar = { DoctorBottomBar(DoctorTab.Queue, onTabSelected) }
+    ) { pad ->
         Column(
             modifier = Modifier
                 .padding(pad)

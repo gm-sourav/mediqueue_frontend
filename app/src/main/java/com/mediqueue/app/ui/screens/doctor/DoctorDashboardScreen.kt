@@ -1,6 +1,5 @@
 package com.mediqueue.app.ui.screens.doctor
-import com.mediqueue.app.ui.components.DoctorBottomBar
-import com.mediqueue.app.ui.components.DoctorTab
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -39,6 +38,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mediqueue.app.R
+import com.mediqueue.app.ui.components.DoctorBottomBar
+import com.mediqueue.app.ui.components.DoctorTab
 import com.mediqueue.app.ui.components.initialsOf
 import com.mediqueue.app.ui.components.localizedNumber
 import com.mediqueue.app.ui.theme.MediColors

@@ -1,30 +1,5 @@
 package com.mediqueue.app
 
-import com.mediqueue.app.ui.components.DoctorTab
-import com.mediqueue.app.ui.screens.auth.ProfileWithBottomBar
-import com.mediqueue.app.data.ApiClient
-import com.mediqueue.app.ui.screens.doctor.WritePrescriptionScreen
-import com.mediqueue.app.ui.screens.doctor.QueueControlInfo
-import com.mediqueue.app.ui.screens.doctor.QueueControlScreen
-import com.mediqueue.app.ui.screens.doctor.QueueEntry
-import com.mediqueue.app.ui.screens.doctor.CreateSlotsScreen
-import com.mediqueue.app.ui.screens.patient.MedicineItem
-import com.mediqueue.app.ui.screens.patient.PrescriptionItem
-import com.mediqueue.app.ui.screens.patient.PrescriptionsScreen
-import com.mediqueue.app.ui.screens.patient.LiveQueueInfo
-import com.mediqueue.app.ui.screens.patient.LiveQueueScreen
-import com.mediqueue.app.ui.screens.patient.PickSlotScreen
-import com.mediqueue.app.ui.screens.patient.SlotItem
-import com.mediqueue.app.ui.screens.patient.AppointmentItem
-import com.mediqueue.app.ui.screens.patient.MyAppointmentsScreen
-import com.mediqueue.app.ui.screens.patient.DoctorDetail
-import com.mediqueue.app.ui.screens.patient.DoctorDetailScreen
-import com.mediqueue.app.ui.screens.patient.DoctorItem
-import com.mediqueue.app.ui.screens.patient.DoctorsListScreen
-import com.mediqueue.app.ui.screens.patient.Department
-import com.mediqueue.app.ui.screens.patient.DepartmentsScreen
-import com.mediqueue.app.ui.screens.auth.LanguageScreen
-import com.mediqueue.app.ui.screens.auth.ProfileScreen
 import android.content.Context
 import android.graphics.Color as AndroidColor
 import android.os.Bundle
@@ -44,17 +19,41 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.mediqueue.app.data.ApiClient
+import com.mediqueue.app.ui.components.DoctorTab
+import com.mediqueue.app.ui.components.PatientTab
+import com.mediqueue.app.ui.screens.auth.LanguageScreen
 import com.mediqueue.app.ui.screens.auth.LoginScreen
+import com.mediqueue.app.ui.screens.auth.ProfileScreen
+import com.mediqueue.app.ui.screens.auth.ProfileWithBottomBar
 import com.mediqueue.app.ui.screens.auth.RegisterScreen
 import com.mediqueue.app.ui.screens.auth.SplashScreen
-import com.mediqueue.app.ui.theme.MediColors
-import com.mediqueue.app.ui.components.PatientTab
+import com.mediqueue.app.ui.screens.doctor.CreateSlotsScreen
 import com.mediqueue.app.ui.screens.doctor.DoctorAppointment
 import com.mediqueue.app.ui.screens.doctor.DoctorDashboardScreen
+import com.mediqueue.app.ui.screens.doctor.QueueControlInfo
+import com.mediqueue.app.ui.screens.doctor.QueueControlScreen
+import com.mediqueue.app.ui.screens.doctor.QueueEntry
+import com.mediqueue.app.ui.screens.doctor.WritePrescriptionScreen
+import com.mediqueue.app.ui.screens.patient.AppointmentItem
+import com.mediqueue.app.ui.screens.patient.Department
+import com.mediqueue.app.ui.screens.patient.DepartmentsScreen
+import com.mediqueue.app.ui.screens.patient.DoctorDetail
+import com.mediqueue.app.ui.screens.patient.DoctorDetailScreen
+import com.mediqueue.app.ui.screens.patient.DoctorItem
+import com.mediqueue.app.ui.screens.patient.DoctorsListScreen
+import com.mediqueue.app.ui.screens.patient.LiveQueueInfo
+import com.mediqueue.app.ui.screens.patient.LiveQueueScreen
+import com.mediqueue.app.ui.screens.patient.MedicineItem
+import com.mediqueue.app.ui.screens.patient.MyAppointmentsScreen
 import com.mediqueue.app.ui.screens.patient.NextAppointment
 import com.mediqueue.app.ui.screens.patient.PatientHomeScreen
+import com.mediqueue.app.ui.screens.patient.PickSlotScreen
+import com.mediqueue.app.ui.screens.patient.PrescriptionItem
 import com.mediqueue.app.ui.screens.patient.PrescriptionsScreen
 import com.mediqueue.app.ui.screens.patient.QueueInfo
+import com.mediqueue.app.ui.screens.patient.SlotItem
+import com.mediqueue.app.ui.theme.MediColors
 
 private val dummyDoctors = listOf(
     DoctorItem(1, "Dr. Ayesha Rahman", 12, "Cardiologist", 1000, "Today · 10:30 AM", true),
@@ -137,13 +136,11 @@ private val dummyQueueControl = QueueControlInfo(
     )
 )
 
-
-
-
 class MainActivity : ComponentActivity() {
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHelper.wrap(newBase))
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(
@@ -167,7 +164,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MediColors.Bg
                 ) {
-                    // Temporary shorol navigation: "splash", "login", "register"
+                    // Temporary shorol navigation (pore real Navigation e jabe)
                     var screen by rememberSaveable { mutableStateOf("splash") }
                     var appointments by remember { mutableStateOf(dummyAppointments) }
                     var liveQueue by remember {
@@ -215,19 +212,25 @@ class MainActivity : ComponentActivity() {
 
                         "language" -> LanguageScreen(onSaved = { screen = "profile" })
 
-                        "profile", "admin_home" -> ProfileScreen(
-                            name = ApiClient.session.name,
-                            email = ApiClient.session.email,
-                            role = ApiClient.session.role ?: "",
-                            onLanguageClick = { screen = "language" },
-                            onLogout = {
-                                ApiClient.session.clear()
-                                screen = "login"
-                            }
-                        )
+                        "profile", "admin_home" -> ProfileWithBottomBar(
+                            role = ApiClient.session.role,
+                            onPatientTab = { screen = routeFor(it) },
+                            onDoctorTab = { screen = doctorRouteFor(it) }
+                        ) {
+                            ProfileScreen(
+                                name = ApiClient.session.name,
+                                email = ApiClient.session.email,
+                                role = ApiClient.session.role ?: "",
+                                onLanguageClick = { screen = "language" },
+                                onLogout = {
+                                    ApiClient.session.clear()
+                                    screen = "login"
+                                }
+                            )
+                        }
 
                         "patient_home" -> PatientHomeScreen(
-                            patientName = "Nila Akter",
+                            patientName = ApiClient.session.name,
                             queue = QueueInfo(
                                 myToken = 28,
                                 nowServing = 21,
@@ -296,6 +299,7 @@ class MainActivity : ComponentActivity() {
                                 onSeeAllClick = { screen = "pick_slot" }
                             )
                         }
+
                         "pick_slot" -> PickSlotScreen(
                             doctorName = selectedDoctorName,
                             slotsForDate = { _ -> dummySlots },
@@ -341,9 +345,8 @@ class MainActivity : ComponentActivity() {
                             onTabSelected = { screen = routeFor(it) }
                         )
 
-
                         "doctor_dashboard" -> DoctorDashboardScreen(
-                            doctorName = "Dr. Ayesha Rahman",
+                            doctorName = ApiClient.session.name,
                             appointments = doctorAppointments,
                             onDateChange = { /* backend e GET /api/doctor/appointments?date= */ },
                             onConfirm = { a ->
@@ -365,14 +368,16 @@ class MainActivity : ComponentActivity() {
                             onAppointmentClick = { a ->
                                 selectedDocAppt = a
                                 screen = "write_prescription"
-                            }
+                            },
+                            onTabSelected = { screen = doctorRouteFor(it) }
                         )
 
                         "create_slots" -> CreateSlotsScreen(
                             onCreate = { date, start, end, length, slots ->
                                 Toast.makeText(this, "Created ${slots.size} slots on $date (demo)", Toast.LENGTH_LONG).show()
                                 screen = "doctor_dashboard"
-                            }
+                            },
+                            onTabSelected = { screen = doctorRouteFor(it) }
                         )
 
                         "queue_control" -> QueueControlScreen(
@@ -387,7 +392,8 @@ class MainActivity : ComponentActivity() {
                                         waiting = queueControl.waiting.drop(1)
                                     )
                                 }
-                            }
+                            },
+                            onTabSelected = { screen = doctorRouteFor(it) }
                         )
 
                         "write_prescription" -> {
@@ -410,7 +416,6 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                         }
-
                     }
                 }
             }

@@ -66,7 +66,7 @@ private val lengthOptions = listOf(15, 20, 30, 45, 60)
 fun CreateSlotsScreen(
     onCreate: (date: LocalDate, start: LocalTime, end: LocalTime, lengthMin: Int, slots: List<LocalTime>) -> Unit,
     isSubmitting: Boolean = false,
-            onTabSelected: (DoctorTab) -> Unit = {}
+    onTabSelected: (DoctorTab) -> Unit = {}
 ) {
     val context = LocalContext.current
     val resources = context.resources
@@ -122,7 +122,12 @@ fun CreateSlotsScreen(
 
     Scaffold(
         containerColor = MediColors.Bg,
-        bottomBar = { DoctorBottomBar(DoctorTab.Queue, onTabSelected) }
+        bottomBar = { DoctorBottomBar(DoctorTab.Slots, onTabSelected) },
+        snackbarHost = {
+            SnackbarHost(snackbar) { data ->
+                Snackbar(snackbarData = data, containerColor = MediColors.Card, contentColor = MediColors.Text)
+            }
+        }
     ) { pad ->
         Column(
             modifier = Modifier
