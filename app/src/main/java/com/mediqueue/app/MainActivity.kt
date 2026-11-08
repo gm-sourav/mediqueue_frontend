@@ -13,14 +13,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mediqueue.app.data.ApiClient
 import com.mediqueue.app.ui.components.DoctorTab
+import com.mediqueue.app.ui.components.LoadOrError
 import com.mediqueue.app.ui.components.PatientTab
 import com.mediqueue.app.ui.screens.auth.LanguageScreen
 import com.mediqueue.app.ui.screens.auth.LoginScreen
@@ -35,44 +42,29 @@ import com.mediqueue.app.ui.screens.doctor.QueueControlInfo
 import com.mediqueue.app.ui.screens.doctor.QueueControlScreen
 import com.mediqueue.app.ui.screens.doctor.QueueEntry
 import com.mediqueue.app.ui.screens.doctor.WritePrescriptionScreen
-import com.mediqueue.app.ui.screens.patient.AppointmentItem
-import com.mediqueue.app.ui.screens.patient.Department
 import com.mediqueue.app.ui.screens.patient.DepartmentsScreen
-import com.mediqueue.app.ui.screens.patient.DoctorDetail
 import com.mediqueue.app.ui.screens.patient.DoctorDetailScreen
-import com.mediqueue.app.ui.screens.patient.DoctorItem
 import com.mediqueue.app.ui.screens.patient.DoctorsListScreen
 import com.mediqueue.app.ui.screens.patient.LiveQueueInfo
 import com.mediqueue.app.ui.screens.patient.LiveQueueScreen
 import com.mediqueue.app.ui.screens.patient.MedicineItem
 import com.mediqueue.app.ui.screens.patient.MyAppointmentsScreen
-import com.mediqueue.app.ui.screens.patient.NextAppointment
 import com.mediqueue.app.ui.screens.patient.PatientHomeScreen
+import com.mediqueue.app.ui.screens.patient.PatientViewModel
 import com.mediqueue.app.ui.screens.patient.PickSlotScreen
 import com.mediqueue.app.ui.screens.patient.PrescriptionItem
 import com.mediqueue.app.ui.screens.patient.PrescriptionsScreen
-import com.mediqueue.app.ui.screens.patient.QueueInfo
-import com.mediqueue.app.ui.screens.patient.SlotItem
+import com.mediqueue.app.ui.screens.patient.nextAppointmentOf
+import com.mediqueue.app.ui.screens.patient.slotLabel
+import com.mediqueue.app.ui.screens.patient.toDetail
+import com.mediqueue.app.ui.screens.patient.toItem
+import com.mediqueue.app.ui.screens.patient.toItems
+import com.mediqueue.app.ui.screens.patient.toNext
+import com.mediqueue.app.ui.screens.patient.toSlotItems
+import com.mediqueue.app.ui.screens.patient.toUi
 import com.mediqueue.app.ui.theme.MediColors
-
-private val dummyDoctors = listOf(
-    DoctorItem(1, "Dr. Ayesha Rahman", 12, "Cardiologist", 1000, "Today · 10:30 AM", true),
-    DoctorItem(2, "Dr. Samiul Haque", 8, "Cardiologist", 800, "Tomorrow · 9:00 AM", false),
-    DoctorItem(3, "Dr. Tasnim Noor", 6, "Cardiologist", 700, "Wed · 11:00 AM", false)
-)
-
-private val dummySlots = listOf(
-    SlotItem(1, "9:00 AM", false), SlotItem(2, "9:30 AM", true), SlotItem(3, "10:00 AM", false),
-    SlotItem(4, "10:30 AM", false), SlotItem(5, "11:00 AM", true), SlotItem(6, "11:30 AM", false),
-    SlotItem(7, "12:00 PM", false), SlotItem(8, "12:30 PM", false), SlotItem(9, "1:00 PM", false)
-)
-
-private val dummyAppointments = listOf(
-    AppointmentItem(1, "CONFIRMED", 28, "Dr. Ayesha Rahman", "Cardiology", "Today", "10:30 AM", "Nov 2", 1000),
-    AppointmentItem(2, "PENDING", null, "Dr. Samiul Haque", "Neurology", "Nov 5", "9:00 AM", "Nov 5", 800),
-    AppointmentItem(3, "COMPLETED", 12, "Dr. Rafiq Ahmed", "Orthopedics", "Oct 28", "11:00 AM", "Oct 28", 900),
-    AppointmentItem(4, "CANCELLED", null, "Dr. Nusrat Jahan", "Medicine", "Oct 2", "4:00 PM", "Oct 2", 700)
-)
+import java.time.LocalDate
+import java.time.LocalTime
 
 private fun routeFor(tab: PatientTab): String = when (tab) {
     PatientTab.Home -> "patient_home"
@@ -94,6 +86,7 @@ private fun doctorRouteFor(tab: DoctorTab): String = when (tab) {
     DoctorTab.Profile -> "profile"
 }
 
+// ---- Ekhono dummy (porer step e real hobe): prescriptions, live queue, doctor screens ----
 private val dummyPrescriptions = listOf(
     PrescriptionItem(
         1, "Nov 02", "Cardiology", "Dr. Ayesha Rahman", "Follow-up and medication plan", true,
@@ -164,17 +157,48 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MediColors.Bg
                 ) {
+                    val vm: PatientViewModel = viewModel()
+
                     // Temporary shorol navigation (pore real Navigation e jabe)
                     var screen by rememberSaveable { mutableStateOf("splash") }
-                    var appointments by remember { mutableStateOf(dummyAppointments) }
+                    var reload by remember { mutableIntStateOf(0) }
+
                     var liveQueue by remember {
                         mutableStateOf(LiveQueueInfo("Cardiology", "Dr. Ayesha Rahman", "10:30 AM", 28, 21, 7, 0.68f, 25))
                     }
                     var doctorAppointments by remember { mutableStateOf(dummyDoctorAppointments) }
                     var queueControl by remember { mutableStateOf(dummyQueueControl) }
                     var selectedDocAppt by remember { mutableStateOf<DoctorAppointment?>(null) }
+
                     var selectedDepartment by rememberSaveable { mutableStateOf("") }
+                    var selectedDepartmentId by rememberSaveable { mutableLongStateOf(0L) }
                     var selectedDoctorName by rememberSaveable { mutableStateOf("") }
+                    var selectedDoctorId by rememberSaveable { mutableLongStateOf(0L) }
+
+                    val locale = LocalConfiguration.current.locales[0]
+                    val today = LocalDate.now()
+                    val todayWord = stringResource(R.string.today)
+                    val tomorrowWord = stringResource(R.string.tomorrow)
+
+                    // Screen e dukle oi screen er data load
+                    LaunchedEffect(screen, reload) {
+                        when (screen) {
+                            "departments" -> vm.loadDepartments()
+                            "doctors" -> vm.loadDoctors(selectedDepartmentId)
+                            "doctor_detail" -> if (vm.deptDoctors == null) vm.loadDoctors(selectedDepartmentId)
+                            "pick_slot" -> vm.loadWeek(selectedDoctorId)
+                            "patient_home", "my_appointments" -> vm.loadAppointments()
+                        }
+                    }
+
+                    // Token expire hole login e pathao
+                    LaunchedEffect(vm.unauthorized) {
+                        if (vm.unauthorized) {
+                            ApiClient.session.clear()
+                            vm.reset()
+                            screen = "login"
+                        }
+                    }
 
                     BackHandler(
                         enabled = screen !in listOf("splash", "login", "patient_home", "doctor_dashboard", "admin_home")
@@ -201,12 +225,18 @@ class MainActivity : ComponentActivity() {
                         )
 
                         "login" -> LoginScreen(
-                            onLoginSuccess = { auth -> screen = homeFor(auth.role) },
+                            onLoginSuccess = { auth ->
+                                vm.reset()
+                                screen = homeFor(auth.role)
+                            },
                             onCreateAccount = { screen = "register" }
                         )
 
                         "register" -> RegisterScreen(
-                            onRegistered = { auth -> screen = homeFor(auth.role) },
+                            onRegistered = { auth ->
+                                vm.reset()
+                                screen = homeFor(auth.role)
+                            },
                             onSignInClick = { screen = "login" }
                         )
 
@@ -224,110 +254,162 @@ class MainActivity : ComponentActivity() {
                                 onLanguageClick = { screen = "language" },
                                 onLogout = {
                                     ApiClient.session.clear()
+                                    vm.reset()
                                     screen = "login"
                                 }
                             )
                         }
 
-                        "patient_home" -> PatientHomeScreen(
-                            patientName = ApiClient.session.name,
-                            queue = QueueInfo(
-                                myToken = 28,
-                                nowServing = 21,
-                                patientsAhead = 7,
-                                estimatedMinutes = 25,
-                                progress = 0.68f,
-                                onTrack = true
-                            ),
-                            nextAppointment = NextAppointment(
-                                doctorName = "Dr. Ayesha Rahman",
-                                department = "Cardiology",
-                                whenText = "Today, 10:30 AM",
-                                token = 28,
-                                status = "CONFIRMED"
-                            ),
-                            onBookClick = { screen = "departments" },
-                            onAppointmentClick = { screen = "my_appointments" },
-                            onAvatarClick = { screen = "profile" },
-                            onTabSelected = { screen = routeFor(it) }
-                        )
-
-                        "departments" -> DepartmentsScreen(
-                            departments = listOf(
-                                Department(1, "Cardiology", 12, "♡"),
-                                Department(2, "Neurology", 8, "✳"),
-                                Department(3, "Dental", 10, "+"),
-                                Department(4, "Eye", 6, "◉"),
-                                Department(5, "Pediatrics", 9, "⌂"),
-                                Department(6, "Orthopedics", 7, "+")
-                            ),
-                            onDepartmentClick = { dept ->
-                                selectedDepartment = dept.name
-                                screen = "doctors"
-                            },
-                            onTabSelected = { screen = routeFor(it) }
-                        )
-
-                        "doctors" -> DoctorsListScreen(
-                            departmentName = selectedDepartment,
-                            searchHint = "Search cardiologists",
-                            doctors = dummyDoctors,
-                            onDoctorClick = { doctor ->
-                                selectedDoctorName = doctor.name
-                                screen = "doctor_detail"
-                            },
-                            onTabSelected = { screen = routeFor(it) }
-                        )
-
-                        "doctor_detail" -> {
-                            val d = dummyDoctors.firstOrNull { it.name == selectedDoctorName } ?: dummyDoctors.first()
-                            DoctorDetailScreen(
-                                doctor = DoctorDetail(
-                                    id = d.id,
-                                    name = d.name,
-                                    specialty = d.specialty,
-                                    department = selectedDepartment,
-                                    experienceYears = d.experienceYears,
-                                    fee = d.fee,
-                                    rating = 4.9,
-                                    about = "Experienced cardiologist focused on clear, patient-centred care.",
-                                    availableToday = d.availableToday,
-                                    nextSlots = listOfNotNull(d.nextSlot)
-                                ),
-                                onBack = { screen = "doctors" },
-                                onBookClick = { screen = "pick_slot" },
-                                onSeeAllClick = { screen = "pick_slot" }
+                        // ================= PATIENT (real data) =================
+                        "patient_home" -> {
+                            val next = nextAppointmentOf(vm.appointments, today)
+                            PatientHomeScreen(
+                                patientName = ApiClient.session.name,
+                                queue = null,   // Live queue card porer step e
+                                nextAppointment = next?.toNext(today, todayWord, tomorrowWord, locale),
+                                onBookClick = { screen = "departments" },
+                                onAppointmentClick = { screen = "my_appointments" },
+                                onAvatarClick = { screen = "profile" },
+                                onTabSelected = { screen = routeFor(it) }
                             )
                         }
 
-                        "pick_slot" -> PickSlotScreen(
-                            doctorName = selectedDoctorName,
-                            slotsForDate = { _ -> dummySlots },
-                            onConfirm = { date, slot, reason ->
-                                Toast.makeText(this, "Booked ${slot.time} on $date (demo)", Toast.LENGTH_LONG).show()
-                                screen = "patient_home"
+                        "departments" -> {
+                            val deps = vm.departments
+                            if (deps == null) {
+                                LoadOrError(vm.errorRes) { reload++ }
+                            } else {
+                                val docs = vm.allDoctors.orEmpty()
+                                DepartmentsScreen(
+                                    departments = deps.map { dep ->
+                                        dep.toUi(docs.count { it.departmentId == dep.id })
+                                    },
+                                    onDepartmentClick = { dept ->
+                                        selectedDepartment = dept.name
+                                        selectedDepartmentId = dept.id.toLong()
+                                        vm.clearDoctors()
+                                        screen = "doctors"
+                                    },
+                                    onTabSelected = { screen = routeFor(it) }
+                                )
                             }
-                        )
+                        }
 
-                        "my_appointments" -> MyAppointmentsScreen(
-                            appointments = appointments,
-                            onCancel = { item ->
-                                appointments = appointments.map {
-                                    if (it.id == item.id) it.copy(status = "CANCELLED") else it
-                                }
-                                Toast.makeText(this, getString(R.string.booking_cancelled), Toast.LENGTH_SHORT).show()
-                            },
-                            onDetailsClick = { item ->
-                                screen = if (item.status == "COMPLETED") "prescriptions" else "live_queue"
-                            },
-                            onTabSelected = { screen = routeFor(it) }
-                        )
+                        "doctors" -> {
+                            val docs = vm.deptDoctors
+                            if (docs == null) {
+                                LoadOrError(vm.errorRes) { reload++ }
+                            } else {
+                                DoctorsListScreen(
+                                    departmentName = selectedDepartment,
+                                    searchHint = stringResource(R.string.search_doctors),
+                                    doctors = docs.map { d ->
+                                        val ups = vm.upcoming[d.id].orEmpty()
+                                        d.toItem(
+                                            nextSlot = ups.firstOrNull()
+                                                ?.let { slotLabel(it, today, todayWord, tomorrowWord, locale) },
+                                            availableToday = ups.any { it.first == today }
+                                        )
+                                    },
+                                    onDoctorClick = { doctor ->
+                                        selectedDoctorId = doctor.id.toLong()
+                                        selectedDoctorName = doctor.name
+                                        screen = "doctor_detail"
+                                    },
+                                    onTabSelected = { screen = routeFor(it) }
+                                )
+                            }
+                        }
 
+                        "doctor_detail" -> {
+                            val d = vm.deptDoctors?.firstOrNull { it.id == selectedDoctorId }
+                            if (d == null) {
+                                LoadOrError(vm.errorRes) { reload++ }
+                            } else {
+                                val ups = vm.upcoming[d.id].orEmpty()
+                                DoctorDetailScreen(
+                                    doctor = d.toDetail(
+                                        nextSlots = ups.map { slotLabel(it, today, todayWord, tomorrowWord, locale) },
+                                        availableToday = ups.any { it.first == today }
+                                    ),
+                                    onBack = { screen = "doctors" },
+                                    onBookClick = {
+                                        vm.clearWeek()
+                                        screen = "pick_slot"
+                                    },
+                                    onSeeAllClick = {
+                                        vm.clearWeek()
+                                        screen = "pick_slot"
+                                    }
+                                )
+                            }
+                        }
+
+                        "pick_slot" -> {
+                            val week = vm.week
+                            if (week == null) {
+                                LoadOrError(vm.errorRes) { reload++ }
+                            } else {
+                                PickSlotScreen(
+                                    doctorName = selectedDoctorName,
+                                    slotsForDate = { date ->
+                                        week[date].orEmpty().toSlotItems(date, today, LocalTime.now(), locale)
+                                    },
+                                    isSubmitting = vm.isBooking,
+                                    onConfirm = { _, slot, reason ->
+                                        vm.book(slot.id, reason) { ok, err ->
+                                            if (ok) {
+                                                Toast.makeText(
+                                                    this@MainActivity,
+                                                    getString(R.string.booking_requested),
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                                vm.loadAppointments()
+                                                screen = "my_appointments"
+                                            } else {
+                                                Toast.makeText(
+                                                    this@MainActivity,
+                                                    getString(err ?: R.string.error_generic),
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                                vm.loadWeek(selectedDoctorId)
+                                            }
+                                        }
+                                    }
+                                )
+                            }
+                        }
+
+                        "my_appointments" -> {
+                            val list = vm.appointments
+                            if (list == null) {
+                                LoadOrError(vm.errorRes) { reload++ }
+                            } else {
+                                val fees = vm.allDoctors.orEmpty().associate { it.id to it.fee.toInt() }
+                                MyAppointmentsScreen(
+                                    appointments = list.toItems(fees, today, todayWord, tomorrowWord, locale),
+                                    onCancel = { item ->
+                                        vm.cancel(item.id) { ok, err ->
+                                            Toast.makeText(
+                                                this@MainActivity,
+                                                getString(if (ok) R.string.booking_cancelled else (err ?: R.string.error_generic)),
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    },
+                                    onDetailsClick = { item ->
+                                        screen = if (item.status == "COMPLETED") "prescriptions" else "live_queue"
+                                    },
+                                    onTabSelected = { screen = routeFor(it) }
+                                )
+                            }
+                        }
+
+                        // ================= Ekhono dummy =================
                         "live_queue" -> LiveQueueScreen(
                             info = liveQueue,
                             onBack = { screen = "my_appointments" },
                             onRefresh = {
-                                // DEMO: protibar refresh e ekta token egiye jabe
                                 if (liveQueue.nowServing < liveQueue.myToken) {
                                     val now = liveQueue.nowServing + 1
                                     liveQueue = liveQueue.copy(
