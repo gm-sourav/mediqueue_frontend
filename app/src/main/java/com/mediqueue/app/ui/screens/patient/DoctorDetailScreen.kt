@@ -60,6 +60,8 @@ data class DoctorDetail(
     val about: String,
     val availableToday: Boolean,
     val nextSlots: List<String>
+
+
 )
 
 @Composable
