@@ -134,5 +134,6 @@ fun AppointmentDto.toNext(
                 ", " + formatTime(startTime, locale),
         token = tokenNo ?: 0,
         status = status
+
     )
 }
