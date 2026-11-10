@@ -10,7 +10,7 @@ data class AuthResponse(
     val id: Long,
     val name: String,
     val email: String,
-    val role: String      // "PATIENT" / "DOCTOR" / "ADMIN"
+    val role: String
 )
 
 data class RegisterRequest(
@@ -71,7 +71,7 @@ data class AppointmentDto(
     val slotDate: String,
     val startTime: String,
     val endTime: String,
-    val status: String,        // PENDING / CONFIRMED / COMPLETED / CANCELLED / REJECTED
+    val status: String,
     val reason: String?,
     val tokenNo: Int?
 )
