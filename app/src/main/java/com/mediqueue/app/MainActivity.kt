@@ -49,12 +49,10 @@ import com.mediqueue.app.ui.screens.patient.DoctorDetailScreen
 import com.mediqueue.app.ui.screens.patient.DoctorsListScreen
 import com.mediqueue.app.ui.screens.patient.LiveQueueInfo
 import com.mediqueue.app.ui.screens.patient.LiveQueueScreen
-import com.mediqueue.app.ui.screens.patient.MedicineItem
 import com.mediqueue.app.ui.screens.patient.MyAppointmentsScreen
 import com.mediqueue.app.ui.screens.patient.PatientHomeScreen
 import com.mediqueue.app.ui.screens.patient.PatientViewModel
 import com.mediqueue.app.ui.screens.patient.PickSlotScreen
-import com.mediqueue.app.ui.screens.patient.PrescriptionItem
 import com.mediqueue.app.ui.screens.patient.PrescriptionsScreen
 import com.mediqueue.app.ui.screens.patient.nextAppointmentOf
 import com.mediqueue.app.ui.screens.patient.slotLabel
@@ -62,6 +60,7 @@ import com.mediqueue.app.ui.screens.patient.toDetail
 import com.mediqueue.app.ui.screens.patient.toItem
 import com.mediqueue.app.ui.screens.patient.toItems
 import com.mediqueue.app.ui.screens.patient.toNext
+import com.mediqueue.app.ui.screens.patient.toPrescriptionItems
 import com.mediqueue.app.ui.screens.patient.toSlotItems
 import com.mediqueue.app.ui.screens.patient.toUi
 import com.mediqueue.app.ui.theme.MediColors
@@ -89,27 +88,7 @@ private fun doctorRouteFor(tab: DoctorTab): String = when (tab) {
     DoctorTab.Profile -> "profile"
 }
 
-// ---- Ekhono dummy (porer step e real hobe): prescriptions, live queue ----
-private val dummyPrescriptions = listOf(
-    PrescriptionItem(
-        1, "Nov 02", "Cardiology", "Dr. Ayesha Rahman", "Follow-up and medication plan", true,
-        listOf(
-            MedicineItem("Medicine A", "1 tablet", "After food"),
-            MedicineItem("Medicine B", "1 tablet", "Night")
-        ),
-        "Take as directed by your doctor. Contact the clinic if you have questions."
-    ),
-    PrescriptionItem(
-        2, "Oct 11", "General Medicine", "Dr. Farhan Kabir", "Prescription and visit notes", false,
-        listOf(
-            MedicineItem("Medicine C", "1 capsule", "Before food"),
-            MedicineItem("Medicine D", "1 tablet", "After food"),
-            MedicineItem("Medicine E", "5 ml", "Morning")
-        ),
-        null
-    )
-)
-
+// ---- Ekhono dummy (porer step e real hobe): live queue ----
 class MainActivity : ComponentActivity() {
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHelper.wrap(newBase))
@@ -176,7 +155,15 @@ class MainActivity : ComponentActivity() {
                             "doctors" -> vm.loadDoctors(selectedDepartmentId)
                             "doctor_detail" -> if (vm.deptDoctors == null) vm.loadDoctors(selectedDepartmentId)
                             "pick_slot" -> vm.loadWeek(selectedDoctorId)
-                            "patient_home", "my_appointments" -> vm.loadAppointments()
+                            "patient_home" -> vm.loadAppointments()
+                            "my_appointments" -> {
+                                vm.loadAppointments()
+                                vm.loadPrescriptions()
+                            }
+                            "prescriptions" -> {
+                                vm.loadAppointments()
+                                vm.loadPrescriptions()
+                            }
                             "doctor_dashboard" -> dvm.loadAppointments(LocalDate.now(), clear = true)
                             "queue_control" -> dvm.loadQueue()
                         }
@@ -393,14 +380,15 @@ class MainActivity : ComponentActivity() {
                                         }
                                     },
                                     onDetailsClick = { item ->
-                                        screen = if (item.status == "COMPLETED") "prescriptions" else "live_queue"
+                                        val hasRx = vm.prescriptions?.any { it.appointmentId == item.id } == true
+                                        screen = if (item.status == "COMPLETED" || hasRx) "prescriptions" else "live_queue"
                                     },
                                     onTabSelected = { screen = routeFor(it) }
                                 )
                             }
                         }
 
-                        // ================= Ekhono dummy (Live Queue, Prescriptions) =================
+                        // ================= Ekhono dummy (Live Queue) =================
                         "live_queue" -> LiveQueueScreen(
                             info = liveQueue,
                             onBack = { screen = "my_appointments" },
@@ -417,10 +405,17 @@ class MainActivity : ComponentActivity() {
                             }
                         )
 
-                        "prescriptions" -> PrescriptionsScreen(
-                            prescriptions = dummyPrescriptions,
-                            onTabSelected = { screen = routeFor(it) }
-                        )
+                        "prescriptions" -> {
+                            val list = vm.prescriptions
+                            if (list == null) {
+                                LoadOrError(vm.errorRes) { reload++ }
+                            } else {
+                                PrescriptionsScreen(
+                                    prescriptions = list.toPrescriptionItems(vm.appointments.orEmpty(), today, locale),
+                                    onTabSelected = { screen = routeFor(it) }
+                                )
+                            }
+                        }
 
                         // ================= DOCTOR (real data) =================
                         "doctor_dashboard" -> {
