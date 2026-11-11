@@ -11,6 +11,7 @@ import com.mediqueue.app.data.AppointmentDto
 import com.mediqueue.app.data.BookRequest
 import com.mediqueue.app.data.DepartmentDto
 import com.mediqueue.app.data.DoctorDto
+import com.mediqueue.app.data.PrescriptionDto
 import com.mediqueue.app.data.SlotDto
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -34,6 +35,8 @@ class PatientViewModel : ViewModel() {
     var week by mutableStateOf<Map<LocalDate, List<SlotDto>>?>(null)
         private set
     var appointments by mutableStateOf<List<AppointmentDto>?>(null)
+        private set
+    var prescriptions by mutableStateOf<List<PrescriptionDto>?>(null)
         private set
     var isBooking by mutableStateOf(false)
         private set
@@ -80,6 +83,7 @@ class PatientViewModel : ViewModel() {
         upcoming = emptyMap()
         week = null
         appointments = null
+        prescriptions = null
         isBooking = false
         errorRes = null
         unauthorized = false
@@ -193,6 +197,13 @@ class PatientViewModel : ViewModel() {
         }
         val list = call { ApiClient.api.getMyAppointments() }
         if (list != null) appointments = list
+    }
+
+    fun loadPrescriptions() {
+        viewModelScope.launch {
+            val list = call { ApiClient.api.getMyPrescriptions() }
+            if (list != null) prescriptions = list
+        }
     }
 
     fun loadAppointments() {
