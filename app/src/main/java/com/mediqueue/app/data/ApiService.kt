@@ -44,6 +44,9 @@ interface ApiService {
     @PUT("api/patient/appointments/{id}/cancel")
     suspend fun cancelAppointment(@Path("id") id: Long): Response<ResponseBody>
 
+    @GET("api/patient/prescriptions")
+    suspend fun getMyPrescriptions(): Response<List<PrescriptionDto>>
+
     // ---- Doctor ----
     @GET("api/doctor/appointments")
     suspend fun getDoctorAppointments(@Query("date") date: String): Response<List<AppointmentDto>>
