@@ -247,4 +247,7 @@
     <string name="diagnosis_hint">যেমন: ভাইরাল জ্বর</string>
     <string name="add_diagnosis_first">অনুগ্রহ করে রোগ নির্ণয় লিখুন।</string>
 
+    <string name="prescription_title">প্রেসক্রিপশন</string>
+    <string name="rx_advice_title">ডাক্তারের পরামর্শ</string>
+
 </resources>

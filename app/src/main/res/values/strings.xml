@@ -253,5 +253,8 @@
     <string name="diagnosis_hint">e.g. Viral fever</string>
     <string name="add_diagnosis_first">Please enter a diagnosis.</string>
 
+    <string name="prescription_title">Prescription</string>
+    <string name="rx_advice_title">Doctor\'s advice</string>
+
 
 </resources>

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -75,7 +76,8 @@ fun PatientHomeScreen(
     onBookClick: () -> Unit,
     onAppointmentClick: () -> Unit,
     onAvatarClick: () -> Unit,
-    onTabSelected: (PatientTab) -> Unit
+    onTabSelected: (PatientTab) -> Unit,
+    onPrescriptionsClick: () -> Unit = {}
 ) {
     val locale = LocalConfiguration.current.locales[0]
     val dateText = remember(locale) {
@@ -182,9 +184,53 @@ fun PatientHomeScreen(
             ) {
                 Text(text = stringResource(R.string.book_appointment), fontSize = 14.sp)
             }
+
+            Spacer(Modifier.height(12.dp))
+            PrescriptionsLink(onPrescriptionsClick)
         }
 
         PatientBottomBar(selected = PatientTab.Home, onSelect = onTabSelected)
+    }
+}
+
+@Composable
+private fun PrescriptionsLink(onClick: () -> Unit) {
+    val shape = RoundedCornerShape(16.dp)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .background(MediColors.Card)
+            .border(1.dp, MediColors.Border, shape)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier
+                    .size(36.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(MediColors.Pill),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.rx_badge),
+                    color = MediColors.Teal,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+            Spacer(Modifier.width(12.dp))
+            Text(
+                text = stringResource(R.string.prescriptions_title),
+                color = MediColors.Text,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
+        Text(text = "›", color = MediColors.Muted, fontSize = 16.sp)
     }
 }
 

@@ -19,10 +19,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,7 +36,6 @@ import com.mediqueue.app.ui.components.localizedNumber
 import com.mediqueue.app.ui.theme.MediColors
 
 private val RxIconBg = Color(0xFF1C2E2A)
-private val RxDetailBg = Color(0xFF1E322E)
 private val RxNewBg = Color(0xFF1D4034)
 private val RxNewText = Color(0xFF55D6A0)
 
@@ -64,12 +59,11 @@ data class PrescriptionItem(
 @Composable
 fun PrescriptionsScreen(
     prescriptions: List<PrescriptionItem>,
+    onPrescriptionClick: (PrescriptionItem) -> Unit,
     onTabSelected: (PatientTab) -> Unit
 ) {
     val locale = LocalContext.current.resources.configuration.locales[0]
     val resources = LocalContext.current.resources
-    var selectedId by rememberSaveable { mutableStateOf<Long?>(null) }
-    val selected = prescriptions.firstOrNull { it.id == selectedId } ?: prescriptions.firstOrNull()
 
     Scaffold(
         containerColor = MediColors.Bg,
@@ -140,6 +134,7 @@ fun PrescriptionsScreen(
                         .clip(shape)
                         .background(MediColors.Card)
                         .border(1.dp, MediColors.Border, shape)
+                        .clickable { onPrescriptionClick(p) }
                         .padding(14.dp)
                 ) {
                     Row(
@@ -191,65 +186,13 @@ fun PrescriptionsScreen(
                             color = MediColors.Teal,
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Medium,
-                            modifier = Modifier
-                                .clickable { selectedId = p.id }
-                                .padding(vertical = 4.dp)
+                            modifier = Modifier.padding(vertical = 4.dp)
                         )
                     }
                 }
                 Spacer(Modifier.height(14.dp))
             }
 
-            // Detail card
-            if (selected != null) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(RxDetailBg)
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        stringResource(R.string.prescription_detail),
-                        color = MediColors.Text,
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(Modifier.height(16.dp))
-                    selected.medicines.forEachIndexed { index, m ->
-                        if (index > 0) Spacer(Modifier.height(10.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                m.name + " · " + m.dose,
-                                color = MediColors.Text,
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(m.timing, color = MediColors.Muted, fontSize = 13.sp)
-                        }
-                    }
-                    if (selected.note != null) {
-                        Spacer(Modifier.height(12.dp))
-                        Box(
-                            Modifier
-                                .fillMaxWidth()
-                                .height(1.dp)
-                                .background(MediColors.Border)
-                        )
-                        Spacer(Modifier.height(12.dp))
-                        Text(
-                            selected.note,
-                            color = MediColors.Muted,
-                            fontSize = 12.5.sp,
-                            lineHeight = 19.sp
-                        )
-                    }
-                }
-            }
             Spacer(Modifier.height(8.dp))
         }
     }
@@ -270,6 +213,7 @@ private fun PrescriptionsPreview() {
                 listOf(MedicineItem("Medicine C", "1 capsule", "Before food")), null
             )
         ),
+        onPrescriptionClick = {},
         onTabSelected = {}
     )
 }

@@ -27,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mediqueue.app.data.ApiClient
 import com.mediqueue.app.ui.components.DoctorTab
+import com.mediqueue.app.ui.components.FullScreenError
 import com.mediqueue.app.ui.components.LoadOrError
 import com.mediqueue.app.ui.components.PatientTab
 import com.mediqueue.app.ui.screens.auth.LanguageScreen
@@ -53,6 +54,7 @@ import com.mediqueue.app.ui.screens.patient.MyAppointmentsScreen
 import com.mediqueue.app.ui.screens.patient.PatientHomeScreen
 import com.mediqueue.app.ui.screens.patient.PatientViewModel
 import com.mediqueue.app.ui.screens.patient.PickSlotScreen
+import com.mediqueue.app.ui.screens.patient.PrescriptionDetailScreen
 import com.mediqueue.app.ui.screens.patient.PrescriptionsScreen
 import com.mediqueue.app.ui.screens.patient.nextAppointmentOf
 import com.mediqueue.app.ui.screens.patient.slotLabel
@@ -129,6 +131,9 @@ class MainActivity : ComponentActivity() {
                     }
                     var selectedDocAppt by remember { mutableStateOf<DoctorAppointment?>(null) }
 
+                    var selectedPrescriptionId by rememberSaveable { mutableLongStateOf(0L) }
+                    var detailBackTo by rememberSaveable { mutableStateOf("prescriptions") }
+
                     var selectedDepartment by rememberSaveable { mutableStateOf("") }
                     var selectedDepartmentId by rememberSaveable { mutableLongStateOf(0L) }
                     var selectedDoctorName by rememberSaveable { mutableStateOf("") }
@@ -160,7 +165,7 @@ class MainActivity : ComponentActivity() {
                                 vm.loadAppointments()
                                 vm.loadPrescriptions()
                             }
-                            "prescriptions" -> {
+                            "prescriptions", "prescription_detail" -> {
                                 vm.loadAppointments()
                                 vm.loadPrescriptions()
                             }
@@ -189,7 +194,9 @@ class MainActivity : ComponentActivity() {
                             "doctors" -> "departments"
                             "doctor_detail" -> "doctors"
                             "pick_slot" -> "doctor_detail"
-                            "live_queue", "prescriptions" -> "my_appointments"
+                            "live_queue" -> "my_appointments"
+                            "prescriptions" -> "patient_home"
+                            "prescription_detail" -> detailBackTo
                             "create_slots", "queue_control", "write_prescription" -> "doctor_dashboard"
                             "register" -> "login"
                             else -> "login"
@@ -252,7 +259,8 @@ class MainActivity : ComponentActivity() {
                                 onBookClick = { screen = "departments" },
                                 onAppointmentClick = { screen = "my_appointments" },
                                 onAvatarClick = { screen = "profile" },
-                                onTabSelected = { screen = routeFor(it) }
+                                onTabSelected = { screen = routeFor(it) },
+                                onPrescriptionsClick = { screen = "prescriptions" }
                             )
                         }
 
@@ -380,8 +388,14 @@ class MainActivity : ComponentActivity() {
                                         }
                                     },
                                     onDetailsClick = { item ->
-                                        val hasRx = vm.prescriptions?.any { it.appointmentId == item.id } == true
-                                        screen = if (item.status == "COMPLETED" || hasRx) "prescriptions" else "live_queue"
+                                        val rx = vm.prescriptions?.firstOrNull { it.appointmentId == item.id }
+                                        if (rx != null) {
+                                            selectedPrescriptionId = rx.id
+                                            detailBackTo = "my_appointments"
+                                            screen = "prescription_detail"
+                                        } else {
+                                            screen = if (item.status == "COMPLETED") "prescriptions" else "live_queue"
+                                        }
                                     },
                                     onTabSelected = { screen = routeFor(it) }
                                 )
@@ -412,8 +426,32 @@ class MainActivity : ComponentActivity() {
                             } else {
                                 PrescriptionsScreen(
                                     prescriptions = list.toPrescriptionItems(vm.appointments.orEmpty(), today, locale),
+                                    onPrescriptionClick = { p ->
+                                        selectedPrescriptionId = p.id
+                                        detailBackTo = "prescriptions"
+                                        screen = "prescription_detail"
+                                    },
                                     onTabSelected = { screen = routeFor(it) }
                                 )
+                            }
+                        }
+
+                        "prescription_detail" -> {
+                            val list = vm.prescriptions
+                            if (list == null) {
+                                LoadOrError(vm.errorRes) { reload++ }
+                            } else {
+                                val item = list
+                                    .toPrescriptionItems(vm.appointments.orEmpty(), today, locale)
+                                    .firstOrNull { it.id == selectedPrescriptionId }
+                                if (item == null) {
+                                    FullScreenError(R.string.error_generic) { screen = "prescriptions" }
+                                } else {
+                                    PrescriptionDetailScreen(
+                                        prescription = item,
+                                        onBack = { screen = detailBackTo }
+                                    )
+                                }
                             }
                         }
 
