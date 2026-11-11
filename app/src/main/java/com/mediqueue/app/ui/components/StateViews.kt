@@ -66,6 +66,37 @@ fun FullScreenError(@StringRes messageRes: Int, onRetry: () -> Unit) {
     }
 }
 
+/** Error na, shudhu ekta bartha + ekta button (jemon Back) */
+@Composable
+fun FullScreenMessage(@StringRes messageRes: Int, @StringRes buttonRes: Int, onClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MediColors.Bg)
+            .padding(32.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = stringResource(messageRes),
+            color = MediColors.Muted,
+            fontSize = 14.sp,
+            textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.height(16.dp))
+        Button(
+            onClick = onClick,
+            shape = RoundedCornerShape(14.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MediColors.Teal,
+                contentColor = MediColors.OnTeal
+            )
+        ) {
+            Text(stringResource(buttonRes), fontSize = 14.sp)
+        }
+    }
+}
+
 /** errorRes null = ekhono load hocche, na hole error + Retry */
 @Composable
 fun LoadOrError(errorRes: Int?, onRetry: () -> Unit) {
