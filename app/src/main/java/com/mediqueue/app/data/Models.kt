@@ -97,3 +97,16 @@ data class PrescriptionRequest(
     val medicines: String,
     val advice: String?
 )
+
+// ---------------- Prescriptions ----------------
+
+data class PrescriptionDto(
+    val id: Long,
+    val appointmentId: Long,
+    val doctorName: String,
+    val patientName: String,
+    val visitDate: String,       // "2026-11-11"
+    val diagnosis: String?,
+    val medicines: String?,      // protita line: "name | dosage | frequency | duration"
+    val advice: String?
+)
