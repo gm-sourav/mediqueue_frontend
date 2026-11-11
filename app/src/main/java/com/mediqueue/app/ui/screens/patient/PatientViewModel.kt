@@ -12,6 +12,7 @@ import com.mediqueue.app.data.BookRequest
 import com.mediqueue.app.data.DepartmentDto
 import com.mediqueue.app.data.DoctorDto
 import com.mediqueue.app.data.PrescriptionDto
+import com.mediqueue.app.data.QueueDto
 import com.mediqueue.app.data.SlotDto
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -37,6 +38,8 @@ class PatientViewModel : ViewModel() {
     var appointments by mutableStateOf<List<AppointmentDto>?>(null)
         private set
     var prescriptions by mutableStateOf<List<PrescriptionDto>?>(null)
+        private set
+    var queue by mutableStateOf<QueueDto?>(null)
         private set
     var isBooking by mutableStateOf(false)
         private set
@@ -84,6 +87,7 @@ class PatientViewModel : ViewModel() {
         week = null
         appointments = null
         prescriptions = null
+        queue = null
         isBooking = false
         errorRes = null
         unauthorized = false
@@ -204,6 +208,39 @@ class PatientViewModel : ViewModel() {
             val list = call { ApiClient.api.getMyPrescriptions() }
             if (list != null) prescriptions = list
         }
+    }
+
+    /** Ajker CONFIRMED (token paoa) appointment: live queue er jonno */
+    val activeAppointment: AppointmentDto?
+        get() {
+            val today = LocalDate.now().toString()
+            return appointments
+                ?.filter { it.slotDate == today && it.status == "CONFIRMED" && it.tokenNo != null }
+                ?.minByOrNull { it.startTime }
+        }
+
+    private suspend fun fetchQueue() {
+        val a = activeAppointment
+        if (a == null) {
+            queue = null
+            return
+        }
+        val q = call { ApiClient.api.getDoctorQueue(a.doctorId, LocalDate.now().toString()) }
+        if (q != null) queue = q
+    }
+
+    /** Home / Live Queue screen: appointment + queue duitai ana */
+    fun loadHome() {
+        viewModelScope.launch {
+            errorRes = null
+            fetchAppointments()
+            fetchQueue()
+        }
+    }
+
+    /** Live Queue screen e 10 sec por por */
+    fun refreshQueue() {
+        viewModelScope.launch { fetchQueue() }
     }
 
     fun loadAppointments() {
