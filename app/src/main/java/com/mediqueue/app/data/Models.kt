@@ -75,3 +75,25 @@ data class AppointmentDto(
     val reason: String?,
     val tokenNo: Int?
 )
+// ---------------- Doctor side ----------------
+
+data class CreateSlotRequest(
+    val slotDate: String,            // "2026-11-12"
+    val startTime: String,           // "09:00"
+    val endTime: String,             // "12:00"
+    val slotDurationMinutes: Int
+)
+
+data class QueueDto(
+    val doctorId: Long,
+    val doctorName: String,
+    val queueDate: String,
+    val currentToken: Int,
+    val waitingCount: Long
+)
+
+data class PrescriptionRequest(
+    val diagnosis: String,
+    val medicines: String,
+    val advice: String?
+)
