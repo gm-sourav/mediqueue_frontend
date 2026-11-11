@@ -256,5 +256,7 @@
     <string name="prescription_title">Prescription</string>
     <string name="rx_advice_title">Doctor\'s advice</string>
 
+    <string name="queue_not_available">Live queue opens on the day of your visit, once the doctor confirms your appointment.</string>
+
 
 </resources>

@@ -28,6 +28,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mediqueue.app.data.ApiClient
 import com.mediqueue.app.ui.components.DoctorTab
 import com.mediqueue.app.ui.components.FullScreenError
+import com.mediqueue.app.ui.components.FullScreenMessage
 import com.mediqueue.app.ui.components.LoadOrError
 import com.mediqueue.app.ui.components.PatientTab
 import com.mediqueue.app.ui.screens.auth.LanguageScreen
@@ -48,7 +49,6 @@ import com.mediqueue.app.ui.screens.doctor.toDoctorAppointments
 import com.mediqueue.app.ui.screens.patient.DepartmentsScreen
 import com.mediqueue.app.ui.screens.patient.DoctorDetailScreen
 import com.mediqueue.app.ui.screens.patient.DoctorsListScreen
-import com.mediqueue.app.ui.screens.patient.LiveQueueInfo
 import com.mediqueue.app.ui.screens.patient.LiveQueueScreen
 import com.mediqueue.app.ui.screens.patient.MyAppointmentsScreen
 import com.mediqueue.app.ui.screens.patient.PatientHomeScreen
@@ -61,7 +61,9 @@ import com.mediqueue.app.ui.screens.patient.slotLabel
 import com.mediqueue.app.ui.screens.patient.toDetail
 import com.mediqueue.app.ui.screens.patient.toItem
 import com.mediqueue.app.ui.screens.patient.toItems
+import com.mediqueue.app.ui.screens.patient.toLiveQueueInfo
 import com.mediqueue.app.ui.screens.patient.toNext
+import com.mediqueue.app.ui.screens.patient.toQueueInfo
 import com.mediqueue.app.ui.screens.patient.toPrescriptionItems
 import com.mediqueue.app.ui.screens.patient.toSlotItems
 import com.mediqueue.app.ui.screens.patient.toUi
@@ -90,7 +92,6 @@ private fun doctorRouteFor(tab: DoctorTab): String = when (tab) {
     DoctorTab.Profile -> "profile"
 }
 
-// ---- Ekhono dummy (porer step e real hobe): live queue ----
 class MainActivity : ComponentActivity() {
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHelper.wrap(newBase))
@@ -126,9 +127,6 @@ class MainActivity : ComponentActivity() {
                     var screen by rememberSaveable { mutableStateOf("splash") }
                     var reload by remember { mutableIntStateOf(0) }
 
-                    var liveQueue by remember {
-                        mutableStateOf(LiveQueueInfo("Cardiology", "Dr. Ayesha Rahman", "10:30 AM", 28, 21, 7, 0.68f, 25))
-                    }
                     var selectedDocAppt by remember { mutableStateOf<DoctorAppointment?>(null) }
 
                     var selectedPrescriptionId by rememberSaveable { mutableLongStateOf(0L) }
@@ -160,7 +158,7 @@ class MainActivity : ComponentActivity() {
                             "doctors" -> vm.loadDoctors(selectedDepartmentId)
                             "doctor_detail" -> if (vm.deptDoctors == null) vm.loadDoctors(selectedDepartmentId)
                             "pick_slot" -> vm.loadWeek(selectedDoctorId)
-                            "patient_home" -> vm.loadAppointments()
+                            "patient_home", "live_queue" -> vm.loadHome()
                             "my_appointments" -> {
                                 vm.loadAppointments()
                                 vm.loadPrescriptions()
@@ -254,7 +252,7 @@ class MainActivity : ComponentActivity() {
                             val next = nextAppointmentOf(vm.appointments, today)
                             PatientHomeScreen(
                                 patientName = ApiClient.session.name,
-                                queue = null,   // Live queue card porer step e
+                                queue = vm.queue?.let { q -> vm.activeAppointment?.toQueueInfo(q) },
                                 nextAppointment = next?.toNext(today, todayWord, tomorrowWord, locale),
                                 onBookClick = { screen = "departments" },
                                 onAppointmentClick = { screen = "my_appointments" },
@@ -402,22 +400,23 @@ class MainActivity : ComponentActivity() {
                             }
                         }
 
-                        // ================= Ekhono dummy (Live Queue) =================
-                        "live_queue" -> LiveQueueScreen(
-                            info = liveQueue,
-                            onBack = { screen = "my_appointments" },
-                            onRefresh = {
-                                if (liveQueue.nowServing < liveQueue.myToken) {
-                                    val now = liveQueue.nowServing + 1
-                                    liveQueue = liveQueue.copy(
-                                        nowServing = now,
-                                        waiting = (liveQueue.myToken - now - 1).coerceAtLeast(0),
-                                        progress = now / liveQueue.myToken.toFloat(),
-                                        minutesRemaining = ((liveQueue.myToken - now) * 3).coerceAtLeast(0)
-                                    )
+                        // ================= Live Queue (real) =================
+                        "live_queue" -> {
+                            val appt = vm.activeAppointment
+                            val q = vm.queue
+                            when {
+                                vm.appointments == null -> LoadOrError(vm.errorRes) { reload++ }
+                                appt == null -> FullScreenMessage(R.string.queue_not_available, R.string.back) {
+                                    screen = "my_appointments"
                                 }
+                                q == null -> LoadOrError(vm.errorRes) { reload++ }
+                                else -> LiveQueueScreen(
+                                    info = appt.toLiveQueueInfo(q, locale),
+                                    onBack = { screen = "my_appointments" },
+                                    onRefresh = { vm.refreshQueue() }
+                                )
                             }
-                        )
+                        }
 
                         "prescriptions" -> {
                             val list = vm.prescriptions

@@ -250,4 +250,6 @@
     <string name="prescription_title">প্রেসক্রিপশন</string>
     <string name="rx_advice_title">ডাক্তারের পরামর্শ</string>
 
+    <string name="queue_not_available">ডাক্তার অ্যাপয়েন্টমেন্ট নিশ্চিত করলে ভিজিটের দিনে লাইভ কিউ দেখা যাবে।</string>
+
 </resources>
