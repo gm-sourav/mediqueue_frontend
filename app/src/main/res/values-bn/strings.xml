@@ -236,5 +236,15 @@
     <string name="booking_requested">অ্যাপয়েন্টমেন্টের অনুরোধ পাঠানো হয়েছে। ডাক্তারের নিশ্চিতকরণের অপেক্ষায়।</string>
     <string name="retry">আবার চেষ্টা করুন</string>
 
+    <string name="no_reason">কারণ উল্লেখ করা হয়নি</string>
+    <string name="error_slots_exist">নতুন কোনো স্লট তৈরি হয়নি। এই সময়গুলো আগেই থাকতে পারে।</string>
+    <string name="slots_created">%1$s টি স্লট তৈরি হয়েছে।</string>
+    <string name="error_rx_failed">প্রেসক্রিপশন সেভ করা যায়নি। এটি আগেই লেখা হয়ে থাকতে পারে, অথবা অ্যাপয়েন্টমেন্ট এখনো নিশ্চিত করা হয়নি।</string>
+    <string name="rx_saved">প্রেসক্রিপশন সেভ হয়েছে।</string>
+    <string name="rx_needs_confirmed">প্রেসক্রিপশন লিখতে আগে অ্যাপয়েন্টমেন্ট নিশ্চিত করুন।</string>
+    <string name="queue_no_more">কিউতে আর কোনো রোগী নেই।</string>
+    <string name="diagnosis_label">রোগ নির্ণয়</string>
+    <string name="diagnosis_hint">যেমন: ভাইরাল জ্বর</string>
+    <string name="add_diagnosis_first">অনুগ্রহ করে রোগ নির্ণয় লিখুন।</string>
 
 </resources>

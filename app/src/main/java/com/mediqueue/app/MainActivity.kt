@@ -37,11 +37,13 @@ import com.mediqueue.app.ui.screens.auth.RegisterScreen
 import com.mediqueue.app.ui.screens.auth.SplashScreen
 import com.mediqueue.app.ui.screens.doctor.CreateSlotsScreen
 import com.mediqueue.app.ui.screens.doctor.DoctorAppointment
+import com.mediqueue.app.ui.screens.doctor.DoctorAction
 import com.mediqueue.app.ui.screens.doctor.DoctorDashboardScreen
-import com.mediqueue.app.ui.screens.doctor.QueueControlInfo
+import com.mediqueue.app.ui.screens.doctor.DoctorViewModel
 import com.mediqueue.app.ui.screens.doctor.QueueControlScreen
-import com.mediqueue.app.ui.screens.doctor.QueueEntry
 import com.mediqueue.app.ui.screens.doctor.WritePrescriptionScreen
+import com.mediqueue.app.ui.screens.doctor.queueInfoOf
+import com.mediqueue.app.ui.screens.doctor.toDoctorAppointments
 import com.mediqueue.app.ui.screens.patient.DepartmentsScreen
 import com.mediqueue.app.ui.screens.patient.DoctorDetailScreen
 import com.mediqueue.app.ui.screens.patient.DoctorsListScreen
@@ -63,6 +65,7 @@ import com.mediqueue.app.ui.screens.patient.toNext
 import com.mediqueue.app.ui.screens.patient.toSlotItems
 import com.mediqueue.app.ui.screens.patient.toUi
 import com.mediqueue.app.ui.theme.MediColors
+import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -86,7 +89,7 @@ private fun doctorRouteFor(tab: DoctorTab): String = when (tab) {
     DoctorTab.Profile -> "profile"
 }
 
-// ---- Ekhono dummy (porer step e real hobe): prescriptions, live queue, doctor screens ----
+// ---- Ekhono dummy (porer step e real hobe): prescriptions, live queue ----
 private val dummyPrescriptions = listOf(
     PrescriptionItem(
         1, "Nov 02", "Cardiology", "Dr. Ayesha Rahman", "Follow-up and medication plan", true,
@@ -104,28 +107,6 @@ private val dummyPrescriptions = listOf(
             MedicineItem("Medicine E", "5 ml", "Morning")
         ),
         null
-    )
-)
-
-private val dummyDoctorAppointments = listOf(
-    DoctorAppointment(1, "10:00", "Nila Akter", "Follow-up", "Cardiology", "PENDING", null),
-    DoctorAppointment(2, "10:30", "Rafi Ahmed", "New consultation", "Cardiology", "CONFIRMED", 28),
-    DoctorAppointment(3, "09:30", "Sabina Yasmin", "Check-up", "Cardiology", "COMPLETED", 27)
-)
-
-private val dummyQueueControl = QueueControlInfo(
-    department = "Cardiology",
-    nowServingToken = 21,
-    nowServingName = "Nila Akter",
-    nowServingTime = "10:00 AM",
-    waiting = listOf(
-        QueueEntry(22, "Rafi Ahmed", "10:15"),
-        QueueEntry(23, "Tania Noor", "10:30"),
-        QueueEntry(24, "Sabina Yasmin", "10:45"),
-        QueueEntry(25, "Imran Hossain", "11:00"),
-        QueueEntry(26, "Mitu Akter", "11:15"),
-        QueueEntry(27, "Jahid Hasan", "11:30"),
-        QueueEntry(28, "Farzana Islam", "11:45")
     )
 )
 
@@ -158,6 +139,7 @@ class MainActivity : ComponentActivity() {
                     color = MediColors.Bg
                 ) {
                     val vm: PatientViewModel = viewModel()
+                    val dvm: DoctorViewModel = viewModel()
 
                     // Temporary shorol navigation (pore real Navigation e jabe)
                     var screen by rememberSaveable { mutableStateOf("splash") }
@@ -166,8 +148,6 @@ class MainActivity : ComponentActivity() {
                     var liveQueue by remember {
                         mutableStateOf(LiveQueueInfo("Cardiology", "Dr. Ayesha Rahman", "10:30 AM", 28, 21, 7, 0.68f, 25))
                     }
-                    var doctorAppointments by remember { mutableStateOf(dummyDoctorAppointments) }
-                    var queueControl by remember { mutableStateOf(dummyQueueControl) }
                     var selectedDocAppt by remember { mutableStateOf<DoctorAppointment?>(null) }
 
                     var selectedDepartment by rememberSaveable { mutableStateOf("") }
@@ -179,6 +159,15 @@ class MainActivity : ComponentActivity() {
                     val today = LocalDate.now()
                     val todayWord = stringResource(R.string.today)
                     val tomorrowWord = stringResource(R.string.tomorrow)
+                    val noReason = stringResource(R.string.no_reason)
+
+                    fun toast(resId: Int?) {
+                        Toast.makeText(
+                            this@MainActivity,
+                            getString(resId ?: R.string.error_generic),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
 
                     // Screen e dukle oi screen er data load
                     LaunchedEffect(screen, reload) {
@@ -188,14 +177,17 @@ class MainActivity : ComponentActivity() {
                             "doctor_detail" -> if (vm.deptDoctors == null) vm.loadDoctors(selectedDepartmentId)
                             "pick_slot" -> vm.loadWeek(selectedDoctorId)
                             "patient_home", "my_appointments" -> vm.loadAppointments()
+                            "doctor_dashboard" -> dvm.loadAppointments(LocalDate.now(), clear = true)
+                            "queue_control" -> dvm.loadQueue()
                         }
                     }
 
                     // Token expire hole login e pathao
-                    LaunchedEffect(vm.unauthorized) {
-                        if (vm.unauthorized) {
+                    LaunchedEffect(vm.unauthorized, dvm.unauthorized) {
+                        if (vm.unauthorized || dvm.unauthorized) {
                             ApiClient.session.clear()
                             vm.reset()
+                            dvm.reset()
                             screen = "login"
                         }
                     }
@@ -227,6 +219,7 @@ class MainActivity : ComponentActivity() {
                         "login" -> LoginScreen(
                             onLoginSuccess = { auth ->
                                 vm.reset()
+                                dvm.reset()
                                 screen = homeFor(auth.role)
                             },
                             onCreateAccount = { screen = "register" }
@@ -235,6 +228,7 @@ class MainActivity : ComponentActivity() {
                         "register" -> RegisterScreen(
                             onRegistered = { auth ->
                                 vm.reset()
+                                dvm.reset()
                                 screen = homeFor(auth.role)
                             },
                             onSignInClick = { screen = "login" }
@@ -255,6 +249,7 @@ class MainActivity : ComponentActivity() {
                                 onLogout = {
                                     ApiClient.session.clear()
                                     vm.reset()
+                                    dvm.reset()
                                     screen = "login"
                                 }
                             )
@@ -405,7 +400,7 @@ class MainActivity : ComponentActivity() {
                             }
                         }
 
-                        // ================= Ekhono dummy =================
+                        // ================= Ekhono dummy (Live Queue, Prescriptions) =================
                         "live_queue" -> LiveQueueScreen(
                             info = liveQueue,
                             onBack = { screen = "my_appointments" },
@@ -427,56 +422,77 @@ class MainActivity : ComponentActivity() {
                             onTabSelected = { screen = routeFor(it) }
                         )
 
-                        "doctor_dashboard" -> DoctorDashboardScreen(
-                            doctorName = ApiClient.session.name,
-                            appointments = doctorAppointments,
-                            onDateChange = { /* backend e GET /api/doctor/appointments?date= */ },
-                            onConfirm = { a ->
-                                doctorAppointments = doctorAppointments.map {
-                                    if (it.id == a.id) it.copy(status = "CONFIRMED", token = 29) else it
-                                }
-                            },
-                            onReject = { a ->
-                                doctorAppointments = doctorAppointments.map {
-                                    if (it.id == a.id) it.copy(status = "REJECTED") else it
-                                }
-                            },
-                            onComplete = { a ->
-                                doctorAppointments = doctorAppointments.map {
-                                    if (it.id == a.id) it.copy(status = "COMPLETED") else it
-                                }
-                            },
-                            onAvatarClick = { screen = "profile" },
-                            onAppointmentClick = { a ->
-                                selectedDocAppt = a
-                                screen = "write_prescription"
-                            },
-                            onTabSelected = { screen = doctorRouteFor(it) }
-                        )
+                        // ================= DOCTOR (real data) =================
+                        "doctor_dashboard" -> {
+                            val list = dvm.appointments
+                            if (list == null) {
+                                LoadOrError(dvm.errorRes) { reload++ }
+                            } else {
+                                DoctorDashboardScreen(
+                                    doctorName = ApiClient.session.name,
+                                    appointments = list.toDoctorAppointments(locale, noReason),
+                                    onDateChange = { d -> dvm.loadAppointments(d, clear = false) },
+                                    onConfirm = { a ->
+                                        dvm.act(a.id, DoctorAction.CONFIRM) { ok, err -> if (!ok) toast(err) }
+                                    },
+                                    onReject = { a ->
+                                        dvm.act(a.id, DoctorAction.REJECT) { ok, err -> if (!ok) toast(err) }
+                                    },
+                                    onComplete = { a ->
+                                        dvm.act(a.id, DoctorAction.COMPLETE) { ok, err -> if (!ok) toast(err) }
+                                    },
+                                    onAvatarClick = { screen = "profile" },
+                                    onAppointmentClick = { a ->
+                                        if (a.status == "CONFIRMED" || a.status == "COMPLETED") {
+                                            selectedDocAppt = a
+                                            screen = "write_prescription"
+                                        } else {
+                                            toast(R.string.rx_needs_confirmed)
+                                        }
+                                    },
+                                    onTabSelected = { screen = doctorRouteFor(it) }
+                                )
+                            }
+                        }
 
                         "create_slots" -> CreateSlotsScreen(
-                            onCreate = { date, start, end, length, slots ->
-                                Toast.makeText(this, "Created ${slots.size} slots on $date (demo)", Toast.LENGTH_LONG).show()
-                                screen = "doctor_dashboard"
+                            onCreate = { date, start, end, length, _ ->
+                                dvm.createSlots(date, start, end, length) { ok, count, err ->
+                                    if (ok) {
+                                        Toast.makeText(
+                                            this@MainActivity,
+                                            getString(
+                                                R.string.slots_created,
+                                                NumberFormat.getInstance(locale).format(count)
+                                            ),
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                        screen = "doctor_dashboard"
+                                    } else {
+                                        toast(err)
+                                    }
+                                }
                             },
+                            isSubmitting = dvm.isSubmitting,
                             onTabSelected = { screen = doctorRouteFor(it) }
                         )
 
-                        "queue_control" -> QueueControlScreen(
-                            info = queueControl,
-                            onCallNext = {
-                                val next = queueControl.waiting.firstOrNull()
-                                if (next != null) {
-                                    queueControl = queueControl.copy(
-                                        nowServingToken = next.token,
-                                        nowServingName = next.patientName,
-                                        nowServingTime = next.time,
-                                        waiting = queueControl.waiting.drop(1)
-                                    )
-                                }
-                            },
-                            onTabSelected = { screen = doctorRouteFor(it) }
-                        )
+                        "queue_control" -> {
+                            val q = dvm.queue
+                            val qa = dvm.queueAppointments
+                            if (q == null || qa == null) {
+                                LoadOrError(dvm.errorRes) { reload++ }
+                            } else {
+                                QueueControlScreen(
+                                    info = queueInfoOf(q, qa, dvm.myDepartment, locale),
+                                    onCallNext = {
+                                        dvm.callNext { ok, err -> if (!ok) toast(err) }
+                                    },
+                                    isCalling = dvm.isCalling,
+                                    onTabSelected = { screen = doctorRouteFor(it) }
+                                )
+                            }
+                        }
 
                         "write_prescription" -> {
                             val a = selectedDocAppt
@@ -487,14 +503,21 @@ class MainActivity : ComponentActivity() {
                                     time = a.time,
                                     status = a.status,
                                     onBack = { screen = "doctor_dashboard" },
-                                    onSave = { medicines, notes ->
-                                        Toast.makeText(
-                                            this@MainActivity,
-                                            "Prescription saved: ${medicines.size} medicine(s) (demo)",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                        screen = "doctor_dashboard"
-                                    }
+                                    onSave = { diagnosis, medicines, notes ->
+                                        dvm.savePrescription(a.id, diagnosis, medicines, notes) { ok, err ->
+                                            if (ok) {
+                                                Toast.makeText(
+                                                    this@MainActivity,
+                                                    getString(R.string.rx_saved),
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                                screen = "doctor_dashboard"
+                                            } else {
+                                                toast(err)
+                                            }
+                                        }
+                                    },
+                                    isSubmitting = dvm.isSubmitting
                                 )
                             }
                         }

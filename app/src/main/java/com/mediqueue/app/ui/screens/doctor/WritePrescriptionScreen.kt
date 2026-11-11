@@ -71,16 +71,18 @@ fun WritePrescriptionScreen(
     time: String,                 // "10:00 AM"
     status: String,               // CONFIRMED / COMPLETED
     onBack: () -> Unit,
-    onSave: (medicines: List<MedicineEntry>, notes: String) -> Unit,
+    onSave: (diagnosis: String, medicines: List<MedicineEntry>, notes: String) -> Unit,
     isSubmitting: Boolean = false
 ) {
     var nextId by rememberSaveable { mutableLongStateOf(2L) }
     val entries = remember { mutableStateListOf(MedicineEntry(1L)) }
     var notes by rememberSaveable { mutableStateOf("") }
+    var diagnosis by rememberSaveable { mutableStateOf("") }
 
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val needMedicineMsg = stringResource(R.string.add_medicine_first)
+    val needDiagnosisMsg = stringResource(R.string.add_diagnosis_first)
 
     fun update(id: Long, change: (MedicineEntry) -> MedicineEntry) {
         val i = entries.indexOfFirst { it.id == id }
@@ -160,6 +162,17 @@ fun WritePrescriptionScreen(
                 }
             }
 
+            // Diagnosis (backend e required)
+            Spacer(Modifier.height(20.dp))
+            MediFieldCard(label = stringResource(R.string.diagnosis_label)) {
+                MediInput(
+                    value = diagnosis,
+                    onValueChange = { diagnosis = it },
+                    hint = stringResource(R.string.diagnosis_hint),
+                    imeAction = ImeAction.Next
+                )
+            }
+
             // Medicines header
             Spacer(Modifier.height(20.dp))
             Row(
@@ -217,10 +230,12 @@ fun WritePrescriptionScreen(
             Button(
                 onClick = {
                     val filled = entries.filter { it.name.isNotBlank() }
-                    if (filled.isEmpty()) {
+                    if (diagnosis.isBlank()) {
+                        scope.launch { snackbar.showSnackbar(needDiagnosisMsg) }
+                    } else if (filled.isEmpty()) {
                         scope.launch { snackbar.showSnackbar(needMedicineMsg) }
                     } else {
-                        onSave(filled.toList(), notes.trim())
+                        onSave(diagnosis.trim(), filled.toList(), notes.trim())
                     }
                 },
                 enabled = !isSubmitting,
@@ -343,6 +358,6 @@ private fun WritePrescriptionPreview() {
         time = "10:00 AM",
         status = "COMPLETED",
         onBack = {},
-        onSave = { _, _ -> }
+        onSave = { _, _, _ -> }
     )
 }

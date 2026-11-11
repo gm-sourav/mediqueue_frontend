@@ -43,4 +43,32 @@ interface ApiService {
 
     @PUT("api/patient/appointments/{id}/cancel")
     suspend fun cancelAppointment(@Path("id") id: Long): Response<ResponseBody>
+
+    // ---- Doctor ----
+    @GET("api/doctor/appointments")
+    suspend fun getDoctorAppointments(@Query("date") date: String): Response<List<AppointmentDto>>
+
+    @PUT("api/doctor/appointments/{id}/confirm")
+    suspend fun confirmAppointment(@Path("id") id: Long): Response<AppointmentDto>
+
+    @PUT("api/doctor/appointments/{id}/reject")
+    suspend fun rejectAppointment(@Path("id") id: Long): Response<AppointmentDto>
+
+    @PUT("api/doctor/appointments/{id}/complete")
+    suspend fun completeAppointment(@Path("id") id: Long): Response<AppointmentDto>
+
+    @POST("api/doctor/slots")
+    suspend fun createSlots(@Body body: CreateSlotRequest): Response<List<SlotDto>>
+
+    @GET("api/doctor/queue")
+    suspend fun getMyQueue(@Query("date") date: String): Response<QueueDto>
+
+    @PUT("api/doctor/queue/next")
+    suspend fun callNextToken(@Query("date") date: String): Response<QueueDto>
+
+    @POST("api/doctor/appointments/{id}/prescription")
+    suspend fun writePrescription(
+        @Path("id") id: Long,
+        @Body body: PrescriptionRequest
+    ): Response<ResponseBody>
 }

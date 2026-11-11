@@ -242,5 +242,16 @@
     <string name="booking_requested">Appointment requested. Waiting for the doctor to confirm.</string>
     <string name="retry">Retry</string>
 
+    <string name="no_reason">No reason given</string>
+    <string name="error_slots_exist">No new slots were created. These times may already exist.</string>
+    <string name="slots_created">%1$s slots created.</string>
+    <string name="error_rx_failed">Couldn\'t save the prescription. It may already exist, or the appointment isn\'t confirmed yet.</string>
+    <string name="rx_saved">Prescription saved.</string>
+    <string name="rx_needs_confirmed">Confirm this appointment first to write a prescription.</string>
+    <string name="queue_no_more">No more patients in the queue.</string>
+    <string name="diagnosis_label">Diagnosis</string>
+    <string name="diagnosis_hint">e.g. Viral fever</string>
+    <string name="add_diagnosis_first">Please enter a diagnosis.</string>
+
 
 </resources>
