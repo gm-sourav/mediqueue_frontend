@@ -110,3 +110,22 @@ data class PrescriptionDto(
     val medicines: String?,      // protita line: "name | dosage | frequency | duration"
     val advice: String?
 )
+
+// ---------------- Admin ----------------
+
+data class DepartmentRequest(
+    val name: String,
+    val icon: String?
+)
+
+data class CreateDoctorRequest(
+    val name: String,
+    val email: String,
+    val password: String,
+    val phone: String?,
+    val departmentId: Long,
+    val bio: String?,
+    val experienceYears: Int?,
+    val fee: Double?,
+    val photoUrl: String? = null
+)
