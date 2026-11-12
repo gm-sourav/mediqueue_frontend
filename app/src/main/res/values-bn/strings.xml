@@ -252,4 +252,37 @@
 
     <string name="queue_not_available">ডাক্তার অ্যাপয়েন্টমেন্ট নিশ্চিত করলে ভিজিটের দিনে লাইভ কিউ দেখা যাবে।</string>
 
+
+    <string name="admin_panel">অ্যাডমিন প্যানেল</string>
+    <string name="clinic_management">ক্লিনিক ব্যবস্থাপনা</string>
+    <string name="quick_actions">দ্রুত কাজ</string>
+    <string name="add_doctor">ডাক্তার যোগ করুন</string>
+    <string name="add_department">বিভাগ যোগ করুন</string>
+    <string name="admin_tab_departments">বিভাগ</string>
+    <string name="admin_stat_departments">বিভাগ</string>
+    <string name="admin_stat_doctors">ডাক্তার</string>
+    <string name="admin_doctors_title">ডাক্তার</string>
+    <string name="admin_departments_title">বিভাগসমূহ</string>
+    <string name="admin_add_doctor_title">ডাক্তার যোগ করুন</string>
+    <string name="admin_add_doctor_sub">ডাক্তারের জন্য লগইন তৈরি করুন। এই ইমেইল ও পাসওয়ার্ড দিয়ে তিনি সাইন ইন করতে পারবেন।</string>
+    <string name="admin_create_doctor">ডাক্তারের অ্যাকাউন্ট তৈরি করুন</string>
+    <string name="admin_doctor_name_hint">ডা. নুসরাত জাহান</string>
+    <string name="admin_password_hint">কমপক্ষে ৬ অক্ষর</string>
+    <string name="admin_department">বিভাগ</string>
+    <string name="admin_experience_label">অভিজ্ঞতা (বছর)</string>
+    <string name="admin_fee_label">ফি (৳)</string>
+    <string name="admin_bio_label">পরিচিতি (ঐচ্ছিক)</string>
+    <string name="admin_bio_hint">রোগীদের জন্য সংক্ষিপ্ত পরিচিতি</string>
+    <string name="admin_dept_name_hint">যেমন: অর্থোপেডিক্স</string>
+    <string name="admin_icon">আইকন</string>
+    <string name="admin_add_button">যোগ করুন</string>
+    <string name="admin_no_departments">এখনো কোনো বিভাগ নেই।</string>
+    <string name="err_required">এই ঘরটি পূরণ করতে হবে</string>
+    <string name="err_invalid_email">সঠিক ইমেইল ঠিকানা দিন</string>
+    <string name="err_select_department">একটি বিভাগ বেছে নিন</string>
+    <string name="admin_doctor_created">ডাক্তারের অ্যাকাউন্ট তৈরি হয়েছে।</string>
+    <string name="admin_department_added">বিভাগ যোগ হয়েছে।</string>
+    <string name="error_doctor_create">ডাক্তার তৈরি করা যায়নি। ইমেইলটি হয়তো আগেই ব্যবহার হয়েছে।</string>
+    <string name="error_department_create">বিভাগ যোগ করা যায়নি। নামটি হয়তো আগেই আছে।</string>
+
 </resources>

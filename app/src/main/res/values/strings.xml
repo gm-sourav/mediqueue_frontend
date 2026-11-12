@@ -259,4 +259,36 @@
     <string name="queue_not_available">Live queue opens on the day of your visit, once the doctor confirms your appointment.</string>
 
 
+    <string name="admin_panel">Admin panel</string>
+    <string name="clinic_management">Clinic management</string>
+    <string name="quick_actions">Quick actions</string>
+    <string name="add_doctor">Add doctor</string>
+    <string name="add_department">Add department</string>
+    <string name="admin_tab_departments">Departments</string>
+    <string name="admin_stat_departments">Departments</string>
+    <string name="admin_stat_doctors">Doctors</string>
+    <string name="admin_doctors_title">Doctors</string>
+    <string name="admin_departments_title">Departments</string>
+    <string name="admin_add_doctor_title">Add doctor</string>
+    <string name="admin_add_doctor_sub">Create a login for the doctor. They can sign in with this email and password.</string>
+    <string name="admin_create_doctor">Create doctor account</string>
+    <string name="admin_doctor_name_hint">Dr. Nusrat Jahan</string>
+    <string name="admin_password_hint">At least 6 characters</string>
+    <string name="admin_department">Department</string>
+    <string name="admin_experience_label">Experience (years)</string>
+    <string name="admin_fee_label">Fee (৳)</string>
+    <string name="admin_bio_label">Bio (optional)</string>
+    <string name="admin_bio_hint">Short introduction for patients</string>
+    <string name="admin_dept_name_hint">e.g. Orthopedics</string>
+    <string name="admin_icon">Icon</string>
+    <string name="admin_add_button">Add</string>
+    <string name="admin_no_departments">No departments yet.</string>
+    <string name="err_required">This field is required</string>
+    <string name="err_invalid_email">Enter a valid email address</string>
+    <string name="err_select_department">Choose a department</string>
+    <string name="admin_doctor_created">Doctor account created.</string>
+    <string name="admin_department_added">Department added.</string>
+    <string name="error_doctor_create">Couldn\'t create the doctor. The email may already be in use.</string>
+    <string name="error_department_create">Couldn\'t add the department. The name may already exist.</string>
+
 </resources>

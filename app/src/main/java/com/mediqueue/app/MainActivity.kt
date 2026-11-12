@@ -26,11 +26,20 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mediqueue.app.data.ApiClient
+import com.mediqueue.app.data.CreateDoctorRequest
+import com.mediqueue.app.ui.components.AdminTab
 import com.mediqueue.app.ui.components.DoctorTab
 import com.mediqueue.app.ui.components.FullScreenError
 import com.mediqueue.app.ui.components.FullScreenMessage
 import com.mediqueue.app.ui.components.LoadOrError
 import com.mediqueue.app.ui.components.PatientTab
+import com.mediqueue.app.ui.screens.admin.AddDoctorScreen
+import com.mediqueue.app.ui.screens.admin.AdminDashboardScreen
+import com.mediqueue.app.ui.screens.admin.AdminDepartment
+import com.mediqueue.app.ui.screens.admin.AdminDepartmentsScreen
+import com.mediqueue.app.ui.screens.admin.AdminDoctor
+import com.mediqueue.app.ui.screens.admin.AdminDoctorsScreen
+import com.mediqueue.app.ui.screens.admin.AdminViewModel
 import com.mediqueue.app.ui.screens.auth.LanguageScreen
 import com.mediqueue.app.ui.screens.auth.LoginScreen
 import com.mediqueue.app.ui.screens.auth.ProfileScreen
@@ -85,6 +94,13 @@ private fun homeFor(role: String?): String = when (role) {
     else -> "patient_home"
 }
 
+private fun adminRouteFor(tab: AdminTab): String = when (tab) {
+    AdminTab.Home -> "admin_home"
+    AdminTab.Doctors -> "admin_doctors"
+    AdminTab.Departments -> "admin_departments"
+    AdminTab.Profile -> "profile"
+}
+
 private fun doctorRouteFor(tab: DoctorTab): String = when (tab) {
     DoctorTab.Today -> "doctor_dashboard"
     DoctorTab.Slots -> "create_slots"
@@ -122,6 +138,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val vm: PatientViewModel = viewModel()
                     val dvm: DoctorViewModel = viewModel()
+                    val avm: AdminViewModel = viewModel()
 
                     // Temporary shorol navigation (pore real Navigation e jabe)
                     var screen by rememberSaveable { mutableStateOf("splash") }
@@ -129,6 +146,7 @@ class MainActivity : ComponentActivity() {
 
                     var selectedDocAppt by remember { mutableStateOf<DoctorAppointment?>(null) }
 
+                    var deptAdded by remember { mutableIntStateOf(0) }
                     var selectedPrescriptionId by rememberSaveable { mutableLongStateOf(0L) }
                     var detailBackTo by rememberSaveable { mutableStateOf("prescriptions") }
 
@@ -169,15 +187,17 @@ class MainActivity : ComponentActivity() {
                             }
                             "doctor_dashboard" -> dvm.loadAppointments(LocalDate.now(), clear = true)
                             "queue_control" -> dvm.loadQueue()
+                            "admin_home", "admin_doctors", "admin_departments", "add_doctor" -> avm.load()
                         }
                     }
 
                     // Token expire hole login e pathao
-                    LaunchedEffect(vm.unauthorized, dvm.unauthorized) {
-                        if (vm.unauthorized || dvm.unauthorized) {
+                    LaunchedEffect(vm.unauthorized, dvm.unauthorized, avm.unauthorized) {
+                        if (vm.unauthorized || dvm.unauthorized || avm.unauthorized) {
                             ApiClient.session.clear()
                             vm.reset()
                             dvm.reset()
+                            avm.reset()
                             screen = "login"
                         }
                     }
@@ -196,6 +216,8 @@ class MainActivity : ComponentActivity() {
                             "prescriptions" -> "patient_home"
                             "prescription_detail" -> detailBackTo
                             "create_slots", "queue_control", "write_prescription" -> "doctor_dashboard"
+                            "add_doctor" -> "admin_doctors"
+                            "admin_doctors", "admin_departments" -> "admin_home"
                             "register" -> "login"
                             else -> "login"
                         }
@@ -212,6 +234,7 @@ class MainActivity : ComponentActivity() {
                             onLoginSuccess = { auth ->
                                 vm.reset()
                                 dvm.reset()
+                                avm.reset()
                                 screen = homeFor(auth.role)
                             },
                             onCreateAccount = { screen = "register" }
@@ -221,6 +244,7 @@ class MainActivity : ComponentActivity() {
                             onRegistered = { auth ->
                                 vm.reset()
                                 dvm.reset()
+                                avm.reset()
                                 screen = homeFor(auth.role)
                             },
                             onSignInClick = { screen = "login" }
@@ -228,10 +252,11 @@ class MainActivity : ComponentActivity() {
 
                         "language" -> LanguageScreen(onSaved = { screen = "profile" })
 
-                        "profile", "admin_home" -> ProfileWithBottomBar(
+                        "profile" -> ProfileWithBottomBar(
                             role = ApiClient.session.role,
                             onPatientTab = { screen = routeFor(it) },
-                            onDoctorTab = { screen = doctorRouteFor(it) }
+                            onDoctorTab = { screen = doctorRouteFor(it) },
+                            onAdminTab = { screen = adminRouteFor(it) }
                         ) {
                             ProfileScreen(
                                 name = ApiClient.session.name,
@@ -242,9 +267,119 @@ class MainActivity : ComponentActivity() {
                                     ApiClient.session.clear()
                                     vm.reset()
                                     dvm.reset()
+                                    avm.reset()
                                     screen = "login"
                                 }
                             )
+                        }
+
+                        // ================= ADMIN (real data) =================
+                        "admin_home" -> {
+                            val deps = avm.departments
+                            val docs = avm.doctors
+                            if (deps == null || docs == null) {
+                                LoadOrError(avm.errorRes) { reload++ }
+                            } else {
+                                AdminDashboardScreen(
+                                    adminName = ApiClient.session.name,
+                                    departmentCount = deps.size,
+                                    doctorCount = docs.size,
+                                    onAddDoctor = { screen = "add_doctor" },
+                                    onAddDepartment = { screen = "admin_departments" },
+                                    onAvatarClick = { screen = "profile" },
+                                    onTabSelected = { screen = adminRouteFor(it) }
+                                )
+                            }
+                        }
+
+                        "admin_doctors" -> {
+                            val docs = avm.doctors
+                            if (docs == null) {
+                                LoadOrError(avm.errorRes) { reload++ }
+                            } else {
+                                AdminDoctorsScreen(
+                                    doctors = docs.sortedBy { it.name }.map {
+                                        AdminDoctor(
+                                            it.id, it.name, it.email.orEmpty(),
+                                            it.departmentName, it.experienceYears, it.fee.toInt()
+                                        )
+                                    },
+                                    onAddDoctor = { screen = "add_doctor" },
+                                    onTabSelected = { screen = adminRouteFor(it) }
+                                )
+                            }
+                        }
+
+                        "add_doctor" -> {
+                            val deps = avm.departments
+                            if (deps == null) {
+                                LoadOrError(avm.errorRes) { reload++ }
+                            } else {
+                                AddDoctorScreen(
+                                    departments = deps.map { AdminDepartment(it.id, it.name, it.icon.orEmpty(), 0) },
+                                    isSubmitting = avm.isSubmitting,
+                                    onBack = { screen = "admin_doctors" },
+                                    onCreate = { name, email, password, phone, deptId, experience, fee, bio ->
+                                        avm.createDoctor(
+                                            CreateDoctorRequest(
+                                                name = name,
+                                                email = email,
+                                                password = password,
+                                                phone = phone.filter { c -> c.isDigit() || c == '+' }.ifBlank { null },
+                                                departmentId = deptId,
+                                                bio = bio.ifBlank { null },
+                                                experienceYears = experience,
+                                                fee = fee
+                                            )
+                                        ) { ok, err ->
+                                            if (ok) {
+                                                Toast.makeText(
+                                                    this@MainActivity,
+                                                    getString(R.string.admin_doctor_created),
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                                screen = "admin_doctors"
+                                            } else {
+                                                toast(err)
+                                            }
+                                        }
+                                    }
+                                )
+                            }
+                        }
+
+                        "admin_departments" -> {
+                            val deps = avm.departments
+                            if (deps == null) {
+                                LoadOrError(avm.errorRes) { reload++ }
+                            } else {
+                                val docs = avm.doctors.orEmpty()
+                                AdminDepartmentsScreen(
+                                    departments = deps.map { dep ->
+                                        AdminDepartment(
+                                            dep.id, dep.name, dep.icon.orEmpty(),
+                                            docs.count { it.departmentId == dep.id }
+                                        )
+                                    },
+                                    isSubmitting = avm.isSubmitting,
+                                    clearSignal = deptAdded,
+                                    onAdd = { name, icon ->
+                                        avm.createDepartment(name, icon) { ok, err ->
+                                            if (ok) {
+                                                deptAdded++
+                                                Toast.makeText(
+                                                    this@MainActivity,
+                                                    getString(R.string.admin_department_added),
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            } else {
+                                                toast(err)
+                                            }
+                                        }
+                                    },
+                                    onTabSelected = { screen = adminRouteFor(it) }
+                                )
+                            }
                         }
 
                         // ================= PATIENT (real data) =================
