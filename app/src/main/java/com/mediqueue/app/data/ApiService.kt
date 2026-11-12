@@ -80,4 +80,11 @@ interface ApiService {
         @Path("id") id: Long,
         @Body body: PrescriptionRequest
     ): Response<ResponseBody>
+
+    // ---- Admin ----
+    @POST("api/admin/departments")
+    suspend fun createDepartment(@Body body: DepartmentRequest): Response<DepartmentDto>
+
+    @POST("api/admin/doctors")
+    suspend fun createDoctor(@Body body: CreateDoctorRequest): Response<DoctorDto>
 }
