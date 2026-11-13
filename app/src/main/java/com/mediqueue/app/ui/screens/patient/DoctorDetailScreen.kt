@@ -43,7 +43,6 @@ import com.mediqueue.app.ui.components.BadgeGreenBg
 import com.mediqueue.app.ui.components.BadgeGreenText
 import com.mediqueue.app.ui.components.MediBadge
 import com.mediqueue.app.ui.components.initialsOf
-import com.mediqueue.app.ui.components.localizedDecimal
 import com.mediqueue.app.ui.components.localizedNumber
 import com.mediqueue.app.ui.theme.MediColors
 
@@ -56,12 +55,11 @@ data class DoctorDetail(
     val department: String,
     val experienceYears: Int,
     val fee: Int,
-    val rating: Double,
     val about: String,
     val availableToday: Boolean,
-    val nextSlots: List<String>
-
-
+    val nextSlots: List<String>,
+    // Backend has no rating, so it is no longer shown. Kept only so old callers still compile.
+    val rating: Double = 0.0
 )
 
 @Composable
@@ -155,7 +153,7 @@ fun DoctorDetailScreen(
 
         Spacer(Modifier.height(22.dp))
 
-        // Stats
+        // Stats (experience + fee only; no rating in backend)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -170,11 +168,6 @@ fun DoctorDetailScreen(
             StatCard(
                 value = stringResource(R.string.fee_compact, localizedNumber(doctor.fee)),
                 label = stringResource(R.string.consultation),
-                modifier = Modifier.weight(1f)
-            )
-            StatCard(
-                value = localizedDecimal(doctor.rating),
-                label = stringResource(R.string.patient_rating),
                 modifier = Modifier.weight(1f)
             )
         }
@@ -314,7 +307,6 @@ private fun DoctorDetailPreview() {
             department = "Cardiology",
             experienceYears = 12,
             fee = 1000,
-            rating = 4.9,
             about = "Experienced cardiologist focused on clear, patient-centred care.",
             availableToday = true,
             nextSlots = listOf("Today · 10:30 AM")
