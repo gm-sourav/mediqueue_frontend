@@ -314,5 +314,6 @@ private fun DoctorDetailPreview() {
         onBack = {},
         onBookClick = {},
         onSeeAllClick = {}
+
     )
 }
