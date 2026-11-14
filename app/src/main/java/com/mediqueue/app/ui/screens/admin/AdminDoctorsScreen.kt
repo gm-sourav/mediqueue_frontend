@@ -57,6 +57,7 @@ fun AdminDoctorsScreen(
         bottomBar = { AdminBottomBar(selected = AdminTab.Doctors, onSelect = onTabSelected) }
     ) { pad ->
         Column(
+
             modifier = Modifier
                 .padding(pad)
                 .verticalScroll(rememberScrollState())
