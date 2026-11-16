@@ -71,6 +71,7 @@ fun AdminDoctorsScreen(
             ) {
                 Column {
                     Text(
+
                         stringResource(R.string.admin_doctors_title),
                         color = MediColors.Text,
                         fontSize = 22.sp,
