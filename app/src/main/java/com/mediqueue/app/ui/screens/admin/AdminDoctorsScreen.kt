@@ -67,6 +67,7 @@ fun AdminDoctorsScreen(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
+
             ) {
                 Column {
                     Text(
