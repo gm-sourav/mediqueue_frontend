@@ -303,4 +303,44 @@
     <string name="fp_invalid_code">কোডটি ভুল বা মেয়াদোত্তীর্ণ। নতুন কোড চেয়ে নিন।</string>
     <string name="fp_success">পাসওয়ার্ড পরিবর্তন হয়েছে। অনুগ্রহ করে সাইন ইন করুন।</string>
 
+
+    <!-- Home (redesign) -->
+    <string name="home_hero_title">অপেক্ষা ছাড়াই সঠিক ডাক্তার খুঁজুন</string>
+    <string name="home_hero_sub">বিভাগ বেছে নিন, সময় ঠিক করুন এবং আপনার টোকেন নিন।</string>
+    <string name="home_no_appt">কোনো আসন্ন অ্যাপয়েন্টমেন্ট নেই</string>
+    <string name="home_no_appt_sub">অ্যাপয়েন্টমেন্ট নিন, আপনার টোকেন এখানে দেখা যাবে।</string>
+
+    <!-- Personal details -->
+    <string name="pd_name">পূর্ণ নাম</string>
+    <string name="pd_phone">ফোন নম্বর</string>
+    <string name="pd_phone_hint">যেমন ০১৭১২৩৪৫৬৭৮</string>
+    <string name="pd_email">ইমেইল</string>
+    <string name="pd_email_locked">ইমেইল পরিবর্তন করা যায় না।</string>
+    <string name="pd_role">অ্যাকাউন্টের ধরন</string>
+    <string name="pd_save">পরিবর্তন সংরক্ষণ করুন</string>
+    <string name="pd_saved">তথ্য আপডেট হয়েছে</string>
+    <string name="pd_err_name">আপনার নাম লিখুন</string>
+    <string name="pd_err_phone">সঠিক ফোন নম্বর দিন</string>
+    <string name="pd_err_check">তথ্য ঠিক আছে কিনা দেখে আবার চেষ্টা করুন।</string>
+
+    <!-- Help and support -->
+    <string name="hs_subtitle">আমরা সাহায্য করতে প্রস্তুত। দ্রুত উত্তর খুঁজুন বা আমাদের সাথে যোগাযোগ করুন।</string>
+    <string name="hs_call">কল করুন</string>
+    <string name="hs_email">ইমেইল করুন</string>
+    <string name="hs_hours">রবি থেকে বৃহস্পতি, সকাল ৯:০০ থেকে সন্ধ্যা ৬:০০</string>
+    <string name="hs_faq_title">সাধারণ জিজ্ঞাসা</string>
+    <string name="hs_version">মেডিকিউ সংস্করণ %1$s</string>
+    <string name="faq_q1">কীভাবে অ্যাপয়েন্টমেন্ট নেব?</string>
+    <string name="faq_a1">হোমে "অ্যাপয়েন্টমেন্ট নিন" চাপুন। বিভাগ ও ডাক্তার বেছে নিন, তারিখ ও সময় ঠিক করে নিশ্চিত করুন। আপনি একটি টোকেন নম্বর পাবেন।</string>
+    <string name="faq_q2">বুকিং কি বাতিল করা যায়?</string>
+    <string name="faq_a2">হ্যাঁ। বুকিং-এ গিয়ে আসন্ন অ্যাপয়েন্টমেন্ট খুলে "বাতিল" চাপুন। স্লটটি আবার অন্য রোগীদের জন্য খালি হয়ে যাবে।</string>
+    <string name="faq_q3">লাইভ কিউ কীভাবে কাজ করে?</string>
+    <string name="faq_a3">অ্যাপয়েন্টমেন্ট নিশ্চিত হলে লাইভ কিউতে এখন কোন টোকেন চলছে, আপনার আগে কতজন আছেন এবং আনুমানিক অপেক্ষার সময় দেখা যায়।</string>
+    <string name="faq_q4">প্রেসক্রিপশন কোথায় পাব?</string>
+    <string name="faq_a4">ডাক্তার ভিজিট শেষ করে প্রেসক্রিপশন লিখলে তা হোম স্ক্রিনের "প্রেসক্রিপশন" অংশে দেখা যাবে।</string>
+    <string name="faq_q5">পাসওয়ার্ড ভুলে গেলে কী করব?</string>
+    <string name="faq_a5">সাইন ইন স্ক্রিনে "পাসওয়ার্ড ভুলে গেছেন" চাপুন, ইমেইল দিন এবং আমাদের পাঠানো ৬ সংখ্যার কোড দিয়ে নতুন পাসওয়ার্ড বেছে নিন।</string>
+    <string name="faq_q6">ভাষা কীভাবে বদলাব?</string>
+    <string name="faq_a6">প্রোফাইলে গিয়ে "ভাষা" চাপুন। যেকোনো সময় ইংরেজি ও বাংলা বদলাতে পারবেন।</string>
+    <string name="filter_all">সব</string>
 </resources>

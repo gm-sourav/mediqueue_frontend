@@ -116,11 +116,10 @@ class PatientViewModel : ViewModel() {
     fun loadDoctors(departmentId: Long) {
         viewModelScope.launch {
             errorRes = null
-            if (deptDoctorsFor != departmentId) {
-                deptDoctors = null
-                upcoming = emptyMap()
-            }
-            val docs = call { ApiClient.api.getDoctors(departmentId = departmentId) } ?: return@launch
+            // departmentId 0 = all doctors. Old list stays visible while the new one loads.
+            val docs = call {
+                ApiClient.api.getDoctors(departmentId = departmentId.takeIf { it > 0 })
+            } ?: return@launch
 
             val today = LocalDate.now()
             val now = LocalTime.now()

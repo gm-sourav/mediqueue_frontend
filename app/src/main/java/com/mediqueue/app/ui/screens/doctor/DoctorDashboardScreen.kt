@@ -1,5 +1,6 @@
 package com.mediqueue.app.ui.screens.doctor
 
+import com.mediqueue.app.ui.components.DoctorAvatar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -48,14 +49,14 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DecimalStyle
 
-private val DocIconBg = Color(0xFF1C2E2A)
-private val DocStatBg = Color(0xFF1E322E)
-private val DocGreenBg = Color(0xFF1D4034)
-private val DocGreenText = Color(0xFF55D6A0)
-private val DocRedBg = Color(0xFF4A2326)
-private val DocRedText = Color(0xFFFF8A8A)
-private val DocBlueBg = Color(0xFF1B3550)
-private val DocBlueText = Color(0xFF7FB8F0)
+private val DocIconBg = Color(0xFFE6F3F2)
+private val DocStatBg = Color(0xFFEAF5F4)
+private val DocGreenBg = Color(0xFFDDF3E7)
+private val DocGreenText = Color(0xFF1B8A57)
+private val DocRedBg = Color(0xFFFDE5E2)
+private val DocRedText = Color(0xFFC73B2E)
+private val DocBlueBg = Color(0xFFE1EDFB)
+private val DocBlueText = Color(0xFF2468B5)
 
 /** status: PENDING / CONFIRMED / COMPLETED / CANCELLED / REJECTED */
 data class DoctorAppointment(
@@ -131,21 +132,12 @@ fun DoctorDashboardScreen(
                         fontWeight = FontWeight.Bold
                     )
                 }
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(DocIconBg)
-                        .clickable(onClick = onAvatarClick),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        initialsOf(doctorName),
-                        color = MediColors.Teal,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
+                DoctorAvatar(
+                    name = doctorName,
+                    avatarSize = 46.dp,
+                    corner = 15.dp,
+                    modifier = Modifier.clickable(onClick = onAvatarClick)
+                )
             }
 
             // Stats

@@ -1,5 +1,6 @@
 package com.mediqueue.app.ui.screens.patient
 
+import com.mediqueue.app.ui.components.DoctorAvatar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -34,9 +35,9 @@ import com.mediqueue.app.ui.components.initialsOf
 import com.mediqueue.app.ui.components.localizedNumber
 import com.mediqueue.app.ui.theme.MediColors
 
-private val DxHeaderBg = Color(0xFF1E322E)
-private val DxNewBg = Color(0xFF1D4034)
-private val DxNewText = Color(0xFF55D6A0)
+private val DxHeaderBg = Color(0xFFEAF5F4)
+private val DxNewBg = Color(0xFFDDF3E7)
+private val DxNewText = Color(0xFF1B8A57)
 
 /** Ekta prescription er puro page: doctor, diagnosis, medicines, advice */
 @Composable
@@ -78,20 +79,7 @@ fun PrescriptionDetailScreen(
                     .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .background(MediColors.Pill),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        initialsOf(prescription.doctorName),
-                        color = MediColors.Teal,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+                DoctorAvatar(name = prescription.doctorName, avatarSize = 52.dp, corner = 26.dp)
                 Spacer(Modifier.width(14.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(

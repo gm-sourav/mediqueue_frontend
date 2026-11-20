@@ -51,8 +51,8 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DecimalStyle
 
-private val SlotAvailableBg = Color(0xFF1D3530)
-private val SlotBookedBg = Color(0xFF2A3330)
+private val SlotAvailableBg = Color(0xFFE3F2F1)
+private val SlotBookedBg = Color(0xFFE4EBEC)
 
 data class SlotItem(
     val id: Long,

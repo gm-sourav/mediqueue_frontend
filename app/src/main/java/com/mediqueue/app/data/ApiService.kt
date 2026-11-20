@@ -24,6 +24,13 @@ interface ApiService {
     @POST("api/auth/reset-password")
     suspend fun resetPassword(@Body body: ResetPasswordRequest): Response<Unit>
 
+    // ---- Profile (any role) ----
+    @GET("api/me")
+    suspend fun getMe(): Response<ProfileDto>
+
+    @PUT("api/me")
+    suspend fun updateMe(@Body body: UpdateProfileRequest): Response<ProfileDto>
+
     // ---- Common ----
     @GET("api/departments")
     suspend fun getDepartments(): Response<List<DepartmentDto>>

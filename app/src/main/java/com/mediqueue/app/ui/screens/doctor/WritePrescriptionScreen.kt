@@ -52,9 +52,9 @@ import com.mediqueue.app.ui.components.MediInput
 import com.mediqueue.app.ui.theme.MediColors
 import kotlinx.coroutines.launch
 
-private val WpInfoBg = Color(0xFF1E322E)
-private val WpGreenBg = Color(0xFF1D4034)
-private val WpGreenText = Color(0xFF55D6A0)
+private val WpInfoBg = Color(0xFFEAF5F4)
+private val WpGreenBg = Color(0xFFDDF3E7)
+private val WpGreenText = Color(0xFF1B8A57)
 
 data class MedicineEntry(
     val id: Long,

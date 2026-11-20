@@ -39,8 +39,8 @@ import com.mediqueue.app.ui.components.localizedNumber
 import com.mediqueue.app.ui.theme.MediColors
 import kotlinx.coroutines.delay
 
-private val ProgressCardBg = Color(0xFF1E322E)
-private val ProgressTrack = Color(0xFF2A3A36)
+private val ProgressCardBg = Color(0xFFEAF5F4)
+private val ProgressTrack = Color(0xFFD3E6E4)
 
 data class LiveQueueInfo(
     val department: String,

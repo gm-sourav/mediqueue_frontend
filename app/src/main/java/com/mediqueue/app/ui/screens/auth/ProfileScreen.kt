@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
@@ -23,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
@@ -32,10 +35,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mediqueue.app.R
+import com.mediqueue.app.ui.components.DoctorAvatar
+import com.mediqueue.app.ui.components.IconKind
+import com.mediqueue.app.ui.components.MediIcon
 import com.mediqueue.app.ui.theme.MediColors
 
-private val AvatarBg = Color(0xFF1D3530)
-private val LogoutRed = Color(0xFFFF8F7A)
+private val LogoutRed = Color(0xFFC73B2E)
 
 @Composable
 fun ProfileScreen(
@@ -67,42 +72,44 @@ fun ProfileScreen(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 20.dp, vertical = 16.dp)
     ) {
-        // Top pill (full width)
-        Box(
+        Text(
+            text = stringResource(R.string.profile_pill),
+            color = MediColors.Muted,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Medium,
+            letterSpacing = 0.8.sp
+        )
+
+        Spacer(Modifier.height(18.dp))
+
+        // ---------- Header card ----------
+        val cardShape = RoundedCornerShape(24.dp)
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(20.dp))
-                .background(MediColors.Pill)
-                .padding(horizontal = 15.dp, vertical = 11.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.profile_pill),
-                color = MediColors.Teal,
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Medium
-            )
-        }
-
-        Spacer(Modifier.height(32.dp))
-
-        // Avatar + name + email + role
-        Column(
-            modifier = Modifier.fillMaxWidth(),
+                .clip(cardShape)
+                .background(MediColors.Card)
+                .border(1.dp, MediColors.Border, cardShape)
+                .padding(vertical = 24.dp, horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box(
-                modifier = Modifier
-                    .size(76.dp)
-                    .clip(RoundedCornerShape(24.dp))
-                    .background(AvatarBg),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = initialsOf(name),
-                    color = MediColors.Teal,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Medium
-                )
+            if (role.uppercase() == "DOCTOR") {
+                DoctorAvatar(name = name, avatarSize = 92.dp, corner = 46.dp)
+            } else {
+                Box(
+                    modifier = Modifier
+                        .size(92.dp)
+                        .clip(CircleShape)
+                        .background(Brush.linearGradient(listOf(MediColors.TealLight, MediColors.TealDark))),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = initialsOf(name),
+                        color = Color.White,
+                        fontSize = 30.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
 
             Spacer(Modifier.height(14.dp))
@@ -113,14 +120,14 @@ fun ProfileScreen(
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
             )
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(6.dp))
             Text(text = email, color = MediColors.Muted, fontSize = 12.sp)
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(12.dp))
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(16.dp))
                     .background(MediColors.Pill)
-                    .padding(horizontal = 14.dp, vertical = 8.dp)
+                    .padding(horizontal = 14.dp, vertical = 7.dp)
             ) {
                 Text(
                     text = roleLabel,
@@ -131,72 +138,86 @@ fun ProfileScreen(
             }
         }
 
-        Spacer(Modifier.height(26.dp))
+        Spacer(Modifier.height(20.dp))
 
         ProfileMenuRow(
+            icon = IconKind.User,
             text = stringResource(R.string.personal_details),
             onClick = onPersonalDetailsClick
         )
         Spacer(Modifier.height(10.dp))
         ProfileMenuRow(
+            icon = IconKind.Globe,
             text = stringResource(R.string.profile_language, languageName),
             onClick = onLanguageClick
         )
         Spacer(Modifier.height(10.dp))
         ProfileMenuRow(
+            icon = IconKind.Help,
             text = stringResource(R.string.help_support),
             onClick = onHelpClick
         )
 
-        Spacer(Modifier.height(14.dp))
-        val logoutShape = RoundedCornerShape(14.dp)
-        Box(
+        Spacer(Modifier.height(16.dp))
+        val logoutShape = RoundedCornerShape(18.dp)
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(48.dp)
+                .height(54.dp)
                 .clip(logoutShape)
-                .background(MediColors.Card)
-                .border(1.dp, MediColors.Border, logoutShape)
+                .background(Color(0xFFFDE5E2))
                 .clickable(onClick = onLogout),
-            contentAlignment = Alignment.Center
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            MediIcon(IconKind.Logout, tint = LogoutRed, iconSize = 20.dp)
+            Spacer(Modifier.width(10.dp))
             Text(
                 text = stringResource(R.string.log_out),
                 color = LogoutRed,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Medium
+                fontSize = 13.5.sp,
+                fontWeight = FontWeight.Bold
             )
         }
     }
 }
 
 @Composable
-private fun ProfileMenuRow(text: String, onClick: () -> Unit) {
-    val shape = RoundedCornerShape(24.dp)
+private fun ProfileMenuRow(icon: IconKind, text: String, onClick: () -> Unit) {
+    val shape = RoundedCornerShape(18.dp)
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp)
             .clip(shape)
             .background(MediColors.Card)
             .border(1.dp, MediColors.Border, shape)
             .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
+            .padding(horizontal = 14.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        Box(
+            modifier = Modifier
+                .size(38.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(MediColors.Pill),
+            contentAlignment = Alignment.Center
+        ) {
+            MediIcon(icon, tint = MediColors.Teal, iconSize = 20.dp)
+        }
+        Spacer(Modifier.width(14.dp))
         Text(
             text = text,
             color = MediColors.Text,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Bold
+            fontSize = 13.5.sp,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.weight(1f)
         )
-        Text(text = "›", color = MediColors.Muted, fontSize = 18.sp)
+        MediIcon(IconKind.ChevronRight, tint = MediColors.Muted, iconSize = 20.dp)
     }
 }
 
 // "Nila Akter" -> "NA"
-private fun initialsOf(name: String): String {
+internal fun initialsOf(name: String): String {
     val parts = name.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
     return when {
         parts.isEmpty() -> "?"

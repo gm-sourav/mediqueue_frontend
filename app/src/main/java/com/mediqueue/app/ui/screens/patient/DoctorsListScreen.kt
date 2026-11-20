@@ -1,5 +1,8 @@
 package com.mediqueue.app.ui.screens.patient
 
+import com.mediqueue.app.ui.components.IconKind
+import com.mediqueue.app.ui.components.MediIcon
+import com.mediqueue.app.ui.components.DoctorAvatar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,6 +19,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -46,7 +51,7 @@ import com.mediqueue.app.ui.components.initialsOf
 import com.mediqueue.app.ui.components.localizedNumber
 import com.mediqueue.app.ui.theme.MediColors
 
-private val AvatarBg = Color(0xFF1D3530)
+private val AvatarBg = Color(0xFFE3F2F1)
 
 data class DoctorItem(
     val id: Long,
@@ -60,12 +65,14 @@ data class DoctorItem(
 
 @Composable
 fun DoctorsListScreen(
-    departmentName: String,
     doctors: List<DoctorItem>,
+    departments: List<Pair<Long, String>>,
+    selectedDepartmentId: Long,
+    onDepartmentSelected: (Long) -> Unit,
     onDoctorClick: (DoctorItem) -> Unit,
     onTabSelected: (PatientTab) -> Unit,
     searchHint: String = stringResource(R.string.search_doctors),
-    selectedTab: PatientTab? = null
+    selectedTab: PatientTab? = PatientTab.Doctors
 ) {
     var query by rememberSaveable { mutableStateOf("") }
 
@@ -89,14 +96,7 @@ fun DoctorsListScreen(
                 .padding(start = 20.dp, end = 20.dp, top = 16.dp)
         ) {
             Text(
-                text = stringResource(R.string.department_label),
-                color = MediColors.Muted,
-                fontSize = 11.sp,
-                letterSpacing = 0.6.sp
-            )
-            Spacer(Modifier.height(14.dp))
-            Text(
-                text = departmentName,
+                text = stringResource(R.string.tab_doctors),
                 color = MediColors.Text,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold
@@ -115,7 +115,7 @@ fun DoctorsListScreen(
                     .padding(horizontal = 14.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "⌕", color = MediColors.Text, fontSize = 13.sp)
+                MediIcon(IconKind.Search, tint = MediColors.Muted, iconSize = 18.dp)
                 Spacer(Modifier.width(10.dp))
                 Box(modifier = Modifier.weight(1f)) {
                     MediInput(
@@ -124,6 +124,18 @@ fun DoctorsListScreen(
                         hint = searchHint,
                         imeAction = ImeAction.Search
                     )
+                }
+            }
+            Spacer(Modifier.height(12.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                DeptChip(stringResource(R.string.filter_all), selectedDepartmentId == 0L) { onDepartmentSelected(0L) }
+                departments.forEach { (id, name) ->
+                    DeptChip(name, selectedDepartmentId == id) { onDepartmentSelected(id) }
                 }
             }
         }
@@ -154,6 +166,26 @@ fun DoctorsListScreen(
 }
 
 @Composable
+private fun DeptChip(label: String, selected: Boolean, onClick: () -> Unit) {
+    val shape = RoundedCornerShape(50)
+    Box(
+        modifier = Modifier
+            .clip(shape)
+            .background(if (selected) MediColors.Teal else MediColors.Card)
+            .border(1.dp, if (selected) MediColors.Teal else MediColors.Border, shape)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 8.dp)
+    ) {
+        Text(
+            text = label,
+            color = if (selected) MediColors.OnTeal else MediColors.Text,
+            fontSize = 12.5.sp,
+            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal
+        )
+    }
+}
+
+@Composable
 private fun DoctorCard(doctor: DoctorItem, onClick: () -> Unit) {
     val shape = RoundedCornerShape(16.dp)
     Column(
@@ -167,20 +199,7 @@ private fun DoctorCard(doctor: DoctorItem, onClick: () -> Unit) {
     ) {
         // Avatar + name
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(AvatarBg),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = initialsOf(doctor.name.removePrefix("Dr. ")),
-                    color = MediColors.Teal,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium
-                )
-            }
+            DoctorAvatar(name = doctor.name, avatarSize = 52.dp)
             Spacer(Modifier.width(12.dp))
             Column {
                 Text(
@@ -254,8 +273,9 @@ private fun DoctorCard(doctor: DoctorItem, onClick: () -> Unit) {
 @Composable
 private fun DoctorsListPreview() {
     DoctorsListScreen(
-        departmentName = "Cardiology",
-        searchHint = "Search cardiologists",
+        departments = listOf(1L to "Cardiology", 2L to "Neurology"),
+        selectedDepartmentId = 0L,
+        onDepartmentSelected = {},
         doctors = listOf(
             DoctorItem(1, "Dr. Ayesha Rahman", 12, "Cardiologist", 1000, "Today · 10:30 AM", true),
             DoctorItem(2, "Dr. Samiul Haque", 8, "Cardiologist", 800, "Tomorrow · 9:00 AM", false),

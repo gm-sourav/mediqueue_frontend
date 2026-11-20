@@ -47,7 +47,7 @@ import com.mediqueue.app.ui.components.MediInput
 import com.mediqueue.app.ui.components.MediPill
 import com.mediqueue.app.ui.theme.MediColors
 
-private val LinkLight = Color(0xFFC9D8D4)
+private val LinkLight = Color(0xFF5E7681)
 private val PhoneRegex = Regex("^(\\+?88)?01[3-9]\\d{8}$")
 
 @Composable

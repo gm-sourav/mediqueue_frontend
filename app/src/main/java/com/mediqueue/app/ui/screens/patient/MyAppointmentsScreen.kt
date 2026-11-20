@@ -1,5 +1,8 @@
 package com.mediqueue.app.ui.screens.patient
 
+import com.mediqueue.app.ui.components.IconKind
+import com.mediqueue.app.ui.components.MediIcon
+import com.mediqueue.app.ui.components.DoctorAvatar
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -42,14 +45,14 @@ import com.mediqueue.app.ui.components.initialsOf
 import com.mediqueue.app.ui.components.localizedNumber
 import com.mediqueue.app.ui.theme.MediColors
 
-private val ApptPendingBg = Color(0xFF1D3530)
-private val ApptGreenBg = Color(0xFF1D4034)
-private val ApptGreenText = Color(0xFF55D6A0)
-private val ApptBlueBg = Color(0xFF1B3550)
-private val ApptBlueText = Color(0xFF7FB8F0)
-private val ApptRedBg = Color(0xFF4A2326)
-private val ApptRedText = Color(0xFFFF8A8A)
-private val IconBoxBg = Color(0xFF1C2E2A)
+private val ApptPendingBg = Color(0xFFE3F2F1)
+private val ApptGreenBg = Color(0xFFDDF3E7)
+private val ApptGreenText = Color(0xFF1B8A57)
+private val ApptBlueBg = Color(0xFFE1EDFB)
+private val ApptBlueText = Color(0xFF2468B5)
+private val ApptRedBg = Color(0xFFFDE5E2)
+private val ApptRedText = Color(0xFFC73B2E)
+private val IconBoxBg = Color(0xFFE6F3F2)
 
 /** status: PENDING / CONFIRMED / COMPLETED / CANCELLED / REJECTED */
 data class AppointmentItem(
@@ -107,7 +110,7 @@ fun MyAppointmentsScreen(
                         .background(IconBoxBg),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("▤", color = MediColors.Muted, fontSize = 14.sp)
+                    MediIcon(IconKind.Calendar, tint = MediColors.Teal, iconSize = 20.dp)
                 }
             }
 
@@ -195,20 +198,7 @@ private fun AppointmentCard(
 
         Spacer(Modifier.height(14.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(MediColors.Pill),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = initialsOf(item.doctorName),
-                    color = MediColors.Teal,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium
-                )
-            }
+            DoctorAvatar(name = item.doctorName, avatarSize = 46.dp, corner = 14.dp)
             Spacer(Modifier.width(12.dp))
             Column {
                 Text(

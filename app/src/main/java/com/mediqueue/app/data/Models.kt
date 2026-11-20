@@ -137,3 +137,16 @@ data class CreateDoctorRequest(
     val fee: Double?,
     val photoUrl: String? = null
 )
+
+data class ProfileDto(
+    val id: Long,
+    val name: String,
+    val email: String,
+    val phone: String?,
+    val role: String
+)
+
+data class UpdateProfileRequest(
+    val name: String,
+    val phone: String?
+)

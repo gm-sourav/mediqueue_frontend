@@ -61,7 +61,7 @@ import com.mediqueue.app.data.AuthResponse
 import com.mediqueue.app.ui.theme.MediColors
 import kotlinx.coroutines.launch
 
-private val LinkLight = Color(0xFFC9D8D4)
+private val LinkLight = Color(0xFF5E7681)
 
 @Composable
 fun LoginScreen(

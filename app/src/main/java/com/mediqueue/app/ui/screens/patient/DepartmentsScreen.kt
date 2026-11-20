@@ -1,5 +1,8 @@
 package com.mediqueue.app.ui.screens.patient
 
+import com.mediqueue.app.ui.components.DepartmentIcon
+import com.mediqueue.app.ui.components.IconKind
+import com.mediqueue.app.ui.components.MediIcon
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -46,7 +49,7 @@ import com.mediqueue.app.ui.components.PatientTab
 import com.mediqueue.app.ui.components.localizedNumber
 import com.mediqueue.app.ui.theme.MediColors
 
-private val IconBoxBg = Color(0xFF1D3530)
+private val IconBoxBg = Color(0xFFE3F2F1)
 
 data class Department(
     val id: Long,
@@ -60,7 +63,7 @@ fun DepartmentsScreen(
     departments: List<Department>,
     onDepartmentClick: (Department) -> Unit,
     onTabSelected: (PatientTab) -> Unit,
-    selectedTab: PatientTab = PatientTab.Home
+    selectedTab: PatientTab = PatientTab.Doctors
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
@@ -110,7 +113,7 @@ fun DepartmentsScreen(
                         .clickable { focusRequester.requestFocus() },
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(text = "⌕", color = MediColors.Teal, fontSize = 15.sp)
+                    MediIcon(IconKind.Search, tint = MediColors.Teal, iconSize = 20.dp)
                 }
             }
 
@@ -128,7 +131,7 @@ fun DepartmentsScreen(
                     .padding(horizontal = 14.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "⌕", color = MediColors.Teal, fontSize = 14.sp)
+                MediIcon(IconKind.Search, tint = MediColors.Teal, iconSize = 18.dp)
                 Spacer(Modifier.width(10.dp))
                 Box(modifier = Modifier.weight(1f)) {
                     MediInput(
@@ -183,15 +186,7 @@ private fun DepartmentCard(department: Department, onClick: () -> Unit) {
             .clickable(onClick = onClick)
             .padding(14.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(IconBoxBg),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(text = department.icon, color = MediColors.Teal, fontSize = 15.sp)
-        }
+        DepartmentIcon(icon = department.icon, boxSize = 48.dp, corner = 15.dp)
         Spacer(Modifier.height(24.dp))
         Text(
             text = department.name,
@@ -213,12 +208,12 @@ private fun DepartmentCard(department: Department, onClick: () -> Unit) {
 private fun DepartmentsPreview() {
     DepartmentsScreen(
         departments = listOf(
-            Department(1, "Cardiology", 12, "♡"),
-            Department(2, "Neurology", 8, "✳"),
-            Department(3, "Dental", 10, "+"),
-            Department(4, "Eye", 6, "◉"),
-            Department(5, "Pediatrics", 9, "⌂"),
-            Department(6, "Orthopedics", 7, "+")
+            Department(1, "Cardiology", 12, "heart"),
+            Department(2, "Neurology", 8, "brain"),
+            Department(3, "Dental", 10, "tooth"),
+            Department(4, "Eye", 6, "eye"),
+            Department(5, "Pediatrics", 9, "child"),
+            Department(6, "Orthopedics", 7, "bone")
         ),
         onDepartmentClick = {},
         onTabSelected = {}

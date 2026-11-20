@@ -25,6 +25,10 @@ class SessionManager(context: Context) {
 
     val isLoggedIn: Boolean get() = !token.isNullOrBlank() && !role.isNullOrBlank()
 
+    fun updateName(name: String) {
+        prefs.edit().putString("name", name).apply()
+    }
+
     fun clear() {
         prefs.edit().clear().apply()
     }

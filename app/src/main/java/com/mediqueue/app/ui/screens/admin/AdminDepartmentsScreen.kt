@@ -1,5 +1,6 @@
 package com.mediqueue.app.ui.screens.admin
 
+import com.mediqueue.app.ui.components.DepartmentIcon
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -116,17 +117,16 @@ fun AdminDepartmentsScreen(
                         val selected = option == icon
                         Box(
                             modifier = Modifier
-                                .size(42.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(if (selected) MediColors.Teal else MediColors.Pill)
-                                .clickable { icon = option },
-                            contentAlignment = Alignment.Center
+                                .clip(RoundedCornerShape(14.dp))
+                                .border(
+                                    2.dp,
+                                    if (selected) MediColors.Teal else androidx.compose.ui.graphics.Color.Transparent,
+                                    RoundedCornerShape(14.dp)
+                                )
+                                .padding(2.dp)
+                                .clickable { icon = option }
                         ) {
-                            Text(
-                                departmentGlyph(option),
-                                color = if (selected) MediColors.OnTeal else MediColors.Teal,
-                                fontSize = 16.sp
-                            )
+                            DepartmentIcon(icon = option, boxSize = 44.dp, corner = 12.dp)
                         }
                     }
                 }
@@ -177,15 +177,7 @@ private fun DepartmentRow(d: AdminDepartment) {
             .padding(14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .size(42.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(MediColors.Pill),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(departmentGlyph(d.icon), color = MediColors.Teal, fontSize = 16.sp)
-        }
+        DepartmentIcon(icon = d.icon, boxSize = 46.dp, corner = 14.dp)
         Spacer(Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(

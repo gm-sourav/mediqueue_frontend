@@ -1,5 +1,7 @@
 package com.mediqueue.app.ui.screens.patient
 
+import com.mediqueue.app.ui.components.IconKind
+import com.mediqueue.app.ui.components.MediIcon
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -35,9 +37,9 @@ import com.mediqueue.app.ui.components.PatientTab
 import com.mediqueue.app.ui.components.localizedNumber
 import com.mediqueue.app.ui.theme.MediColors
 
-private val RxIconBg = Color(0xFF1C2E2A)
-private val RxNewBg = Color(0xFF1D4034)
-private val RxNewText = Color(0xFF55D6A0)
+private val RxIconBg = Color(0xFFE6F3F2)
+private val RxNewBg = Color(0xFFDDF3E7)
+private val RxNewText = Color(0xFF1B8A57)
 
 data class MedicineItem(
     val name: String,     // "Medicine A"
@@ -93,12 +95,7 @@ fun PrescriptionsScreen(
                         .background(RxIconBg),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        stringResource(R.string.rx_badge),
-                        color = MediColors.Teal,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Medium
-                    )
+                    MediIcon(IconKind.Pill, tint = MediColors.Teal, iconSize = 21.dp)
                 }
             }
 

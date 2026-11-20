@@ -43,9 +43,9 @@ import com.mediqueue.app.LocaleHelper
 import com.mediqueue.app.R
 import com.mediqueue.app.ui.theme.MediColors
 
-private val PreviewCard = Color(0xFF1D3530)
-private val BadgeBg = Color(0xFF1D4034)
-private val BadgeText = Color(0xFF55D6A0)
+private val PreviewCard = Color(0xFFE3F2F1)
+private val BadgeBg = Color(0xFFDDF3E7)
+private val BadgeText = Color(0xFF1B8A57)
 
 @Composable
 fun LanguageScreen(onSaved: () -> Unit) {

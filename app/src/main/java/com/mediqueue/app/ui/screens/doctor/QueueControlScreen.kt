@@ -39,8 +39,8 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DecimalStyle
 
-private val QcLiveBg = Color(0xFF1D4034)
-private val QcLiveText = Color(0xFF55D6A0)
+private val QcLiveBg = Color(0xFFDDF3E7)
+private val QcLiveText = Color(0xFF1B8A57)
 
 data class QueueEntry(
     val token: Int,

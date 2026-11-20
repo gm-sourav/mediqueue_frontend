@@ -309,4 +309,46 @@
     <string name="fp_invalid_code">Invalid or expired code. Please request a new one.</string>
     <string name="fp_success">Password changed. Please sign in.</string>
 
+
+    <!-- Home (redesign) -->
+    <string name="home_hero_title">Find the right doctor, without the wait</string>
+    <string name="home_hero_sub">Pick a department, choose a time and get your token.</string>
+    <string name="home_no_appt">No upcoming appointment</string>
+    <string name="home_no_appt_sub">Book a visit and your token will show up here.</string>
+
+    <!-- Personal details -->
+    <string name="pd_name">Full name</string>
+    <string name="pd_phone">Phone number</string>
+    <string name="pd_phone_hint">e.g. 01712345678</string>
+    <string name="pd_email">Email</string>
+    <string name="pd_email_locked">Email can\'t be changed.</string>
+    <string name="pd_role">Account type</string>
+    <string name="pd_save">Save changes</string>
+    <string name="pd_saved">Details updated</string>
+    <string name="pd_err_name">Please enter your name</string>
+    <string name="pd_err_phone">Enter a valid phone number</string>
+    <string name="pd_err_check">Please check your details and try again.</string>
+
+    <!-- Help and support -->
+    <string name="hs_subtitle">We\'re here to help. Find quick answers or contact us.</string>
+    <string name="hs_call">Call us</string>
+    <string name="hs_email">Email us</string>
+    <string name="hs_phone_value">+880 1700-000000</string>
+    <string name="hs_email_value">support@mediqueue.app</string>
+    <string name="hs_hours">Sun to Thu, 9:00 AM to 6:00 PM</string>
+    <string name="hs_faq_title">Frequently asked questions</string>
+    <string name="hs_version">MediQueue version %1$s</string>
+    <string name="faq_q1">How do I book an appointment?</string>
+    <string name="faq_a1">On Home, tap Book appointment. Choose a department and a doctor, pick a date and time slot, then confirm. You will get a token number.</string>
+    <string name="faq_q2">Can I cancel a booking?</string>
+    <string name="faq_a2">Yes. Open Bookings, select an upcoming appointment and tap Cancel. The slot becomes available for other patients again.</string>
+    <string name="faq_q3">How does the live queue work?</string>
+    <string name="faq_a3">Once your appointment is confirmed, Live Queue shows the token being served now, how many patients are ahead of you and the estimated wait.</string>
+    <string name="faq_q4">Where do I find my prescriptions?</string>
+    <string name="faq_a4">After the doctor completes your visit and writes a prescription, it appears under Prescriptions on the Home screen.</string>
+    <string name="faq_q5">I forgot my password. What should I do?</string>
+    <string name="faq_a5">On the sign-in screen tap Forgot password, enter your email and the 6-digit code we send, then choose a new password.</string>
+    <string name="faq_q6">How do I change the language?</string>
+    <string name="faq_a6">Open Profile and tap Language. You can switch between English and Bangla at any time.</string>
+    <string name="filter_all">All</string>
 </resources>

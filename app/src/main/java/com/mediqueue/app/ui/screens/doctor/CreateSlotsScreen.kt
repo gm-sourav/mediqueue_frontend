@@ -58,8 +58,8 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DecimalStyle
 
-private val SlotsPillBg = Color(0xFF1C3A35)
-private val SlotsPreviewBg = Color(0xFF1E322E)
+private val SlotsPillBg = Color(0xFFE2F4F3)
+private val SlotsPreviewBg = Color(0xFFEAF5F4)
 private val lengthOptions = listOf(15, 20, 30, 45, 60)
 
 @Composable

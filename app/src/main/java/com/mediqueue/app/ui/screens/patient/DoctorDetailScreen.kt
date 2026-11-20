@@ -1,5 +1,8 @@
 package com.mediqueue.app.ui.screens.patient
 
+import com.mediqueue.app.ui.components.IconKind
+import com.mediqueue.app.ui.components.MediIcon
+import com.mediqueue.app.ui.components.DoctorAvatar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -46,7 +49,7 @@ import com.mediqueue.app.ui.components.initialsOf
 import com.mediqueue.app.ui.components.localizedNumber
 import com.mediqueue.app.ui.theme.MediColors
 
-private val AvatarBg = Color(0xFF1D3530)
+private val AvatarBg = Color(0xFFE3F2F1)
 
 data class DoctorDetail(
     val id: Long,
@@ -95,15 +98,19 @@ fun DoctorDetailScreen(
                     .clickable(onClick = onBack)
                     .padding(vertical = 6.dp, horizontal = 2.dp)
             )
-            Text(
-                text = if (favorite) "♥" else "♡",
-                color = if (favorite) MediColors.Teal else MediColors.Text,
-                fontSize = 14.sp,
+            Box(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(10.dp))
                     .clickable { favorite = !favorite }
                     .padding(6.dp)
-            )
+            ) {
+                MediIcon(
+                    icon = IconKind.Heart,
+                    tint = if (favorite) MediColors.Danger else MediColors.Text,
+                    iconSize = 22.dp,
+                    strokeWidth = if (favorite) 2.3f else 1.8f
+                )
+            }
         }
 
         Spacer(Modifier.height(24.dp))
@@ -113,20 +120,7 @@ fun DoctorDetailScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box(
-                modifier = Modifier
-                    .size(76.dp)
-                    .clip(RoundedCornerShape(24.dp))
-                    .background(AvatarBg),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = initialsOf(doctor.name.removePrefix("Dr. ")),
-                    color = MediColors.Teal,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Medium
-                )
-            }
+            DoctorAvatar(name = doctor.name, avatarSize = 96.dp, corner = 30.dp)
             Spacer(Modifier.height(16.dp))
             Text(
                 text = doctor.name,

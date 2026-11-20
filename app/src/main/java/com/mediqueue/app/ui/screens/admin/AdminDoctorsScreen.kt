@@ -1,5 +1,6 @@
 package com.mediqueue.app.ui.screens.admin
 
+import com.mediqueue.app.ui.components.DoctorAvatar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -125,20 +126,7 @@ private fun DoctorRow(d: AdminDoctor) {
             .padding(14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .size(44.dp)
-                .clip(CircleShape)
-                .background(MediColors.Pill),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                initialsOf(d.name),
-                color = MediColors.Teal,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
+        DoctorAvatar(name = d.name, avatarSize = 48.dp, corner = 24.dp)
         Spacer(Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(

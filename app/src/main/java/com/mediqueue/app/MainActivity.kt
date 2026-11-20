@@ -12,7 +12,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -41,7 +41,10 @@ import com.mediqueue.app.ui.screens.admin.AdminDoctor
 import com.mediqueue.app.ui.screens.admin.AdminDoctorsScreen
 import com.mediqueue.app.ui.screens.admin.AdminViewModel
 import com.mediqueue.app.ui.screens.auth.ForgotPasswordScreen
+import com.mediqueue.app.ui.screens.auth.HelpSupportScreen
 import com.mediqueue.app.ui.screens.auth.LanguageScreen
+import com.mediqueue.app.ui.screens.auth.PersonalDetailsScreen
+import com.mediqueue.app.ui.screens.auth.ProfileViewModel
 import com.mediqueue.app.ui.screens.auth.LoginScreen
 import com.mediqueue.app.ui.screens.auth.ProfileScreen
 import com.mediqueue.app.ui.screens.auth.ProfileWithBottomBar
@@ -84,7 +87,7 @@ import java.time.LocalTime
 
 private fun routeFor(tab: PatientTab): String = when (tab) {
     PatientTab.Home -> "patient_home"
-    PatientTab.Doctors -> "departments"
+    PatientTab.Doctors -> "doctors"
     PatientTab.Bookings -> "my_appointments"
     PatientTab.Profile -> "profile"
 }
@@ -117,13 +120,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.dark(AndroidColor.TRANSPARENT),
-            navigationBarStyle = SystemBarStyle.dark(AndroidColor.TRANSPARENT)
+            statusBarStyle = SystemBarStyle.light(AndroidColor.TRANSPARENT, AndroidColor.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.light(AndroidColor.TRANSPARENT, AndroidColor.TRANSPARENT)
         )
 
         setContent {
             MaterialTheme(
-                colorScheme = darkColorScheme(
+                colorScheme = lightColorScheme(
                     primary = MediColors.Teal,
                     onPrimary = MediColors.OnTeal,
                     secondary = MediColors.Teal,
@@ -140,6 +143,7 @@ class MainActivity : ComponentActivity() {
                     val vm: PatientViewModel = viewModel()
                     val dvm: DoctorViewModel = viewModel()
                     val avm: AdminViewModel = viewModel()
+                    val pvm: ProfileViewModel = viewModel()
 
                     // Temporary shorol navigation (pore real Navigation e jabe)
                     var screen by rememberSaveable { mutableStateOf("splash") }
@@ -153,6 +157,15 @@ class MainActivity : ComponentActivity() {
 
                     var selectedDepartment by rememberSaveable { mutableStateOf("") }
                     var selectedDepartmentId by rememberSaveable { mutableLongStateOf(0L) }
+                    // Doctors tab always opens with "All" selected
+                    val onPatientTab: (PatientTab) -> Unit = { tab ->
+                        if (tab == PatientTab.Doctors && screen != "doctors") {
+                            selectedDepartmentId = 0L
+                            selectedDepartment = ""
+                            vm.clearDoctors()
+                        }
+                        screen = routeFor(tab)
+                    }
                     var selectedDoctorName by rememberSaveable { mutableStateOf("") }
                     var selectedDoctorId by rememberSaveable { mutableLongStateOf(0L) }
 
@@ -174,10 +187,18 @@ class MainActivity : ComponentActivity() {
                     LaunchedEffect(screen, reload) {
                         when (screen) {
                             "departments" -> vm.loadDepartments()
-                            "doctors" -> vm.loadDoctors(selectedDepartmentId)
+                            "doctors" -> {
+                                vm.loadDoctors(selectedDepartmentId)
+                                if (vm.departments == null) vm.loadDepartments()
+                            }
                             "doctor_detail" -> if (vm.deptDoctors == null) vm.loadDoctors(selectedDepartmentId)
                             "pick_slot" -> vm.loadWeek(selectedDoctorId)
-                            "patient_home", "live_queue" -> vm.loadHome()
+                            "patient_home" -> {
+                                vm.loadHome()
+                                vm.loadDepartments()
+                            }
+                            "live_queue" -> vm.loadHome()
+                            "personal_details" -> pvm.load()
                             "my_appointments" -> {
                                 vm.loadAppointments()
                                 vm.loadPrescriptions()
@@ -193,12 +214,13 @@ class MainActivity : ComponentActivity() {
                     }
 
                     // Token expire hole login e pathao
-                    LaunchedEffect(vm.unauthorized, dvm.unauthorized, avm.unauthorized) {
-                        if (vm.unauthorized || dvm.unauthorized || avm.unauthorized) {
+                    LaunchedEffect(vm.unauthorized, dvm.unauthorized, avm.unauthorized, pvm.unauthorized) {
+                        if (vm.unauthorized || dvm.unauthorized || avm.unauthorized || pvm.unauthorized) {
                             ApiClient.session.clear()
                             vm.reset()
                             dvm.reset()
                             avm.reset()
+                            pvm.reset()
                             screen = "login"
                         }
                     }
@@ -207,10 +229,10 @@ class MainActivity : ComponentActivity() {
                         enabled = screen !in listOf("splash", "login", "patient_home", "doctor_dashboard", "admin_home")
                     ) {
                         screen = when (screen) {
-                            "language" -> "profile"
+                            "language", "personal_details", "help_support" -> "profile"
                             "profile" -> homeFor(ApiClient.session.role)
                             "departments", "my_appointments" -> "patient_home"
-                            "doctors" -> "departments"
+                            "doctors" -> "patient_home"
                             "doctor_detail" -> "doctors"
                             "pick_slot" -> "doctor_detail"
                             "live_queue" -> "my_appointments"
@@ -236,6 +258,7 @@ class MainActivity : ComponentActivity() {
                                 vm.reset()
                                 dvm.reset()
                                 avm.reset()
+                                pvm.reset()
                                 screen = homeFor(auth.role)
                             },
                             onCreateAccount = { screen = "register" },
@@ -255,6 +278,7 @@ class MainActivity : ComponentActivity() {
                                 vm.reset()
                                 dvm.reset()
                                 avm.reset()
+                                pvm.reset()
                                 screen = homeFor(auth.role)
                             },
                             onSignInClick = { screen = "login" }
@@ -264,7 +288,7 @@ class MainActivity : ComponentActivity() {
 
                         "profile" -> ProfileWithBottomBar(
                             role = ApiClient.session.role,
-                            onPatientTab = { screen = routeFor(it) },
+                            onPatientTab = onPatientTab,
                             onDoctorTab = { screen = doctorRouteFor(it) },
                             onAdminTab = { screen = adminRouteFor(it) }
                         ) {
@@ -273,15 +297,41 @@ class MainActivity : ComponentActivity() {
                                 email = ApiClient.session.email,
                                 role = ApiClient.session.role ?: "",
                                 onLanguageClick = { screen = "language" },
+                                onPersonalDetailsClick = { screen = "personal_details" },
+                                onHelpClick = { screen = "help_support" },
                                 onLogout = {
                                     ApiClient.session.clear()
                                     vm.reset()
                                     dvm.reset()
                                     avm.reset()
+                                    pvm.reset()
                                     screen = "login"
                                 }
                             )
                         }
+
+                        "personal_details" -> {
+                            val p = pvm.profile
+                            if (p == null) {
+                                LoadOrError(pvm.errorRes) { reload++ }
+                            } else {
+                                PersonalDetailsScreen(
+                                    profile = p,
+                                    isSaving = pvm.isSaving,
+                                    errorRes = pvm.errorRes,
+                                    onClearError = { pvm.clearError() },
+                                    onBack = { screen = "profile" },
+                                    onSave = { n, ph ->
+                                        pvm.save(n, ph) {
+                                            toast(R.string.pd_saved)
+                                            screen = "profile"
+                                        }
+                                    }
+                                )
+                            }
+                        }
+
+                        "help_support" -> HelpSupportScreen(onBack = { screen = "profile" })
 
                         // ================= ADMIN (real data) =================
                         "admin_home" -> {
@@ -399,11 +449,26 @@ class MainActivity : ComponentActivity() {
                                 patientName = ApiClient.session.name,
                                 queue = vm.queue?.let { q -> vm.activeAppointment?.toQueueInfo(q) },
                                 nextAppointment = next?.toNext(today, todayWord, tomorrowWord, locale),
-                                onBookClick = { screen = "departments" },
+                                onBookClick = {
+                                    selectedDepartmentId = 0L
+                                    selectedDepartment = ""
+                                    vm.clearDoctors()
+                                    screen = "doctors"
+                                },
                                 onAppointmentClick = { screen = "my_appointments" },
                                 onAvatarClick = { screen = "profile" },
-                                onTabSelected = { screen = routeFor(it) },
-                                onPrescriptionsClick = { screen = "prescriptions" }
+                                onTabSelected = onPatientTab,
+                                onPrescriptionsClick = { screen = "prescriptions" },
+                                departments = vm.departments?.let { deps ->
+                                    val docs = vm.allDoctors.orEmpty()
+                                    deps.map { dep -> dep.toUi(docs.count { it.departmentId == dep.id }) }
+                                }.orEmpty(),
+                                onDepartmentClick = { dept ->
+                                    selectedDepartment = dept.name
+                                    selectedDepartmentId = dept.id.toLong()
+                                    vm.clearDoctors()
+                                    screen = "doctors"
+                                }
                             )
                         }
 
@@ -423,7 +488,7 @@ class MainActivity : ComponentActivity() {
                                         vm.clearDoctors()
                                         screen = "doctors"
                                     },
-                                    onTabSelected = { screen = routeFor(it) }
+                                    onTabSelected = onPatientTab
                                 )
                             }
                         }
@@ -434,7 +499,12 @@ class MainActivity : ComponentActivity() {
                                 LoadOrError(vm.errorRes) { reload++ }
                             } else {
                                 DoctorsListScreen(
-                                    departmentName = selectedDepartment,
+                                    departments = vm.departments.orEmpty().map { it.id to it.name },
+                                    selectedDepartmentId = selectedDepartmentId,
+                                    onDepartmentSelected = { id ->
+                                        selectedDepartmentId = id
+                                        vm.loadDoctors(id)
+                                    },
                                     searchHint = stringResource(R.string.search_doctors),
                                     doctors = docs.map { d ->
                                         val ups = vm.upcoming[d.id].orEmpty()
@@ -449,7 +519,7 @@ class MainActivity : ComponentActivity() {
                                         selectedDoctorName = doctor.name
                                         screen = "doctor_detail"
                                     },
-                                    onTabSelected = { screen = routeFor(it) }
+                                    onTabSelected = onPatientTab
                                 )
                             }
                         }
@@ -540,7 +610,7 @@ class MainActivity : ComponentActivity() {
                                             screen = if (item.status == "COMPLETED") "prescriptions" else "live_queue"
                                         }
                                     },
-                                    onTabSelected = { screen = routeFor(it) }
+                                    onTabSelected = onPatientTab
                                 )
                             }
                         }
@@ -575,7 +645,7 @@ class MainActivity : ComponentActivity() {
                                         detailBackTo = "prescriptions"
                                         screen = "prescription_detail"
                                     },
-                                    onTabSelected = { screen = routeFor(it) }
+                                    onTabSelected = onPatientTab
                                 )
                             }
                         }

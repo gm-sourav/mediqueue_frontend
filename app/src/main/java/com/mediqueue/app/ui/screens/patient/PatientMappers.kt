@@ -41,21 +41,14 @@ fun slotLabel(
 ): String = dayLabel(p.first, today, todayWord, tomorrowWord, locale, "EEE") +
         " · " + formatTime(p.second, locale)
 
-fun departmentGlyph(icon: String?): String = when (icon?.lowercase()) {
-    "heart" -> "♡"
-    "brain" -> "✳"
-    "tooth" -> "+"
-    "eye" -> "◉"
-    "child" -> "⌂"
-    "bone" -> "+"
-    else -> "+"
-}
+/** The icon key (heart, brain, tooth, eye, child, bone, general). Drawn by DepartmentIcon. */
+fun departmentGlyph(icon: String?): String = icon?.lowercase()?.ifBlank { null } ?: "general"
 
 // NOTE: jodi "Type mismatch: required Long, found Int" error ashe,
 // shei line theke `.toInt()` muche dao (Department, DoctorItem, DoctorDetail er id).
 
 fun DepartmentDto.toUi(doctorCount: Int): Department =
-    Department(id, name, doctorCount, departmentGlyph(icon))
+    Department(id, name, doctorCount, departmentGlyph(icon ?: name))
 
 fun DoctorDto.toItem(nextSlot: String?, availableToday: Boolean): DoctorItem =
     DoctorItem(id, name, experienceYears, departmentName, fee.toInt(), nextSlot, availableToday)
