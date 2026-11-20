@@ -67,6 +67,7 @@ private val LinkLight = Color(0xFFC9D8D4)
 fun LoginScreen(
     onLoginSuccess: (AuthResponse) -> Unit,
     onCreateAccount: () -> Unit,
+    onForgotPassword: () -> Unit = {},
     viewModel: LoginViewModel = viewModel()
 ) {
     val context = LocalContext.current
@@ -77,7 +78,7 @@ fun LoginScreen(
     var passwordError by remember { mutableStateOf(false) }
 
     val loading = viewModel.isLoading
-    val errorRes = viewModel.errorRes
+    val errorText = viewModel.errorRes?.let { stringResource(it) }
 
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -85,9 +86,9 @@ fun LoginScreen(
     val checkFieldsMsg = stringResource(R.string.err_check_fields)
 
     // Server error (wrong password, network...) snackbar e dekhao
-    LaunchedEffect(errorRes) {
-        if (errorRes != null) {
-            snackbar.showSnackbar(context.getString(errorRes))
+    LaunchedEffect(errorText) {
+        if (errorText != null) {
+            snackbar.showSnackbar(errorText)
             viewModel.clearError()
         }
     }
@@ -211,7 +212,11 @@ fun LoginScreen(
                 text = stringResource(R.string.forgot_password),
                 color = MediColors.Muted,
                 fontSize = 11.sp,
-                modifier = Modifier.align(Alignment.End)
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .clip(RoundedCornerShape(6.dp))
+                    .clickable { onForgotPassword() }
+                    .padding(horizontal = 4.dp, vertical = 6.dp)
             )
 
             Spacer(Modifier.height(14.dp))
@@ -314,5 +319,5 @@ private fun FieldCard(
 @Preview(showBackground = true, widthDp = 390, heightDp = 844)
 @Composable
 private fun LoginScreenPreview() {
-    LoginScreen(onLoginSuccess = {}, onCreateAccount = {}, viewModel = LoginViewModel())
+    LoginScreen(onLoginSuccess = {}, onCreateAccount = {}, onForgotPassword = {})
 }

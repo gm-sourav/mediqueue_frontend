@@ -40,6 +40,7 @@ import com.mediqueue.app.ui.screens.admin.AdminDepartmentsScreen
 import com.mediqueue.app.ui.screens.admin.AdminDoctor
 import com.mediqueue.app.ui.screens.admin.AdminDoctorsScreen
 import com.mediqueue.app.ui.screens.admin.AdminViewModel
+import com.mediqueue.app.ui.screens.auth.ForgotPasswordScreen
 import com.mediqueue.app.ui.screens.auth.LanguageScreen
 import com.mediqueue.app.ui.screens.auth.LoginScreen
 import com.mediqueue.app.ui.screens.auth.ProfileScreen
@@ -237,7 +238,16 @@ class MainActivity : ComponentActivity() {
                                 avm.reset()
                                 screen = homeFor(auth.role)
                             },
-                            onCreateAccount = { screen = "register" }
+                            onCreateAccount = { screen = "register" },
+                            onForgotPassword = { screen = "forgot_password" }
+                        )
+
+                        "forgot_password" -> ForgotPasswordScreen(
+                            onBackToLogin = { screen = "login" },
+                            onResetDone = {
+                                toast(R.string.fp_success)
+                                screen = "login"
+                            }
                         )
 
                         "register" -> RegisterScreen(

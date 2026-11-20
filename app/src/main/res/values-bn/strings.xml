@@ -285,4 +285,22 @@
     <string name="error_doctor_create">ডাক্তার তৈরি করা যায়নি। ইমেইলটি হয়তো আগেই ব্যবহার হয়েছে।</string>
     <string name="error_department_create">বিভাগ যোগ করা যায়নি। নামটি হয়তো আগেই আছে।</string>
 
+    <!-- Forgot password -->
+    <string name="fp_title">পাসওয়ার্ড রিসেট করুন</string>
+    <string name="fp_subtitle_email">আপনার অ্যাকাউন্টের ইমেইল দিন। আমরা একটি ৬ সংখ্যার কোড পাঠাব।</string>
+    <string name="fp_subtitle_code">ইমেইলে পাওয়া ৬ সংখ্যার কোড দিন এবং নতুন পাসওয়ার্ড বেছে নিন।</string>
+    <string name="fp_sent_to">কোড পাঠানো হয়েছে %1$s এ</string>
+    <string name="fp_send_code">কোড পাঠান</string>
+    <string name="fp_code_sent">ইমেইলটি নিবন্ধিত থাকলে নতুন কোড পাঠানো হয়েছে।</string>
+    <string name="fp_code">যাচাইকরণ কোড</string>
+    <string name="fp_code_hint">৬ সংখ্যার কোড</string>
+    <string name="fp_new_password">নতুন পাসওয়ার্ড</string>
+    <string name="fp_reset_button">পাসওয়ার্ড রিসেট করুন</string>
+    <string name="fp_resend">আবার কোড পাঠান</string>
+    <string name="fp_change_email">অন্য ইমেইল ব্যবহার করুন</string>
+    <string name="fp_back_to_login">সাইন ইনে ফিরে যান</string>
+    <string name="fp_err_code">৬ সংখ্যার কোড দিন</string>
+    <string name="fp_invalid_code">কোডটি ভুল বা মেয়াদোত্তীর্ণ। নতুন কোড চেয়ে নিন।</string>
+    <string name="fp_success">পাসওয়ার্ড পরিবর্তন হয়েছে। অনুগ্রহ করে সাইন ইন করুন।</string>
+
 </resources>
