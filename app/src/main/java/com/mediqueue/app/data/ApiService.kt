@@ -18,6 +18,12 @@ interface ApiService {
     @POST("api/auth/register")
     suspend fun register(@Body body: RegisterRequest): Response<RegisterResponse>
 
+    @POST("api/auth/forgot-password")
+    suspend fun forgotPassword(@Body body: ForgotPasswordRequest): Response<Unit>
+
+    @POST("api/auth/reset-password")
+    suspend fun resetPassword(@Body body: ResetPasswordRequest): Response<Unit>
+
     // ---- Common ----
     @GET("api/departments")
     suspend fun getDepartments(): Response<List<DepartmentDto>>

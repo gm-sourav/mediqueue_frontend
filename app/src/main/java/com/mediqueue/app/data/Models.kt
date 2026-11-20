@@ -20,6 +20,14 @@ data class RegisterRequest(
     val phone: String
 )
 
+data class ForgotPasswordRequest(val email: String)
+
+data class ResetPasswordRequest(
+    val email: String,
+    val code: String,
+    val newPassword: String
+)
+
 // Register er response e token nai
 data class RegisterResponse(
     val id: Long,
