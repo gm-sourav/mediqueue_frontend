@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mediqueue.app.R
 import com.mediqueue.app.data.ApiClient
+import com.mediqueue.app.ui.components.AvatarStore
 import com.mediqueue.app.data.AppointmentDto
 import com.mediqueue.app.data.BookRequest
 import com.mediqueue.app.data.DepartmentDto
@@ -108,7 +109,10 @@ class PatientViewModel : ViewModel() {
             val deps = call { ApiClient.api.getDepartments() }
             val docs = call { ApiClient.api.getDoctors() }
             if (deps != null) departments = deps
-            if (docs != null) allDoctors = docs
+            if (docs != null) {
+                allDoctors = docs
+                AvatarStore.putDoctors(docs)
+            }
         }
     }
 
@@ -142,6 +146,7 @@ class PatientViewModel : ViewModel() {
                 }.awaitAll()
             }
             upcoming = pairs.toMap()
+            AvatarStore.putDoctors(docs)
             deptDoctors = docs
             deptDoctorsFor = departmentId
         }
@@ -196,7 +201,10 @@ class PatientViewModel : ViewModel() {
     // ---------- My appointments ----------
     private suspend fun fetchAppointments() {
         if (allDoctors == null) {
-            call { ApiClient.api.getDoctors() }?.let { allDoctors = it }
+            call { ApiClient.api.getDoctors() }?.let {
+                allDoctors = it
+                AvatarStore.putDoctors(it)
+            }
         }
         val list = call { ApiClient.api.getMyAppointments() }
         if (list != null) appointments = list

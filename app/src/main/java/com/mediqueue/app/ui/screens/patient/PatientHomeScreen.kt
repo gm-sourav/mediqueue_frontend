@@ -41,6 +41,7 @@ import com.mediqueue.app.ui.components.BadgeGreenBg
 import com.mediqueue.app.ui.components.BadgeGreenText
 import com.mediqueue.app.ui.components.DepartmentIcon
 import com.mediqueue.app.ui.components.DoctorAvatar
+import com.mediqueue.app.ui.components.UserAvatar
 import com.mediqueue.app.ui.components.IconKind
 import com.mediqueue.app.ui.components.MediBadge
 import com.mediqueue.app.ui.components.MediIcon
@@ -134,21 +135,11 @@ fun PatientHomeScreen(
                         fontWeight = FontWeight.Bold
                     )
                 }
-                Box(
-                    modifier = Modifier
-                        .size(46.dp)
-                        .clip(CircleShape)
-                        .background(Brush.linearGradient(listOf(MediColors.TealLight, MediColors.TealDark)))
-                        .clickable(onClick = onAvatarClick),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = initialsOf(patientName),
-                        color = Color.White,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+                UserAvatar(
+                    name = patientName,
+                    avatarSize = 46.dp,
+                    modifier = Modifier.clickable(onClick = onAvatarClick)
+                )
             }
 
             // ---------- Hero ----------

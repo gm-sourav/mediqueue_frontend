@@ -14,6 +14,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.Alignment
+import com.mediqueue.app.ui.components.GenderSelector
+import com.mediqueue.app.ui.components.PhotoPickerAvatar
+import com.mediqueue.app.ui.components.avatarRes
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.TextButton
+import com.mediqueue.app.ui.components.AvatarStore
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
@@ -43,6 +56,8 @@ fun AddDoctorScreen(
     departments: List<AdminDepartment>,
     isSubmitting: Boolean,
     onBack: () -> Unit,
+    editing: AdminDoctor? = null,
+    onDelete: () -> Unit = {},
     onCreate: (
         name: String,
         email: String,
@@ -51,22 +66,37 @@ fun AddDoctorScreen(
         departmentId: Long,
         experienceYears: Int?,
         fee: Double?,
-        bio: String
+        bio: String,
+        gender: String,
+        photo: Uri?
     ) -> Unit
 ) {
-    var name by rememberSaveable { mutableStateOf("") }
+    val isEdit = editing != null
+    val key = editing?.id ?: -1L
+    var name by rememberSaveable(key) { mutableStateOf(editing?.name.orEmpty()) }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
-    var phone by rememberSaveable { mutableStateOf("") }
-    var experience by rememberSaveable { mutableStateOf("") }
-    var fee by rememberSaveable { mutableStateOf("") }
-    var bio by rememberSaveable { mutableStateOf("") }
-    var departmentId by rememberSaveable { mutableLongStateOf(-1L) }
+    var phone by rememberSaveable(key) { mutableStateOf(editing?.phone.orEmpty()) }
+    var experience by rememberSaveable(key) {
+        mutableStateOf(editing?.experienceYears?.takeIf { it > 0 }?.toString().orEmpty())
+    }
+    var fee by rememberSaveable(key) {
+        mutableStateOf(editing?.fee?.takeIf { it > 0 }?.toString().orEmpty())
+    }
+    var bio by rememberSaveable(key) { mutableStateOf(editing?.bio.orEmpty()) }
+    var departmentId by rememberSaveable(key) { mutableLongStateOf(editing?.departmentId ?: -1L) }
+    var gender by rememberSaveable(key) { mutableStateOf(editing?.gender.orEmpty()) }
+    var confirmDelete by rememberSaveable { mutableStateOf(false) }
+    var photo by rememberSaveable { mutableStateOf<Uri?>(null) }
     var submitted by rememberSaveable { mutableStateOf(false) }
 
+    val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) photo = uri
+    }
+
     val nameOk = name.isNotBlank()
-    val emailOk = email.trim().let { it.contains("@") && it.substringAfter("@").contains(".") }
-    val passOk = password.length >= 6
+    val emailOk = isEdit || email.trim().let { it.contains("@") && it.substringAfter("@").contains(".") }
+    val passOk = isEdit || password.length >= 6
     val deptOk = departmentId >= 0
 
     val required = stringResource(R.string.err_required)
@@ -88,20 +118,47 @@ fun AddDoctorScreen(
             )
             Spacer(Modifier.height(10.dp))
             Text(
-                stringResource(R.string.admin_add_doctor_title),
+                stringResource(if (isEdit) R.string.admin_edit_doctor_title else R.string.admin_add_doctor_title),
                 color = MediColors.Text,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold
             )
             Spacer(Modifier.height(6.dp))
-            Text(
-                stringResource(R.string.admin_add_doctor_sub),
-                color = MediColors.Muted,
-                fontSize = 12.sp,
-                lineHeight = 18.sp
-            )
+            if (!isEdit) {
+                Text(
+                    stringResource(R.string.admin_add_doctor_sub),
+                    color = MediColors.Muted,
+                    fontSize = 12.sp,
+                    lineHeight = 18.sp
+                )
+            }
 
             Spacer(Modifier.height(18.dp))
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                PhotoPickerAvatar(
+                    name = name.ifBlank { "Dr" },
+                    model = photo ?: editing?.let { AvatarStore.doctor(it.name)?.photoUrl },
+                    fallbackRes = avatarRes(true, gender.ifBlank { null }),
+                    avatarSize = 92.dp,
+                    onClick = {
+                        picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    }
+                )
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    text = stringResource(R.string.admin_doctor_photo_hint),
+                    color = MediColors.Muted,
+                    fontSize = 11.5.sp
+                )
+            }
+            Spacer(Modifier.height(14.dp))
+            MediFieldCard(label = stringResource(R.string.gender_label)) {
+                GenderSelector(selected = gender, onSelect = { gender = it })
+            }
+            Spacer(Modifier.height(12.dp))
             MediFieldCard(
                 label = stringResource(R.string.full_name),
                 error = submitted && !nameOk,
@@ -114,6 +171,14 @@ fun AddDoctorScreen(
                 )
             }
 
+            if (isEdit) {
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    text = editing?.email.orEmpty(),
+                    color = MediColors.Muted,
+                    fontSize = 12.5.sp
+                )
+            } else {
             Spacer(Modifier.height(12.dp))
             MediFieldCard(
                 label = stringResource(R.string.email),
@@ -140,6 +205,8 @@ fun AddDoctorScreen(
                     hint = stringResource(R.string.admin_password_hint),
                     password = true
                 )
+            }
+
             }
 
             Spacer(Modifier.height(12.dp))
@@ -231,7 +298,9 @@ fun AddDoctorScreen(
                             departmentId,
                             experience.toIntOrNull(),
                             fee.toDoubleOrNull(),
-                            bio.trim()
+                            bio.trim(),
+                            gender,
+                            photo
                         )
                     }
                 },
@@ -245,10 +314,50 @@ fun AddDoctorScreen(
                     .fillMaxWidth()
                     .height(52.dp)
             ) {
-                Text(stringResource(R.string.admin_create_doctor), fontSize = 14.sp)
+                Text(
+                    stringResource(if (isEdit) R.string.save_changes else R.string.admin_create_doctor),
+                    fontSize = 14.sp
+                )
+            }
+            if (isEdit) {
+                Spacer(Modifier.height(10.dp))
+                OutlinedButton(
+                    onClick = { confirmDelete = true },
+                    enabled = !isSubmitting,
+                    shape = RoundedCornerShape(16.dp),
+                    border = BorderStroke(1.dp, MediColors.Danger),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MediColors.Danger),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                ) {
+                    Text(stringResource(R.string.delete_doctor), fontSize = 14.sp)
+                }
             }
             Spacer(Modifier.height(16.dp))
         }
+    }
+
+    if (confirmDelete) {
+        AlertDialog(
+            onDismissRequest = { confirmDelete = false },
+            title = { Text(stringResource(R.string.delete_doctor_title)) },
+            text = { Text(stringResource(R.string.delete_doctor_msg, editing?.name.orEmpty())) },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmDelete = false
+                    onDelete()
+                }) {
+                    Text(stringResource(R.string.delete_action), color = MediColors.Danger)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmDelete = false }) {
+                    Text(stringResource(R.string.cancel_action))
+                }
+            },
+            containerColor = MediColors.Card
+        )
     }
 }
 
@@ -262,6 +371,6 @@ private fun AddDoctorPreview() {
         ),
         isSubmitting = false,
         onBack = {},
-        onCreate = { _, _, _, _, _, _, _, _ -> }
+        onCreate = { _, _, _, _, _, _, _, _, _, _ -> }
     )
 }

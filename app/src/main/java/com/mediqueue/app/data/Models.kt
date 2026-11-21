@@ -52,7 +52,8 @@ data class DoctorDto(
     val bio: String?,
     val experienceYears: Int,
     val fee: Double,
-    val photoUrl: String?
+    val photoUrl: String?,
+    val gender: String? = null
 )
 
 data class SlotDto(
@@ -135,7 +136,30 @@ data class CreateDoctorRequest(
     val bio: String?,
     val experienceYears: Int?,
     val fee: Double?,
-    val photoUrl: String? = null
+    val photoUrl: String? = null,
+    val gender: String? = null
+)
+
+data class AdminStatsDto(
+    val doctors: Long,
+    val departments: Long,
+    val patients: Long,
+    val appointmentsTotal: Long,
+    val appointmentsToday: Long,
+    val pendingToday: Long,
+    val confirmedToday: Long,
+    val completedToday: Long,
+    val recent: List<AppointmentDto> = emptyList()
+)
+
+data class UpdateDoctorRequest(
+    val name: String,
+    val phone: String?,
+    val departmentId: Long,
+    val bio: String?,
+    val experienceYears: Int?,
+    val fee: Double?,
+    val gender: String?
 )
 
 data class ProfileDto(
@@ -143,10 +167,13 @@ data class ProfileDto(
     val name: String,
     val email: String,
     val phone: String?,
-    val role: String
+    val role: String,
+    val gender: String? = null,
+    val photoUrl: String? = null
 )
 
 data class UpdateProfileRequest(
     val name: String,
-    val phone: String?
+    val phone: String?,
+    val gender: String? = null
 )

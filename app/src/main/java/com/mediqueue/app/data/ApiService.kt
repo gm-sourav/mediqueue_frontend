@@ -1,10 +1,14 @@
 package com.mediqueue.app.data
 
+import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -30,6 +34,13 @@ interface ApiService {
 
     @PUT("api/me")
     suspend fun updateMe(@Body body: UpdateProfileRequest): Response<ProfileDto>
+
+    @Multipart
+    @POST("api/me/photo")
+    suspend fun uploadMyPhoto(@Part file: MultipartBody.Part): Response<ProfileDto>
+
+    @DELETE("api/me/photo")
+    suspend fun deleteMyPhoto(): Response<ProfileDto>
 
     // ---- Common ----
     @GET("api/departments")
@@ -100,4 +111,17 @@ interface ApiService {
 
     @POST("api/admin/doctors")
     suspend fun createDoctor(@Body body: CreateDoctorRequest): Response<DoctorDto>
+
+    @GET("api/admin/stats")
+    suspend fun getAdminStats(): Response<AdminStatsDto>
+
+    @PUT("api/admin/doctors/{id}")
+    suspend fun updateDoctor(@Path("id") id: Long, @Body body: UpdateDoctorRequest): Response<DoctorDto>
+
+    @DELETE("api/admin/doctors/{id}")
+    suspend fun deleteDoctor(@Path("id") id: Long): Response<Unit>
+
+    @Multipart
+    @POST("api/admin/doctors/{id}/photo")
+    suspend fun uploadDoctorPhoto(@Path("id") id: Long, @Part file: MultipartBody.Part): Response<DoctorDto>
 }

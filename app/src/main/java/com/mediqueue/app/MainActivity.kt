@@ -27,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mediqueue.app.data.ApiClient
 import com.mediqueue.app.data.CreateDoctorRequest
+import com.mediqueue.app.data.UpdateDoctorRequest
 import com.mediqueue.app.ui.components.AdminTab
 import com.mediqueue.app.ui.components.DoctorTab
 import com.mediqueue.app.ui.components.FullScreenError
@@ -157,6 +158,7 @@ class MainActivity : ComponentActivity() {
 
                     var selectedDepartment by rememberSaveable { mutableStateOf("") }
                     var selectedDepartmentId by rememberSaveable { mutableLongStateOf(0L) }
+                    var editingDoctorId by rememberSaveable { mutableLongStateOf(-1L) }
                     // Doctors tab always opens with "All" selected
                     val onPatientTab: (PatientTab) -> Unit = { tab ->
                         if (tab == PatientTab.Doctors && screen != "doctors") {
@@ -194,6 +196,7 @@ class MainActivity : ComponentActivity() {
                             "doctor_detail" -> if (vm.deptDoctors == null) vm.loadDoctors(selectedDepartmentId)
                             "pick_slot" -> vm.loadWeek(selectedDoctorId)
                             "patient_home" -> {
+                                pvm.load()
                                 vm.loadHome()
                                 vm.loadDepartments()
                             }
@@ -207,9 +210,16 @@ class MainActivity : ComponentActivity() {
                                 vm.loadAppointments()
                                 vm.loadPrescriptions()
                             }
-                            "doctor_dashboard" -> dvm.loadAppointments(LocalDate.now(), clear = true)
+                            "doctor_dashboard" -> {
+                                pvm.load()
+                                dvm.loadAppointments(LocalDate.now(), clear = true)
+                            }
                             "queue_control" -> dvm.loadQueue()
-                            "admin_home", "admin_doctors", "admin_departments", "add_doctor" -> avm.load()
+                            "admin_home" -> {
+                                pvm.load()
+                                avm.load()
+                            }
+                            "admin_doctors", "admin_departments", "add_doctor", "edit_doctor" -> avm.load()
                         }
                     }
 
@@ -239,7 +249,7 @@ class MainActivity : ComponentActivity() {
                             "prescriptions" -> "patient_home"
                             "prescription_detail" -> detailBackTo
                             "create_slots", "queue_control", "write_prescription" -> "doctor_dashboard"
-                            "add_doctor" -> "admin_doctors"
+                            "add_doctor", "edit_doctor" -> "admin_doctors"
                             "admin_doctors", "admin_departments" -> "admin_home"
                             "register" -> "login"
                             else -> "login"
@@ -321,8 +331,11 @@ class MainActivity : ComponentActivity() {
                                     errorRes = pvm.errorRes,
                                     onClearError = { pvm.clearError() },
                                     onBack = { screen = "profile" },
-                                    onSave = { n, ph ->
-                                        pvm.save(n, ph) {
+                                    isUploading = pvm.isUploading,
+                                    onPickPhoto = { uri -> pvm.uploadPhoto(applicationContext, uri) },
+                                    onRemovePhoto = { pvm.removePhoto() },
+                                    onSave = { n, ph, g ->
+                                        pvm.save(n, ph, g) {
                                             toast(R.string.pd_saved)
                                             screen = "profile"
                                         }
@@ -342,8 +355,7 @@ class MainActivity : ComponentActivity() {
                             } else {
                                 AdminDashboardScreen(
                                     adminName = ApiClient.session.name,
-                                    departmentCount = deps.size,
-                                    doctorCount = docs.size,
+                                    stats = avm.stats,
                                     onAddDoctor = { screen = "add_doctor" },
                                     onAddDepartment = { screen = "admin_departments" },
                                     onAvatarClick = { screen = "profile" },
@@ -361,11 +373,74 @@ class MainActivity : ComponentActivity() {
                                     doctors = docs.sortedBy { it.name }.map {
                                         AdminDoctor(
                                             it.id, it.name, it.email.orEmpty(),
-                                            it.departmentName, it.experienceYears, it.fee.toInt()
+                                            it.departmentName, it.experienceYears, it.fee.toInt(),
+                                            phone = it.phone.orEmpty(),
+                                            departmentId = it.departmentId,
+                                            bio = it.bio.orEmpty(),
+                                            gender = it.gender.orEmpty()
                                         )
                                     },
                                     onAddDoctor = { screen = "add_doctor" },
+                                    onDoctorClick = { d ->
+                                        editingDoctorId = d.id
+                                        screen = "edit_doctor"
+                                    },
                                     onTabSelected = { screen = adminRouteFor(it) }
+                                )
+                            }
+                        }
+
+                        "edit_doctor" -> {
+                            val deps = avm.departments
+                            val d = avm.doctors?.firstOrNull { it.id == editingDoctorId }
+                            if (deps == null || d == null) {
+                                LoadOrError(avm.errorRes) { reload++ }
+                            } else {
+                                AddDoctorScreen(
+                                    departments = deps.map { AdminDepartment(it.id, it.name, it.icon.orEmpty(), 0) },
+                                    isSubmitting = avm.isSubmitting,
+                                    onBack = { screen = "admin_doctors" },
+                                    editing = AdminDoctor(
+                                        d.id, d.name, d.email.orEmpty(), d.departmentName,
+                                        d.experienceYears, d.fee.toInt(),
+                                        phone = d.phone.orEmpty(),
+                                        departmentId = d.departmentId,
+                                        bio = d.bio.orEmpty(),
+                                        gender = d.gender.orEmpty()
+                                    ),
+                                    onDelete = {
+                                        avm.deleteDoctor(d.id) { ok, err ->
+                                            if (ok) {
+                                                toast(R.string.admin_doctor_deleted)
+                                                screen = "admin_doctors"
+                                            } else {
+                                                toast(err)
+                                            }
+                                        }
+                                    },
+                                    onCreate = { name, _, _, phone, deptId, experience, fee, bio, gender, photo ->
+                                        avm.updateDoctor(
+                                            d.id,
+                                            UpdateDoctorRequest(
+                                                name = name,
+                                                phone = phone.filter { c -> c.isDigit() || c == '+' }.ifBlank { null },
+                                                departmentId = deptId,
+                                                bio = bio.ifBlank { null },
+                                                experienceYears = experience,
+                                                fee = fee,
+                                                gender = gender
+                                            ),
+                                            photoUri = photo,
+                                            context = applicationContext
+                                        ) { ok, err ->
+                                            if (ok) {
+                                                toast(R.string.admin_doctor_updated)
+                                                screen = "admin_doctors"
+                                            } else {
+                                                toast(err)
+                                            }
+                                        }
+                                    }
                                 )
                             }
                         }
@@ -379,7 +454,7 @@ class MainActivity : ComponentActivity() {
                                     departments = deps.map { AdminDepartment(it.id, it.name, it.icon.orEmpty(), 0) },
                                     isSubmitting = avm.isSubmitting,
                                     onBack = { screen = "admin_doctors" },
-                                    onCreate = { name, email, password, phone, deptId, experience, fee, bio ->
+                                    onCreate = { name, email, password, phone, deptId, experience, fee, bio, gender, photo ->
                                         avm.createDoctor(
                                             CreateDoctorRequest(
                                                 name = name,
@@ -389,8 +464,11 @@ class MainActivity : ComponentActivity() {
                                                 departmentId = deptId,
                                                 bio = bio.ifBlank { null },
                                                 experienceYears = experience,
-                                                fee = fee
-                                            )
+                                                fee = fee,
+                                                gender = gender.ifBlank { null }
+                                            ),
+                                            photoUri = photo,
+                                            context = applicationContext
                                         ) { ok, err ->
                                             if (ok) {
                                                 Toast.makeText(

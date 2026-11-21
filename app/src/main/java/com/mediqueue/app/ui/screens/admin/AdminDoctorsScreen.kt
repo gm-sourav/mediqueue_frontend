@@ -3,6 +3,9 @@ package com.mediqueue.app.ui.screens.admin
 import com.mediqueue.app.ui.components.DoctorAvatar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import com.mediqueue.app.ui.components.IconKind
+import com.mediqueue.app.ui.components.MediIcon
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,13 +47,18 @@ data class AdminDoctor(
     val email: String,
     val department: String,
     val experienceYears: Int,
-    val fee: Int
+    val fee: Int,
+    val phone: String = "",
+    val departmentId: Long = -1L,
+    val bio: String = "",
+    val gender: String = ""
 )
 
 @Composable
 fun AdminDoctorsScreen(
     doctors: List<AdminDoctor>,
     onAddDoctor: () -> Unit,
+    onDoctorClick: (AdminDoctor) -> Unit = {},
     onTabSelected: (AdminTab) -> Unit
 ) {
     Scaffold(
@@ -107,7 +115,7 @@ fun AdminDoctorsScreen(
                 )
             }
             doctors.forEach { d ->
-                DoctorRow(d)
+                DoctorRow(d) { onDoctorClick(d) }
                 Spacer(Modifier.height(12.dp))
             }
         }
@@ -115,7 +123,7 @@ fun AdminDoctorsScreen(
 }
 
 @Composable
-private fun DoctorRow(d: AdminDoctor) {
+private fun DoctorRow(d: AdminDoctor, onClick: () -> Unit) {
     val shape = RoundedCornerShape(16.dp)
     Row(
         modifier = Modifier
@@ -123,6 +131,7 @@ private fun DoctorRow(d: AdminDoctor) {
             .clip(shape)
             .background(MediColors.Card)
             .border(1.dp, MediColors.Border, shape)
+            .clickable(onClick = onClick)
             .padding(14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -159,6 +168,8 @@ private fun DoctorRow(d: AdminDoctor) {
             fontSize = 13.sp,
             fontWeight = FontWeight.Bold
         )
+        Spacer(Modifier.width(6.dp))
+        MediIcon(IconKind.ChevronRight, tint = MediColors.Muted, iconSize = 18.dp)
     }
 }
 

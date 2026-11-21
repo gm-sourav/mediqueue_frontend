@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mediqueue.app.R
 import com.mediqueue.app.ui.components.DoctorAvatar
+import com.mediqueue.app.ui.components.UserAvatar
 import com.mediqueue.app.ui.components.IconKind
 import com.mediqueue.app.ui.components.MediIcon
 import com.mediqueue.app.ui.theme.MediColors
@@ -96,20 +97,7 @@ fun ProfileScreen(
             if (role.uppercase() == "DOCTOR") {
                 DoctorAvatar(name = name, avatarSize = 92.dp, corner = 46.dp)
             } else {
-                Box(
-                    modifier = Modifier
-                        .size(92.dp)
-                        .clip(CircleShape)
-                        .background(Brush.linearGradient(listOf(MediColors.TealLight, MediColors.TealDark))),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = initialsOf(name),
-                        color = Color.White,
-                        fontSize = 30.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+                UserAvatar(name = name, avatarSize = 92.dp)
             }
 
             Spacer(Modifier.height(14.dp))

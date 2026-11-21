@@ -19,6 +19,12 @@ object ApiClient {
                 android.os.Build.HARDWARE.contains("goldfish") ||
                 android.os.Build.PRODUCT.contains("sdk")
 
+    /** Server sends "/uploads/x.jpg". Make it a full URL for Coil. */
+    fun absoluteUrl(path: String?): String? {
+        if (path.isNullOrBlank()) return null
+        return if (path.startsWith("http")) path else BASE_URL.trimEnd('/') + path
+    }
+
     lateinit var session: SessionManager
         private set
 
