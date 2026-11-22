@@ -368,4 +368,12 @@
     <string name="admin_stat_appointments">অ্যাপয়েন্টমেন্ট</string>
     <string name="admin_recent">সাম্প্রতিক অ্যাপয়েন্টমেন্ট</string>
     <string name="admin_no_recent">এখনও কোনো অ্যাপয়েন্টমেন্ট নেই।</string>
+    <string name="greet_morning">শুভ সকাল</string>
+    <string name="greet_afternoon">শুভ অপরাহ্ন</string>
+    <string name="greet_evening">শুভ সন্ধ্যা</string>
+    <string name="doc_schedule_for">সময়সূচি · %1$s</string>
+    <string name="doc_next_patient">পরের রোগী</string>
+    <string name="doc_no_next">কোনো রোগী অপেক্ষায় নেই</string>
+    <string name="doc_open_rx">প্রেসক্রিপশন</string>
+    <string name="doc_up_next">এরপর</string>
 </resources>

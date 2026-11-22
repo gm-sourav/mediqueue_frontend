@@ -376,4 +376,12 @@
     <string name="admin_stat_appointments">Appointments</string>
     <string name="admin_recent">Recent appointments</string>
     <string name="admin_no_recent">No appointments yet.</string>
+    <string name="greet_morning">Good morning</string>
+    <string name="greet_afternoon">Good afternoon</string>
+    <string name="greet_evening">Good evening</string>
+    <string name="doc_schedule_for">Schedule · %1$s</string>
+    <string name="doc_next_patient">NEXT PATIENT</string>
+    <string name="doc_no_next">No patients waiting</string>
+    <string name="doc_open_rx">Prescription</string>
+    <string name="doc_up_next">Up next</string>
 </resources>

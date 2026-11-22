@@ -12,6 +12,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.graphics.Brush
+import com.mediqueue.app.ui.components.IconKind
+import com.mediqueue.app.ui.components.MediIcon
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -79,93 +84,125 @@ fun QueueControlScreen(
             modifier = Modifier
                 .padding(pad)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp, vertical = 16.dp)
+                .padding(horizontal = 20.dp, vertical = 20.dp)
         ) {
-            // Top row
+            // ---------- Header ----------
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(MediColors.Pill)
-                        .padding(horizontal = 14.dp, vertical = 11.dp)
-                ) {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         stringResource(R.string.queue_control_badge),
-                        color = MediColors.Teal,
+                        color = MediColors.Muted,
                         fontSize = 11.sp,
-                        fontWeight = FontWeight.Medium,
-                        letterSpacing = 0.5.sp
+                        letterSpacing = 0.6.sp
+                    )
+                    Spacer(Modifier.height(6.dp))
+                    Text(
+                        stringResource(R.string.todays_queue),
+                        color = MediColors.Text,
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = info.department + " · " + dateText,
+                        color = MediColors.Muted,
+                        fontSize = 12.sp
                     )
                 }
-                Box(
+                Row(
                     modifier = Modifier
                         .clip(RoundedCornerShape(20.dp))
                         .background(QcLiveBg)
-                        .padding(horizontal = 12.dp, vertical = 10.dp)
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Box(
+                        Modifier
+                            .size(7.dp)
+                            .clip(CircleShape)
+                            .background(QcLiveText)
+                    )
+                    Spacer(Modifier.width(6.dp))
                     Text(
                         stringResource(R.string.live_status),
                         color = QcLiveText,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Medium
+                        fontSize = 11.5.sp,
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
             }
 
+            // ---------- Now serving ----------
             Spacer(Modifier.height(18.dp))
-            Text(
-                stringResource(R.string.todays_queue),
-                color = MediColors.Text,
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(Modifier.height(10.dp))
-            Text(
-                text = info.department + " · " + dateText,
-                color = MediColors.Muted,
-                fontSize = 12.sp
-            )
-
-            // Now serving
-            Spacer(Modifier.height(16.dp))
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(MediColors.Teal)
-                    .padding(vertical = 22.dp),
+                    .clip(RoundedCornerShape(26.dp))
+                    .background(
+                        Brush.linearGradient(
+                            listOf(Color(0xFF12B5AC), Color(0xFF0A8A83), Color(0xFF066B6B))
+                        )
+                    )
+                    .padding(vertical = 26.dp, horizontal = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
                     stringResource(R.string.now_serving),
-                    color = MediColors.OnTeal,
-                    fontSize = 11.sp,
-                    letterSpacing = 0.6.sp
+                    color = Color.White.copy(alpha = 0.85f),
+                    fontSize = 11.5.sp,
+                    letterSpacing = 1.sp
                 )
-                Spacer(Modifier.height(2.dp))
-                Text(
-                    text = if (info.nowServingToken != null) "#" + localizedNumber(info.nowServingToken) else "—",
-                    color = MediColors.OnTeal,
-                    fontSize = 40.sp,
-                    fontWeight = FontWeight.Medium
-                )
+                Spacer(Modifier.height(12.dp))
+                Box(
+                    modifier = Modifier
+                        .size(112.dp)
+                        .clip(CircleShape)
+                        .background(Color.White.copy(alpha = 0.16f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(92.dp)
+                            .clip(CircleShape)
+                            .background(Color.White),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = if (info.nowServingToken != null) "#" + localizedNumber(info.nowServingToken) else "—",
+                            color = MediColors.TealDark,
+                            fontSize = 30.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
                 if (info.nowServingName != null) {
+                    Spacer(Modifier.height(14.dp))
                     Text(
-                        text = info.nowServingName + " · " + (info.nowServingTime ?: ""),
-                        color = MediColors.OnTeal,
-                        fontSize = 12.sp
+                        text = info.nowServingName,
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
                     )
+                    if (info.nowServingTime != null) {
+                        Spacer(Modifier.height(2.dp))
+                        Text(
+                            text = info.nowServingTime,
+                            color = Color.White.copy(alpha = 0.85f),
+                            fontSize = 12.sp
+                        )
+                    }
                 }
             }
 
-            // Stats
+            // ---------- Stats ----------
             Spacer(Modifier.height(14.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 QcStat(
+                    icon = IconKind.Users,
                     label = stringResource(R.string.waiting_label),
                     value = resources.getQuantityString(
                         R.plurals.patients_count, info.waiting.size, localizedNumber(info.waiting.size)
@@ -173,18 +210,19 @@ fun QueueControlScreen(
                     modifier = Modifier.weight(1f)
                 )
                 QcStat(
+                    icon = IconKind.Clock,
                     label = stringResource(R.string.next_token),
                     value = if (next != null) "#" + localizedNumber(next.token) else "—",
                     modifier = Modifier.weight(1f)
                 )
             }
 
-            // Call next
+            // ---------- Call next ----------
             Spacer(Modifier.height(14.dp))
             Button(
                 onClick = onCallNext,
                 enabled = next != null && !isCalling,
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(18.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MediColors.Teal,
                     contentColor = MediColors.OnTeal,
@@ -193,7 +231,7 @@ fun QueueControlScreen(
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(52.dp)
+                    .height(56.dp)
             ) {
                 if (isCalling) {
                     CircularProgressIndicator(
@@ -202,18 +240,23 @@ fun QueueControlScreen(
                         color = MediColors.OnTeal
                     )
                 } else {
-                    Text(stringResource(R.string.call_next), fontSize = 14.sp)
+                    Text(
+                        stringResource(R.string.call_next),
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
             }
 
-            // Waiting next
-            Spacer(Modifier.height(18.dp))
+            // ---------- Waiting list ----------
+            Spacer(Modifier.height(22.dp))
             Text(
                 stringResource(R.string.waiting_next),
                 color = MediColors.Text,
-                fontSize = 13.sp,
+                fontSize = 15.sp,
                 fontWeight = FontWeight.Bold
             )
+            Spacer(Modifier.height(12.dp))
             if (info.waiting.isEmpty()) {
                 Text(
                     stringResource(R.string.nobody_waiting),
@@ -222,33 +265,12 @@ fun QueueControlScreen(
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 24.dp)
+                        .padding(top = 12.dp)
                 )
             }
             info.waiting.forEachIndexed { index, e ->
-                if (index > 0) {
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .height(1.dp)
-                            .background(MediColors.Border)
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "#" + localizedNumber(e.token) + " · " + e.patientName,
-                        color = MediColors.Text,
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(e.time, color = MediColors.Muted, fontSize = 13.sp)
-                }
+                if (index > 0) Spacer(Modifier.height(10.dp))
+                WaitingRow(e, isNext = index == 0)
             }
             Spacer(Modifier.height(8.dp))
         }
@@ -256,18 +278,84 @@ fun QueueControlScreen(
 }
 
 @Composable
-private fun QcStat(label: String, value: String, modifier: Modifier = Modifier) {
-    val shape = RoundedCornerShape(14.dp)
-    Column(
+private fun WaitingRow(e: QueueEntry, isNext: Boolean) {
+    val shape = RoundedCornerShape(16.dp)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .background(MediColors.Card)
+            .border(1.dp, if (isNext) MediColors.Teal else MediColors.Border, shape)
+            .padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(46.dp)
+                .clip(RoundedCornerShape(14.dp))
+                .background(if (isNext) MediColors.Teal else MediColors.Pill),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                "#" + localizedNumber(e.token),
+                color = if (isNext) Color.White else MediColors.TealDark,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+        Spacer(Modifier.width(12.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                e.patientName,
+                color = MediColors.Text,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1
+            )
+            Spacer(Modifier.height(2.dp))
+            Text(e.time, color = MediColors.Muted, fontSize = 12.sp)
+        }
+        if (isNext) {
+            Text(
+                stringResource(R.string.doc_up_next),
+                color = MediColors.TealDark,
+                fontSize = 11.sp,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(MediColors.Pill)
+                    .padding(horizontal = 10.dp, vertical = 5.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun QcStat(icon: IconKind, label: String, value: String, modifier: Modifier = Modifier) {
+    val shape = RoundedCornerShape(18.dp)
+    Row(
         modifier = modifier
             .clip(shape)
             .background(MediColors.Card)
             .border(1.dp, MediColors.Border, shape)
-            .padding(14.dp)
+            .padding(14.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(label, color = MediColors.Muted, fontSize = 11.sp, letterSpacing = 0.5.sp)
-        Spacer(Modifier.height(10.dp))
-        Text(value, color = MediColors.Text, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        Box(
+            modifier = Modifier
+                .size(38.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(MediColors.Pill),
+            contentAlignment = Alignment.Center
+        ) {
+            MediIcon(icon, tint = MediColors.Teal, iconSize = 20.dp)
+        }
+        Spacer(Modifier.width(10.dp))
+        Column {
+            Text(label, color = MediColors.Muted, fontSize = 10.5.sp, letterSpacing = 0.4.sp, maxLines = 1)
+            Spacer(Modifier.height(2.dp))
+            Text(value, color = MediColors.Text, fontSize = 15.sp, fontWeight = FontWeight.Bold, maxLines = 1)
+        }
     }
 }
 
