@@ -23,6 +23,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -67,12 +69,16 @@ data class AppointmentItem(
     val fee: Int
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyAppointmentsScreen(
     appointments: List<AppointmentItem>,
     onCancel: (AppointmentItem) -> Unit,
     onDetailsClick: (AppointmentItem) -> Unit,
-    onTabSelected: (PatientTab) -> Unit
+    onTabSelected: (PatientTab) -> Unit,
+    isRefreshing: Boolean = false,
+    onRefresh: () -> Unit = {},
+    onBookClick: () -> Unit = {}
 ) {
     var showPast by rememberSaveable { mutableStateOf(false) }
 
@@ -124,27 +130,85 @@ fun MyAppointmentsScreen(
             }
 
             Spacer(Modifier.height(16.dp))
-            if (shown.isEmpty()) {
-                Text(
-                    text = stringResource(if (showPast) R.string.no_past else R.string.no_upcoming),
-                    color = MediColors.Muted,
-                    fontSize = 13.sp,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 40.dp)
-                )
-            } else {
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                    items(shown, key = { it.id }) { item ->
-                        AppointmentCard(
-                            item = item,
-                            onCancel = { onCancel(item) },
-                            onDetails = { onDetailsClick(item) }
-                        )
+            PullToRefreshBox(
+                isRefreshing = isRefreshing,
+                onRefresh = onRefresh,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                if (shown.isEmpty()) {
+                    // scrollable so pull-to-refresh also works on the empty state
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        item {
+                            EmptyAppointments(showPast = showPast, onBookClick = onBookClick)
+                        }
                     }
-                    item { Spacer(Modifier.height(8.dp)) }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(14.dp)
+                    ) {
+                        items(shown, key = { it.id }) { item ->
+                            AppointmentCard(
+                                item = item,
+                                onCancel = { onCancel(item) },
+                                onDetails = { onDetailsClick(item) }
+                            )
+                        }
+                        item { Spacer(Modifier.height(8.dp)) }
+                    }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun EmptyAppointments(showPast: Boolean, onBookClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 48.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .size(72.dp)
+                .clip(RoundedCornerShape(22.dp))
+                .background(IconBoxBg),
+            contentAlignment = Alignment.Center
+        ) {
+            MediIcon(IconKind.Calendar, tint = MediColors.Teal, iconSize = 34.dp)
+        }
+        Spacer(Modifier.height(16.dp))
+        Text(
+            text = stringResource(if (showPast) R.string.no_past else R.string.no_upcoming),
+            color = MediColors.Text,
+            fontSize = 15.sp,
+            fontWeight = FontWeight.SemiBold,
+            textAlign = TextAlign.Center
+        )
+        if (!showPast) {
+            Spacer(Modifier.height(6.dp))
+            Text(
+                text = stringResource(R.string.empty_appts_hint),
+                color = MediColors.Muted,
+                fontSize = 13.sp,
+                textAlign = TextAlign.Center
+            )
+            Spacer(Modifier.height(18.dp))
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(MediColors.Teal)
+                    .clickable(onClick = onBookClick)
+                    .padding(horizontal = 22.dp, vertical = 13.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.book_now),
+                    color = MediColors.OnTeal,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
             }
         }
     }

@@ -169,11 +169,15 @@ data class ProfileDto(
     val phone: String?,
     val role: String,
     val gender: String? = null,
-    val photoUrl: String? = null
+    val photoUrl: String? = null,
+    val bloodGroup: String? = null,
+    val dateOfBirth: String? = null   // yyyy-MM-dd
 )
 
 data class UpdateProfileRequest(
     val name: String,
     val phone: String?,
-    val gender: String? = null
+    val gender: String? = null,
+    val bloodGroup: String? = null,
+    val dateOfBirth: String? = null
 )

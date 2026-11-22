@@ -47,6 +47,9 @@ class PatientViewModel : ViewModel() {
     var errorRes by mutableStateOf<Int?>(null)
         private set
     var unauthorized by mutableStateOf(false)
+    /** true while a pull-to-refresh is running */
+    var refreshing by mutableStateOf(false)
+        private set
 
     private var deptDoctorsFor = -1L
 
@@ -90,6 +93,7 @@ class PatientViewModel : ViewModel() {
         prescriptions = null
         queue = null
         isBooking = false
+        refreshing = false
         errorRes = null
         unauthorized = false
     }
@@ -118,12 +122,30 @@ class PatientViewModel : ViewModel() {
 
     // ---------- Doctors of a department (+ next slots, 3 din) ----------
     fun loadDoctors(departmentId: Long) {
+        viewModelScope.launch { doLoadDoctors(departmentId) }
+    }
+
+    /** Pull-to-refresh on the doctors list */
+    fun refreshDoctors(departmentId: Long) {
+        if (refreshing) return
         viewModelScope.launch {
+            refreshing = true
+            try {
+                doLoadDoctors(departmentId)
+            } finally {
+                refreshing = false
+            }
+        }
+    }
+
+    private suspend fun doLoadDoctors(departmentId: Long) {
+        run {
             errorRes = null
             // departmentId 0 = all doctors. Old list stays visible while the new one loads.
             val docs = call {
                 ApiClient.api.getDoctors(departmentId = departmentId.takeIf { it > 0 })
-            } ?: return@launch
+            } ?: return
+
 
             val today = LocalDate.now()
             val now = LocalTime.now()
@@ -254,6 +276,21 @@ class PatientViewModel : ViewModel() {
         viewModelScope.launch {
             errorRes = null
             fetchAppointments()
+        }
+    }
+
+    /** Pull-to-refresh: appointments + prescriptions (+ queue for Home) */
+    fun refreshAll() {
+        if (refreshing) return
+        viewModelScope.launch {
+            refreshing = true
+            try {
+                fetchAppointments()
+                fetchQueue()
+                call { ApiClient.api.getMyPrescriptions() }?.let { prescriptions = it }
+            } finally {
+                refreshing = false
+            }
         }
     }
 

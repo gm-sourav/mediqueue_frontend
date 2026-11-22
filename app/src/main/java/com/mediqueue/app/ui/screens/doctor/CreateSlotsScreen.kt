@@ -14,14 +14,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.graphics.Brush
+import com.mediqueue.app.ui.components.IconKind
+import com.mediqueue.app.ui.components.MediIcon
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
@@ -58,8 +62,6 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DecimalStyle
 
-private val SlotsPillBg = Color(0xFFE2F4F3)
-private val SlotsPreviewBg = Color(0xFFEAF5F4)
 private val lengthOptions = listOf(15, 20, 30, 45, 60)
 
 @Composable
@@ -77,7 +79,6 @@ fun CreateSlotsScreen(
     var startMin by rememberSaveable { mutableIntStateOf(9 * 60) }
     var endMin by rememberSaveable { mutableIntStateOf(12 * 60) }
     var lengthMin by rememberSaveable { mutableIntStateOf(30) }
-    var lengthMenu by remember { mutableStateOf(false) }
 
     val date = LocalDate.ofEpochDay(epochDay)
 
@@ -133,55 +134,88 @@ fun CreateSlotsScreen(
             modifier = Modifier
                 .padding(pad)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp, vertical = 16.dp)
+                .padding(horizontal = 20.dp, vertical = 20.dp)
         ) {
-            // Availability pill
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(SlotsPillBg)
-                    .padding(horizontal = 14.dp, vertical = 13.dp)
-            ) {
-                Text(
-                    stringResource(R.string.availability_label),
-                    color = MediColors.Teal,
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Medium
-                )
-            }
-
-            Spacer(Modifier.height(18.dp))
+            // ---------- Header ----------
+            Text(
+                stringResource(R.string.availability_label).uppercase(locale),
+                color = MediColors.Muted,
+                fontSize = 11.sp,
+                letterSpacing = 0.6.sp
+            )
+            Spacer(Modifier.height(6.dp))
             Text(
                 stringResource(R.string.create_slots_title),
                 color = MediColors.Text,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold
             )
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(6.dp))
             Text(
                 stringResource(R.string.create_slots_subtitle),
                 color = MediColors.Muted,
                 fontSize = 13.sp
             )
 
-            Spacer(Modifier.height(16.dp))
-            PickerField(
-                label = stringResource(R.string.field_date),
-                value = date.format(fmt("EEEE, MMMM d, yyyy")),
-                modifier = Modifier.fillMaxWidth(),
-                onClick = { pickDate() }
+            // ---------- Date ----------
+            Spacer(Modifier.height(20.dp))
+            SectionLabel(stringResource(R.string.field_date))
+            Spacer(Modifier.height(10.dp))
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                val days = List(7) { today.plusDays(it.toLong()) }
+                days.forEach { d ->
+                    DayChip(
+                        weekday = d.format(fmt("EEE")),
+                        dayNumber = d.format(fmt("d")),
+                        selected = d == date
+                    ) { epochDay = d.toEpochDay() }
+                }
+                // Any other day
+                val customSelected = date !in days
+                Column(
+                    modifier = Modifier
+                        .width(58.dp)
+                        .clip(RoundedCornerShape(18.dp))
+                        .background(if (customSelected) MediColors.Teal else MediColors.Pill)
+                        .clickable { pickDate() }
+                        .padding(vertical = 12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    MediIcon(
+                        IconKind.Calendar,
+                        tint = if (customSelected) Color.White else MediColors.Teal,
+                        iconSize = 22.dp
+                    )
+                    Spacer(Modifier.height(6.dp))
+                    Text(
+                        text = if (customSelected) date.format(fmt("d MMM")) else stringResource(R.string.pick_date),
+                        color = if (customSelected) Color.White else MediColors.Teal,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Medium,
+                        maxLines = 1
+                    )
+                }
+            }
+            Spacer(Modifier.height(8.dp))
+            Text(
+                date.format(fmt("EEEE, MMMM d, yyyy")),
+                color = MediColors.Muted,
+                fontSize = 12.sp
             )
 
-            Spacer(Modifier.height(10.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                PickerField(
+            // ---------- Time window ----------
+            Spacer(Modifier.height(20.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                TimeCard(
                     label = stringResource(R.string.start_time),
                     value = LocalTime.of(startMin / 60, startMin % 60).format(fmt("hh:mm a")),
                     modifier = Modifier.weight(1f),
                     onClick = { pickTime(startMin) { startMin = it } }
                 )
-                PickerField(
+                TimeCard(
                     label = stringResource(R.string.end_time),
                     value = LocalTime.of(endMin / 60, endMin % 60).format(fmt("hh:mm a")),
                     modifier = Modifier.weight(1f),
@@ -189,44 +223,44 @@ fun CreateSlotsScreen(
                 )
             }
 
+            // ---------- Slot length ----------
+            Spacer(Modifier.height(20.dp))
+            SectionLabel(stringResource(R.string.slot_length))
             Spacer(Modifier.height(10.dp))
-            Box {
-                PickerField(
-                    label = stringResource(R.string.slot_length),
-                    value = stringResource(R.string.minutes_format, localizedNumber(lengthMin)),
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = { lengthMenu = true }
-                )
-                DropdownMenu(
-                    expanded = lengthMenu,
-                    onDismissRequest = { lengthMenu = false },
-                    containerColor = MediColors.Card
-                ) {
-                    lengthOptions.forEach { len ->
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    stringResource(R.string.minutes_format, localizedNumber(len)),
-                                    color = if (len == lengthMin) MediColors.Teal else MediColors.Text,
-                                    fontSize = 13.sp
-                                )
-                            },
-                            onClick = {
-                                lengthMin = len
-                                lengthMenu = false
-                            }
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                lengthOptions.forEach { len ->
+                    val on = len == lengthMin
+                    val shape = RoundedCornerShape(50)
+                    Box(
+                        modifier = Modifier
+                            .clip(shape)
+                            .background(if (on) MediColors.Teal else MediColors.Card)
+                            .border(1.dp, if (on) MediColors.Teal else MediColors.Border, shape)
+                            .clickable { lengthMin = len }
+                            .padding(horizontal = 16.dp, vertical = 10.dp)
+                    ) {
+                        Text(
+                            stringResource(R.string.minutes_format, localizedNumber(len)),
+                            color = if (on) Color.White else MediColors.Text,
+                            fontSize = 12.5.sp,
+                            fontWeight = if (on) FontWeight.SemiBold else FontWeight.Normal
                         )
                     }
                 }
             }
 
-            // Preview
-            Spacer(Modifier.height(14.dp))
+            // ---------- Preview ----------
+            Spacer(Modifier.height(22.dp))
+            val cardShape = RoundedCornerShape(20.dp)
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(SlotsPreviewBg)
+                    .clip(cardShape)
+                    .background(MediColors.Card)
+                    .border(1.dp, MediColors.Border, cardShape)
                     .padding(16.dp)
             ) {
                 Row(
@@ -237,35 +271,47 @@ fun CreateSlotsScreen(
                     Text(
                         stringResource(R.string.preview_label),
                         color = MediColors.Text,
-                        fontSize = 13.sp,
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
                         resources.getQuantityString(R.plurals.slots_count, slots.size, localizedNumber(slots.size)),
-                        color = MediColors.Muted,
-                        fontSize = 13.sp
+                        color = MediColors.Teal,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(MediColors.Pill)
+                            .padding(horizontal = 12.dp, vertical = 5.dp)
                     )
                 }
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(14.dp))
+                if (slots.isEmpty()) {
+                    Text(invalidMsg, color = MediColors.Danger, fontSize = 12.5.sp)
+                }
                 slots.chunked(3).forEachIndexed { rowIndex, rowSlots ->
-                    if (rowIndex > 0) Spacer(Modifier.height(14.dp))
-                    Row(modifier = Modifier.fillMaxWidth()) {
+                    if (rowIndex > 0) Spacer(Modifier.height(10.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
                         for (i in 0 until 3) {
                             val t = rowSlots.getOrNull(i)
                             Box(
-                                modifier = Modifier.weight(1f),
-                                contentAlignment = when (i) {
-                                    0 -> Alignment.CenterStart
-                                    1 -> Alignment.Center
-                                    else -> Alignment.CenterEnd
-                                }
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(if (t != null) MediColors.Pill else Color.Transparent)
+                                    .padding(vertical = 10.dp),
+                                contentAlignment = Alignment.Center
                             ) {
                                 if (t != null) {
                                     Text(
-                                        t.format(fmt("h:mm")),
-                                        color = MediColors.Text,
-                                        fontSize = 13.sp,
-                                        fontWeight = FontWeight.Bold
+                                        t.format(fmt("h:mm a")),
+                                        color = MediColors.TealDark,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        maxLines = 1
                                     )
                                 }
                             }
@@ -274,8 +320,8 @@ fun CreateSlotsScreen(
                 }
             }
 
-            // Create
-            Spacer(Modifier.height(16.dp))
+            // ---------- Create ----------
+            Spacer(Modifier.height(18.dp))
             Button(
                 onClick = {
                     if (slots.isEmpty()) {
@@ -291,7 +337,7 @@ fun CreateSlotsScreen(
                     }
                 },
                 enabled = !isSubmitting,
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(18.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MediColors.Teal,
                     contentColor = MediColors.OnTeal,
@@ -300,7 +346,7 @@ fun CreateSlotsScreen(
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(52.dp)
+                    .height(56.dp)
             ) {
                 if (isSubmitting) {
                     CircularProgressIndicator(
@@ -313,7 +359,8 @@ fun CreateSlotsScreen(
                         text = resources.getQuantityString(
                             R.plurals.create_slots_button, slots.size, localizedNumber(slots.size)
                         ),
-                        fontSize = 14.sp,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
                         textAlign = TextAlign.Center
                     )
                 }
@@ -324,24 +371,65 @@ fun CreateSlotsScreen(
 }
 
 @Composable
-private fun PickerField(
-    label: String,
-    value: String,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
-    val shape = RoundedCornerShape(15.dp)
+private fun SectionLabel(text: String) {
+    Text(text, color = MediColors.Text, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+}
+
+@Composable
+private fun DayChip(weekday: String, dayNumber: String, selected: Boolean, onClick: () -> Unit) {
+    val shape = RoundedCornerShape(18.dp)
     Column(
+        modifier = Modifier
+            .width(58.dp)
+            .clip(shape)
+            .background(if (selected) MediColors.Teal else MediColors.Card)
+            .border(1.dp, if (selected) MediColors.Teal else MediColors.Border, shape)
+            .clickable(onClick = onClick)
+            .padding(vertical = 12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            weekday,
+            color = if (selected) Color.White.copy(alpha = 0.9f) else MediColors.Muted,
+            fontSize = 11.sp
+        )
+        Spacer(Modifier.height(4.dp))
+        Text(
+            dayNumber,
+            color = if (selected) Color.White else MediColors.Text,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+private fun TimeCard(label: String, value: String, modifier: Modifier, onClick: () -> Unit) {
+    val shape = RoundedCornerShape(18.dp)
+    Row(
         modifier = modifier
             .clip(shape)
             .background(MediColors.Card)
             .border(1.dp, MediColors.Border, shape)
             .clickable(onClick = onClick)
-            .padding(start = 14.dp, end = 14.dp, top = 15.dp, bottom = 16.dp)
+            .padding(14.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(label, color = MediColors.Text, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-        Spacer(Modifier.height(14.dp))
-        Text(value, color = MediColors.Muted, fontSize = 13.sp, fontWeight = FontWeight.Medium)
+        Box(
+            modifier = Modifier
+                .size(38.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(MediColors.Pill),
+            contentAlignment = Alignment.Center
+        ) {
+            MediIcon(IconKind.Clock, tint = MediColors.Teal, iconSize = 20.dp)
+        }
+        Spacer(Modifier.width(10.dp))
+        Column {
+            Text(label, color = MediColors.Muted, fontSize = 11.sp)
+            Spacer(Modifier.height(2.dp))
+            Text(value, color = MediColors.Text, fontSize = 14.sp, fontWeight = FontWeight.Bold, maxLines = 1)
+        }
     }
 }
 

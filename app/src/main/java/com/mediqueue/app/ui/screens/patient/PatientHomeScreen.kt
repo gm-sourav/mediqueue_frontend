@@ -22,6 +22,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -74,6 +76,7 @@ data class NextAppointment(
     val status: String
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PatientHomeScreen(
     patientName: String,
@@ -85,7 +88,9 @@ fun PatientHomeScreen(
     onTabSelected: (PatientTab) -> Unit,
     onPrescriptionsClick: () -> Unit = {},
     departments: List<Department> = emptyList(),
-    onDepartmentClick: (Department) -> Unit = {}
+    onDepartmentClick: (Department) -> Unit = {},
+    isRefreshing: Boolean = false,
+    onRefresh: () -> Unit = {}
 ) {
     val locale = LocalConfiguration.current.locales[0]
     val dateText = remember(locale) {
@@ -106,9 +111,14 @@ fun PatientHomeScreen(
             .fillMaxSize()
             .background(MediColors.Bg)
     ) {
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = onRefresh,
+            modifier = Modifier.weight(1f)
+        ) {
         Column(
             modifier = Modifier
-                .weight(1f)
+                .fillMaxSize()
                 .statusBarsPadding()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp, vertical = 16.dp)
@@ -231,6 +241,7 @@ fun PatientHomeScreen(
             Spacer(Modifier.height(18.dp))
             PrescriptionsLink(onPrescriptionsClick)
             Spacer(Modifier.height(8.dp))
+        }
         }
 
         PatientBottomBar(selected = PatientTab.Home, onSelect = onTabSelected)

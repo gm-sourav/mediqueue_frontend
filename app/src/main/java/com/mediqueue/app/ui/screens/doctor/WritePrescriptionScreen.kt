@@ -13,9 +13,16 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.graphics.Brush
+import com.mediqueue.app.ui.components.IconKind
+import com.mediqueue.app.ui.components.MediIcon
+import com.mediqueue.app.ui.components.initialsOf
+import com.mediqueue.app.ui.components.localizedNumber
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -38,9 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -95,6 +100,54 @@ fun WritePrescriptionScreen(
             SnackbarHost(snackbar) { data ->
                 Snackbar(snackbarData = data, containerColor = MediColors.Card, contentColor = MediColors.Text)
             }
+        },
+        bottomBar = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MediColors.Card)
+                    .navigationBarsPadding()
+            ) {
+                Box(Modifier.fillMaxWidth().height(1.dp).background(MediColors.Border))
+                Button(
+                    onClick = {
+                        val filled = entries.filter { it.name.isNotBlank() }
+                        if (diagnosis.isBlank()) {
+                            scope.launch { snackbar.showSnackbar(needDiagnosisMsg) }
+                        } else if (filled.isEmpty()) {
+                            scope.launch { snackbar.showSnackbar(needMedicineMsg) }
+                        } else {
+                            onSave(diagnosis.trim(), filled.toList(), notes.trim())
+                        }
+                    },
+                    enabled = !isSubmitting,
+                    shape = RoundedCornerShape(18.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MediColors.Teal,
+                        contentColor = MediColors.OnTeal,
+                        disabledContainerColor = MediColors.Teal.copy(alpha = 0.6f),
+                        disabledContentColor = MediColors.OnTeal
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 12.dp)
+                        .height(54.dp)
+                ) {
+                    if (isSubmitting) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(22.dp),
+                            strokeWidth = 2.dp,
+                            color = MediColors.OnTeal
+                        )
+                    } else {
+                        Text(
+                            stringResource(R.string.save_prescription),
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+            }
         }
     ) { pad ->
         Column(
@@ -103,67 +156,90 @@ fun WritePrescriptionScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp, vertical = 16.dp)
         ) {
-            Text(
-                text = "‹ " + stringResource(R.string.appointment_back),
-                color = MediColors.Muted,
-                fontSize = 13.sp,
-                modifier = Modifier
-                    .clickable(onClick = onBack)
-                    .padding(vertical = 8.dp)
-            )
+            // ---------- Top bar ----------
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(MediColors.Card)
+                        .border(1.dp, MediColors.Border, CircleShape)
+                        .clickable(onClick = onBack),
+                    contentAlignment = Alignment.Center
+                ) {
+                    MediIcon(IconKind.ChevronLeft, tint = MediColors.Text, iconSize = 20.dp)
+                }
+                Spacer(Modifier.width(14.dp))
+                Text(
+                    stringResource(R.string.write_prescription_title),
+                    color = MediColors.Text,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
 
-            Spacer(Modifier.height(10.dp))
-            Text(
-                stringResource(R.string.write_prescription_title),
-                color = MediColors.Text,
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-            // Patient card
-            Spacer(Modifier.height(16.dp))
+            // ---------- Patient card ----------
+            Spacer(Modifier.height(18.dp))
+            val cardShape = RoundedCornerShape(20.dp)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(WpInfoBg)
+                    .clip(cardShape)
+                    .background(
+                        Brush.linearGradient(
+                            listOf(Color(0xFF12B5AC), Color(0xFF0A8A83), Color(0xFF066B6B))
+                        )
+                    )
                     .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                verticalAlignment = Alignment.CenterVertically
             ) {
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(Color.White.copy(alpha = 0.22f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        initialsOf(patientName),
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                Spacer(Modifier.width(14.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         patientName,
-                        color = MediColors.Text,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold
+                        color = Color.White,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1
                     )
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.height(3.dp))
                     Text(
-                        text = department + " · " + stringResource(R.string.today) + ", " + time,
-                        color = MediColors.Muted,
-                        fontSize = 12.5.sp
+                        text = department + " · " + time,
+                        color = Color.White.copy(alpha = 0.85f),
+                        fontSize = 12.sp,
+                        maxLines = 1
                     )
                 }
-                Box(
+                Text(
+                    stringResource(
+                        if (status == "COMPLETED") R.string.status_completed else R.string.status_confirmed
+                    ),
+                    color = WpGreenText,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.SemiBold,
                     modifier = Modifier
                         .clip(RoundedCornerShape(20.dp))
-                        .background(WpGreenBg)
-                        .padding(horizontal = 12.dp, vertical = 9.dp)
-                ) {
-                    Text(
-                        stringResource(
-                            if (status == "COMPLETED") R.string.status_completed else R.string.status_confirmed
-                        ),
-                        color = WpGreenText,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
+                        .background(Color.White)
+                        .padding(horizontal = 11.dp, vertical = 6.dp)
+                )
             }
 
-            // Diagnosis (backend e required)
-            Spacer(Modifier.height(20.dp))
+            // ---------- Diagnosis ----------
+            Spacer(Modifier.height(22.dp))
             MediFieldCard(label = stringResource(R.string.diagnosis_label)) {
                 MediInput(
                     value = diagnosis,
@@ -173,37 +249,18 @@ fun WritePrescriptionScreen(
                 )
             }
 
-            // Medicines header
-            Spacer(Modifier.height(20.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    stringResource(R.string.medicines_title),
-                    color = MediColors.Text,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = stringResource(R.string.add_action),
-                    color = MediColors.Teal,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier
-                        .clickable {
-                            entries.add(MedicineEntry(nextId))
-                            nextId++
-                        }
-                        .padding(vertical = 6.dp)
-                )
-            }
-
-            // Medicine blocks
-            entries.forEach { e ->
+            // ---------- Medicines ----------
+            Spacer(Modifier.height(22.dp))
+            Text(
+                stringResource(R.string.medicines_title),
+                color = MediColors.Text,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold
+            )
+            entries.forEachIndexed { index, e ->
                 Spacer(Modifier.height(12.dp))
                 MedicineBlock(
+                    number = index + 1,
                     entry = e,
                     canRemove = entries.size > 1,
                     onChange = { change -> update(e.id, change) },
@@ -211,8 +268,33 @@ fun WritePrescriptionScreen(
                 )
             }
 
-            // Notes
-            Spacer(Modifier.height(14.dp))
+            Spacer(Modifier.height(12.dp))
+            val addShape = RoundedCornerShape(16.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(addShape)
+                    .background(MediColors.Pill)
+                    .clickable {
+                        entries.add(MedicineEntry(nextId))
+                        nextId++
+                    }
+                    .padding(vertical = 14.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                MediIcon(IconKind.Plus, tint = MediColors.Teal, iconSize = 18.dp, strokeWidth = 2.2f)
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    stringResource(R.string.add_medicine),
+                    color = MediColors.TealDark,
+                    fontSize = 13.5.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            // ---------- Notes ----------
+            Spacer(Modifier.height(22.dp))
             MediFieldCard(
                 label = stringResource(R.string.notes_for_patient),
                 modifier = Modifier.heightIn(min = 92.dp)
@@ -224,42 +306,6 @@ fun WritePrescriptionScreen(
                     imeAction = ImeAction.Done
                 )
             }
-
-            // Save
-            Spacer(Modifier.height(14.dp))
-            Button(
-                onClick = {
-                    val filled = entries.filter { it.name.isNotBlank() }
-                    if (diagnosis.isBlank()) {
-                        scope.launch { snackbar.showSnackbar(needDiagnosisMsg) }
-                    } else if (filled.isEmpty()) {
-                        scope.launch { snackbar.showSnackbar(needMedicineMsg) }
-                    } else {
-                        onSave(diagnosis.trim(), filled.toList(), notes.trim())
-                    }
-                },
-                enabled = !isSubmitting,
-                shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MediColors.Teal,
-                    contentColor = MediColors.OnTeal,
-                    disabledContainerColor = MediColors.Teal.copy(alpha = 0.6f),
-                    disabledContentColor = MediColors.OnTeal
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp)
-            ) {
-                if (isSubmitting) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(22.dp),
-                        strokeWidth = 2.dp,
-                        color = MediColors.OnTeal
-                    )
-                } else {
-                    Text(stringResource(R.string.save_prescription), fontSize = 14.sp)
-                }
-            }
             Spacer(Modifier.height(8.dp))
         }
     }
@@ -267,12 +313,13 @@ fun WritePrescriptionScreen(
 
 @Composable
 private fun MedicineBlock(
+    number: Int,
     entry: MedicineEntry,
     canRemove: Boolean,
     onChange: ((MedicineEntry) -> MedicineEntry) -> Unit,
     onRemove: () -> Unit
 ) {
-    val shape = RoundedCornerShape(16.dp)
+    val shape = RoundedCornerShape(20.dp)
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -281,47 +328,51 @@ private fun MedicineBlock(
             .border(1.dp, MediColors.Border, shape)
             .padding(14.dp)
     ) {
-        // Name + remove
+        // Header: pill icon, number, remove
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(modifier = Modifier.weight(1f)) {
-                if (entry.name.isEmpty()) {
-                    Text(
-                        stringResource(R.string.medicine_name),
-                        color = MediColors.Text,
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                BasicTextField(
-                    value = entry.name,
-                    onValueChange = { v -> onChange { it.copy(name = v) } },
-                    singleLine = true,
-                    textStyle = TextStyle(
-                        color = MediColors.Text,
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    cursorBrush = SolidColor(MediColors.Teal),
-                    modifier = Modifier.fillMaxWidth()
-                )
+            Box(
+                modifier = Modifier
+                    .size(34.dp)
+                    .clip(RoundedCornerShape(11.dp))
+                    .background(Color(0xFFEFE8FB)),
+                contentAlignment = Alignment.Center
+            ) {
+                MediIcon(IconKind.Pill, tint = Color(0xFF7A4FC9), iconSize = 18.dp)
             }
+            Spacer(Modifier.width(10.dp))
+            Text(
+                stringResource(R.string.medicine_n, localizedNumber(number)),
+                color = MediColors.Muted,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.weight(1f)
+            )
             if (canRemove) {
                 Text(
-                    "×",
-                    color = MediColors.Text,
-                    fontSize = 16.sp,
+                    stringResource(R.string.remove_action),
+                    color = MediColors.Danger,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
                     modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
                         .clickable(onClick = onRemove)
-                        .padding(start = 12.dp, top = 4.dp, bottom = 4.dp)
+                        .padding(6.dp)
                 )
             }
         }
 
-        Spacer(Modifier.height(14.dp))
+        Spacer(Modifier.height(12.dp))
+        MediFieldCard(label = stringResource(R.string.medicine_name)) {
+            MediInput(
+                value = entry.name,
+                onValueChange = { v -> onChange { it.copy(name = v) } },
+                hint = stringResource(R.string.medicine_name_hint)
+            )
+        }
+        Spacer(Modifier.height(10.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             MediFieldCard(label = stringResource(R.string.rx_dosage), modifier = Modifier.weight(1f)) {
                 MediInput(

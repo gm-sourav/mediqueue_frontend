@@ -376,4 +376,27 @@
     <string name="doc_no_next">কোনো রোগী অপেক্ষায় নেই</string>
     <string name="doc_open_rx">প্রেসক্রিপশন</string>
     <string name="doc_up_next">এরপর</string>
+    <string name="pick_date">তারিখ বাছুন</string>
+    <string name="add_medicine">ওষুধ যোগ করুন</string>
+    <string name="remove_action">সরান</string>
+    <string name="medicine_n">ওষুধ %1$s</string>
+    <string name="medicine_name_hint">যেমন প্যারাসিটামল ৫০০ মি.গ্রা.</string>
+
+    <!-- patient batch: booking, DOB/blood, empty state, reminders -->
+    <string name="period_morning">সকাল</string>
+    <string name="period_afternoon">দুপুর</string>
+    <string name="period_evening">সন্ধ্যা</string>
+    <string name="step_date">তারিখ</string>
+    <string name="step_time">সময়</string>
+    <string name="step_confirm">নিশ্চিত</string>
+    <string name="no_slots_day">এই দিনে কোনো ফাঁকা স্লট নেই। অন্য তারিখ বেছে নিন।</string>
+    <string name="dob_label">জন্ম তারিখ</string>
+    <string name="dob_hint">জন্ম তারিখ বেছে নিন</string>
+    <string name="blood_group_label">রক্তের গ্রুপ</string>
+    <string name="ok_action">ঠিক আছে</string>
+    <string name="clear_action">মুছুন</string>
+    <string name="empty_appts_hint">ডাক্তার বুক করুন, আপনার অ্যাপয়েন্টমেন্ট এখানে দেখা যাবে।</string>
+    <string name="reminder_channel">অ্যাপয়েন্টমেন্ট রিমাইন্ডার</string>
+    <string name="reminder_title">অ্যাপয়েন্টমেন্ট রিমাইন্ডার</string>
+    <string name="reminder_text">%1$s এর সাথে আপনার অ্যাপয়েন্টমেন্ট %2$s এ।</string>
 </resources>

@@ -75,7 +75,12 @@ fun List<SlotDto>.toSlotItems(
 ): List<SlotItem> = sortedBy { it.startTime }.map { s ->
     val start = runCatching { LocalTime.parse(s.startTime) }.getOrNull()
     val alreadyPassed = date == today && start != null && !start.isAfter(now)
-    SlotItem(s.id, formatTime(s.startTime, locale), s.status != "AVAILABLE" || alreadyPassed)
+    SlotItem(
+        s.id,
+        formatTime(s.startTime, locale),
+        s.status != "AVAILABLE" || alreadyPassed,
+        start?.hour ?: -1
+    )
 }
 
 private fun isUpcoming(status: String) = status == "PENDING" || status == "CONFIRMED"

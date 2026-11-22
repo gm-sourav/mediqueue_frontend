@@ -25,6 +25,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,6 +65,7 @@ data class DoctorItem(
     val availableToday: Boolean
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DoctorsListScreen(
     doctors: List<DoctorItem>,
@@ -72,7 +75,9 @@ fun DoctorsListScreen(
     onDoctorClick: (DoctorItem) -> Unit,
     onTabSelected: (PatientTab) -> Unit,
     searchHint: String = stringResource(R.string.search_doctors),
-    selectedTab: PatientTab? = PatientTab.Doctors
+    selectedTab: PatientTab? = PatientTab.Doctors,
+    isRefreshing: Boolean = false,
+    onRefresh: () -> Unit = {}
 ) {
     var query by rememberSaveable { mutableStateOf("") }
 
@@ -141,8 +146,13 @@ fun DoctorsListScreen(
         }
 
         // Doctor list
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = onRefresh,
+            modifier = Modifier.weight(1f)
+        ) {
         LazyColumn(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
@@ -159,6 +169,7 @@ fun DoctorsListScreen(
             items(filtered, key = { it.id }) { doctor ->
                 DoctorCard(doctor) { onDoctorClick(doctor) }
             }
+        }
         }
 
         PatientBottomBar(selected = selectedTab, onSelect = onTabSelected)

@@ -384,4 +384,27 @@
     <string name="doc_no_next">No patients waiting</string>
     <string name="doc_open_rx">Prescription</string>
     <string name="doc_up_next">Up next</string>
+    <string name="pick_date">Pick date</string>
+    <string name="add_medicine">Add medicine</string>
+    <string name="remove_action">Remove</string>
+    <string name="medicine_n">Medicine %1$s</string>
+    <string name="medicine_name_hint">e.g. Paracetamol 500 mg</string>
+
+    <!-- patient batch: booking, DOB/blood, empty state, reminders -->
+    <string name="period_morning">Morning</string>
+    <string name="period_afternoon">Afternoon</string>
+    <string name="period_evening">Evening</string>
+    <string name="step_date">Date</string>
+    <string name="step_time">Time</string>
+    <string name="step_confirm">Confirm</string>
+    <string name="no_slots_day">No free slots on this day. Try another date.</string>
+    <string name="dob_label">Date of birth</string>
+    <string name="dob_hint">Select date of birth</string>
+    <string name="blood_group_label">Blood group</string>
+    <string name="ok_action">OK</string>
+    <string name="clear_action">Clear</string>
+    <string name="empty_appts_hint">Book a doctor and your appointments will show up here.</string>
+    <string name="reminder_channel">Appointment reminders</string>
+    <string name="reminder_title">Appointment reminder</string>
+    <string name="reminder_text">Your appointment with %1$s is at %2$s.</string>
 </resources>

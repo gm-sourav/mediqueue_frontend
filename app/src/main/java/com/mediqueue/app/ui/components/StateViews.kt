@@ -99,6 +99,10 @@ fun FullScreenMessage(@StringRes messageRes: Int, @StringRes buttonRes: Int, onC
 
 /** errorRes null = ekhono load hocche, na hole error + Retry */
 @Composable
-fun LoadOrError(errorRes: Int?, onRetry: () -> Unit) {
-    if (errorRes == null) FullScreenLoading() else FullScreenError(errorRes, onRetry)
+fun LoadOrError(errorRes: Int?, skeleton: Boolean = false, onRetry: () -> Unit) {
+    when {
+        errorRes != null -> FullScreenError(errorRes, onRetry)
+        skeleton -> SkeletonListScreen()
+        else -> FullScreenLoading()
+    }
 }

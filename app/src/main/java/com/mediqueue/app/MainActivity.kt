@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.lightColorScheme
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -223,6 +224,29 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
+                    // Appointment reminders: ask notification permission once on Home, and
+                    // (re)schedule a reminder for every upcoming appointment whenever the list loads
+                    val notifLauncher = rememberLauncherForActivityResult(
+                        androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
+                    ) { }
+                    var askedNotif by rememberSaveable { mutableStateOf(false) }
+                    LaunchedEffect(screen) {
+                        if (screen == "patient_home" && !askedNotif) {
+                            askedNotif = true
+                            if (androidx.core.content.ContextCompat.checkSelfPermission(
+                                    this@MainActivity, android.Manifest.permission.POST_NOTIFICATIONS
+                                ) != android.content.pm.PackageManager.PERMISSION_GRANTED
+                            ) {
+                                notifLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                            }
+                        }
+                    }
+                    LaunchedEffect(vm.appointments) {
+                        vm.appointments?.let {
+                            com.mediqueue.app.notifications.ReminderScheduler.sync(applicationContext, it)
+                        }
+                    }
+
                     // Token expire hole login e pathao
                     LaunchedEffect(vm.unauthorized, dvm.unauthorized, avm.unauthorized, pvm.unauthorized) {
                         if (vm.unauthorized || dvm.unauthorized || avm.unauthorized || pvm.unauthorized) {
@@ -334,8 +358,8 @@ class MainActivity : ComponentActivity() {
                                     isUploading = pvm.isUploading,
                                     onPickPhoto = { uri -> pvm.uploadPhoto(applicationContext, uri) },
                                     onRemovePhoto = { pvm.removePhoto() },
-                                    onSave = { n, ph, g ->
-                                        pvm.save(n, ph, g) {
+                                    onSave = { n, ph, g, bg, dob ->
+                                        pvm.save(n, ph, g, bg, dob) {
                                             toast(R.string.pd_saved)
                                             screen = "profile"
                                         }
@@ -534,6 +558,8 @@ class MainActivity : ComponentActivity() {
                                     screen = "doctors"
                                 },
                                 onAppointmentClick = { screen = "my_appointments" },
+                                isRefreshing = vm.refreshing,
+                                onRefresh = { vm.refreshAll(); vm.loadDepartments() },
                                 onAvatarClick = { screen = "profile" },
                                 onTabSelected = onPatientTab,
                                 onPrescriptionsClick = { screen = "prescriptions" },
@@ -574,9 +600,11 @@ class MainActivity : ComponentActivity() {
                         "doctors" -> {
                             val docs = vm.deptDoctors
                             if (docs == null) {
-                                LoadOrError(vm.errorRes) { reload++ }
+                                LoadOrError(vm.errorRes, skeleton = true) { reload++ }
                             } else {
                                 DoctorsListScreen(
+                                    isRefreshing = vm.refreshing,
+                                    onRefresh = { vm.refreshDoctors(selectedDepartmentId) },
                                     departments = vm.departments.orEmpty().map { it.id to it.name },
                                     selectedDepartmentId = selectedDepartmentId,
                                     onDepartmentSelected = { id ->
@@ -664,10 +692,18 @@ class MainActivity : ComponentActivity() {
                         "my_appointments" -> {
                             val list = vm.appointments
                             if (list == null) {
-                                LoadOrError(vm.errorRes) { reload++ }
+                                LoadOrError(vm.errorRes, skeleton = true) { reload++ }
                             } else {
                                 val fees = vm.allDoctors.orEmpty().associate { it.id to it.fee.toInt() }
                                 MyAppointmentsScreen(
+                                    isRefreshing = vm.refreshing,
+                                    onRefresh = { vm.refreshAll() },
+                                    onBookClick = {
+                                        selectedDepartmentId = 0L
+                                        selectedDepartment = ""
+                                        vm.clearDoctors()
+                                        screen = "doctors"
+                                    },
                                     appointments = list.toItems(fees, today, todayWord, tomorrowWord, locale),
                                     onCancel = { item ->
                                         vm.cancel(item.id) { ok, err ->
