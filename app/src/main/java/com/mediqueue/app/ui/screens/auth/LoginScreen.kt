@@ -165,19 +165,7 @@ fun LoginScreen(
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Email,
                         imeAction = ImeAction.Next
-                    ),
-                    decorationBox = { inner ->
-                        Box {
-                            if (email.isEmpty()) {
-                                Text(
-                                    text = stringResource(R.string.email_hint),
-                                    color = MediColors.Muted,
-                                    fontSize = 13.sp
-                                )
-                            }
-                            inner()
-                        }
-                    }
+                    )
                 )
             }
 
@@ -303,8 +291,8 @@ private fun FieldCard(
             .clip(shape)
             .background(MediColors.Card)
             .border(1.dp, if (error) MediColors.Danger else MediColors.Border, shape)
-            .padding(horizontal = 14.dp, vertical = 15.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
+            .padding(horizontal = 14.dp, vertical = 11.dp),
+        verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
         Text(
             text = label,

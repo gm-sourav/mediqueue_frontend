@@ -13,6 +13,8 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
@@ -50,6 +52,9 @@ fun MediPill(
     }
 }
 
+/** true inside MediFieldCard: the label is enough, so inputs hide their placeholder text */
+val LocalInsideLabeledField = compositionLocalOf { false }
+
 @Composable
 fun MediFieldCard(
     label: String,
@@ -65,8 +70,8 @@ fun MediFieldCard(
             .clip(shape)
             .background(MediColors.Card)
             .border(1.dp, if (error) MediColors.Danger else MediColors.Border, shape)
-            .padding(horizontal = 14.dp, vertical = 15.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
+            .padding(horizontal = 14.dp, vertical = 11.dp),
+        verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
         Text(
             text = label,
@@ -74,7 +79,9 @@ fun MediFieldCard(
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold
         )
-        content()
+        CompositionLocalProvider(LocalInsideLabeledField provides true) {
+            content()
+        }
         if (error && errorText != null) {
             Text(text = errorText, color = MediColors.Danger, fontSize = 11.sp)
         }
@@ -102,7 +109,7 @@ fun MediInput(
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
         decorationBox = { inner ->
             Box {
-                if (value.isEmpty()) {
+                if (value.isEmpty() && !LocalInsideLabeledField.current) {
                     Text(text = hint, color = MediColors.Muted, fontSize = 13.sp)
                 }
                 inner()
