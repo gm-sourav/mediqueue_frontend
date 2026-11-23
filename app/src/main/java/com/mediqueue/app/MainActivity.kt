@@ -860,6 +860,8 @@ class MainActivity : ComponentActivity() {
                             if (a != null) {
                                 WritePrescriptionScreen(
                                     patientName = a.patientName,
+                                    patientGender = a.patientGender,
+                                    patientPhotoUrl = a.patientPhotoUrl,
                                     department = a.department,
                                     time = a.time,
                                     status = a.status,

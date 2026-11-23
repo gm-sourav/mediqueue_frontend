@@ -82,7 +82,9 @@ data class AppointmentDto(
     val endTime: String,
     val status: String,
     val reason: String?,
-    val tokenNo: Int?
+    val tokenNo: Int?,
+    val patientGender: String? = null,
+    val patientPhotoUrl: String? = null
 )
 // ---------------- Doctor side ----------------
 

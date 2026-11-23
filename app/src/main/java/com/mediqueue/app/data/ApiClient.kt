@@ -9,8 +9,14 @@ import retrofit2.converter.gson.GsonConverterFactory
 object ApiClient {
 
     // Emulator theke PC er localhost
+    // BuildConfig.SERVER_URL (app/build.gradle.kts) set hole oi deployed server, na hole local PC
     val BASE_URL: String =
-        if (isEmulator()) "http://10.0.2.2:8080/" else "http://localhost:8080/"
+        when {
+            com.mediqueue.app.BuildConfig.SERVER_URL.isNotBlank() ->
+                com.mediqueue.app.BuildConfig.SERVER_URL.trimEnd('/') + "/"
+            isEmulator() -> "http://10.0.2.2:8080/"
+            else -> "http://localhost:8080/"
+        }
 
     private fun isEmulator(): Boolean =
         android.os.Build.FINGERPRINT.contains("generic") ||

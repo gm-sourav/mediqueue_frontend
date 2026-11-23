@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.graphics.Brush
 import com.mediqueue.app.ui.components.IconKind
 import com.mediqueue.app.ui.components.MediIcon
+import com.mediqueue.app.ui.components.PatientAvatar
 import com.mediqueue.app.ui.components.initialsOf
 import com.mediqueue.app.ui.components.localizedNumber
 import androidx.compose.foundation.rememberScrollState
@@ -75,6 +76,8 @@ fun WritePrescriptionScreen(
     department: String,
     time: String,                 // "10:00 AM"
     status: String,               // CONFIRMED / COMPLETED
+    patientGender: String? = null,
+    patientPhotoUrl: String? = null,
     onBack: () -> Unit,
     onSave: (diagnosis: String, medicines: List<MedicineEntry>, notes: String) -> Unit,
     isSubmitting: Boolean = false
@@ -193,20 +196,12 @@ fun WritePrescriptionScreen(
                     .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .background(Color.White.copy(alpha = 0.22f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        initialsOf(patientName),
-                        color = Color.White,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+                PatientAvatar(
+                    name = patientName,
+                    gender = patientGender,
+                    photoUrl = patientPhotoUrl,
+                    avatarSize = 48.dp
+                )
                 Spacer(Modifier.width(14.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(

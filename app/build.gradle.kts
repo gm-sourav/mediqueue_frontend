@@ -11,8 +11,11 @@ android {
         applicationId = "com.mediqueue.app"
         minSdk = 31
         targetSdk = 36
-        versionCode = 1
+        versionCode = 2
         versionName = "1.0"
+
+        // Deployed backend URL. Leave "" to use the local PC (emulator / localhost).
+        buildConfigField("String", "SERVER_URL", "\"https://mediqueue-backend-z9fr.onrender.com\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -30,6 +33,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

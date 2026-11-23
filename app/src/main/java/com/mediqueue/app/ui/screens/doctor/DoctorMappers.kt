@@ -24,7 +24,9 @@ fun List<AppointmentDto>.toDoctorAppointments(locale: Locale, noReason: String):
             reason = it.reason?.takeIf { r -> r.isNotBlank() } ?: noReason,
             department = it.departmentName,
             status = it.status,
-            token = it.tokenNo
+            token = it.tokenNo,
+            patientGender = it.patientGender,
+            patientPhotoUrl = it.patientPhotoUrl
         )
     }
 

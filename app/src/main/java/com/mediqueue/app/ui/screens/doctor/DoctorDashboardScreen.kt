@@ -45,6 +45,7 @@ import com.mediqueue.app.ui.components.DoctorBottomBar
 import com.mediqueue.app.ui.components.DoctorTab
 import com.mediqueue.app.ui.components.IconKind
 import com.mediqueue.app.ui.components.MediIcon
+import com.mediqueue.app.ui.components.PatientAvatar
 import com.mediqueue.app.ui.components.initialsOf
 import com.mediqueue.app.ui.components.localizedNumber
 import com.mediqueue.app.ui.theme.MediColors
@@ -73,7 +74,9 @@ data class DoctorAppointment(
     val reason: String,        // "Follow-up"
     val department: String,    // "Cardiology"
     val status: String,
-    val token: Int?
+    val token: Int?,
+    val patientGender: String? = null,
+    val patientPhotoUrl: String? = null
 )
 
 @Composable
@@ -413,7 +416,6 @@ private fun DoctorAppointmentCard(
     onPrescription: () -> Unit
 ) {
     val shape = RoundedCornerShape(18.dp)
-    val tint = PatientTints[((item.patientName.hashCode() % PatientTints.size) + PatientTints.size) % PatientTints.size]
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -423,20 +425,12 @@ private fun DoctorAppointmentCard(
             .padding(14.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = Modifier
-                    .size(46.dp)
-                    .clip(CircleShape)
-                    .background(tint),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    initialsOf(item.patientName),
-                    color = MediColors.TealDark,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            PatientAvatar(
+                name = item.patientName,
+                gender = item.patientGender,
+                photoUrl = item.patientPhotoUrl,
+                avatarSize = 46.dp
+            )
             Spacer(Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
