@@ -13,6 +13,12 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.runtime.remember
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.clickable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
@@ -55,6 +61,9 @@ fun MediPill(
 /** true inside MediFieldCard: the label is enough, so inputs hide their placeholder text */
 val LocalInsideLabeledField = compositionLocalOf { false }
 
+/** The text field inside a MediFieldCard attaches this, so a tap anywhere on the card focuses it */
+val LocalFieldFocus = compositionLocalOf<FocusRequester?> { null }
+
 @Composable
 fun MediFieldCard(
     label: String,
@@ -64,12 +73,21 @@ fun MediFieldCard(
     content: @Composable ColumnScope.() -> Unit
 ) {
     val shape = RoundedCornerShape(15.dp)
+    val focusRequester = remember { FocusRequester() }
+    val keyboard = LocalSoftwareKeyboardController.current
     Column(
         modifier = modifier
             .fillMaxWidth()
             .clip(shape)
             .background(MediColors.Card)
             .border(1.dp, if (error) MediColors.Danger else MediColors.Border, shape)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) {
+                // cards without a text field (chips, pickers) just ignore this
+                runCatching { focusRequester.requestFocus() }.onSuccess { keyboard?.show() }
+            }
             .padding(horizontal = 14.dp, vertical = 11.dp),
         verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
@@ -79,7 +97,10 @@ fun MediFieldCard(
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold
         )
-        CompositionLocalProvider(LocalInsideLabeledField provides true) {
+        CompositionLocalProvider(
+            LocalInsideLabeledField provides true,
+            LocalFieldFocus provides focusRequester
+        ) {
             content()
         }
         if (error && errorText != null) {
@@ -102,7 +123,9 @@ fun MediInput(
         value = value,
         onValueChange = onValueChange,
         singleLine = true,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .then(LocalFieldFocus.current?.let { Modifier.focusRequester(it) } ?: Modifier),
         textStyle = TextStyle(color = MediColors.Text, fontSize = 13.sp),
         cursorBrush = SolidColor(MediColors.Teal),
         visualTransformation = if (password) PasswordVisualTransformation() else VisualTransformation.None,

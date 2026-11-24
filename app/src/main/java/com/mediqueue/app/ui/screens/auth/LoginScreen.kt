@@ -42,6 +42,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -74,6 +78,8 @@ fun LoginScreen(
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var showPassword by rememberSaveable { mutableStateOf(false) }
+    val emailFocus = remember { FocusRequester() }
+    val passwordFocus = remember { FocusRequester() }
     var emailError by remember { mutableStateOf(false) }
     var passwordError by remember { mutableStateOf(false) }
 
@@ -155,8 +161,9 @@ fun LoginScreen(
             )
 
             Spacer(Modifier.height(22.dp))
-            FieldCard(label = stringResource(R.string.email), error = emailError) {
+            FieldCard(label = stringResource(R.string.email), error = emailError, focusRequester = emailFocus) {
                 BasicTextField(
+                    modifier = Modifier.fillMaxWidth().focusRequester(emailFocus),
                     value = email,
                     onValueChange = { email = it; emailError = false },
                     singleLine = true,
@@ -170,13 +177,13 @@ fun LoginScreen(
             }
 
             Spacer(Modifier.height(12.dp))
-            FieldCard(label = stringResource(R.string.password), error = passwordError) {
+            FieldCard(label = stringResource(R.string.password), error = passwordError, focusRequester = passwordFocus) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     BasicTextField(
                         value = password,
                         onValueChange = { password = it; passwordError = false },
                         singleLine = true,
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(1f).focusRequester(passwordFocus),
                         textStyle = TextStyle(color = MediColors.Muted, fontSize = 13.sp),
                         cursorBrush = SolidColor(MediColors.Teal),
                         visualTransformation = if (showPassword) VisualTransformation.None
@@ -282,15 +289,25 @@ private fun Pill(
 private fun FieldCard(
     label: String,
     error: Boolean,
+    focusRequester: FocusRequester,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val shape = RoundedCornerShape(15.dp)
+    val keyboard = LocalSoftwareKeyboardController.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(shape)
             .background(MediColors.Card)
             .border(1.dp, if (error) MediColors.Danger else MediColors.Border, shape)
+            // tap anywhere on the card -> focus the text field and open the keyboard
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) {
+                focusRequester.requestFocus()
+                keyboard?.show()
+            }
             .padding(horizontal = 14.dp, vertical = 11.dp),
         verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
