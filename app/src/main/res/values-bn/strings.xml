@@ -352,7 +352,7 @@
     <string name="admin_doctor_photo_hint">ঐচ্ছিক ছবি, রোগীরা দেখতে পাবে</string>
     <string name="admin_edit_doctor_title">ডাক্তারের তথ্য পরিবর্তন</string>
     <string name="save_changes">পরিবর্তন সংরক্ষণ করুন</string>
-    <string name="delete_doctor">ডাক্তার মুছুন</string>
+    <string name="delete_doctor">স্থায়ীভাবে মুছুন</string>
     <string name="delete_doctor_title">এই ডাক্তারকে মুছবেন?</string>
     <string name="delete_doctor_msg">%1$s-কে লগইন অ্যাকাউন্ট ও স্লটসহ মুছে ফেলা হবে। এটি আর ফেরানো যাবে না।</string>
     <string name="delete_action">মুছুন</string>
@@ -399,4 +399,14 @@
     <string name="reminder_channel">অ্যাপয়েন্টমেন্ট রিমাইন্ডার</string>
     <string name="reminder_title">অ্যাপয়েন্টমেন্ট রিমাইন্ডার</string>
     <string name="reminder_text">%1$s এর সাথে আপনার অ্যাপয়েন্টমেন্ট %2$s এ।</string>
+
+    <!-- deactivate doctor -->
+    <string name="deactivate_doctor">ডাক্তার নিষ্ক্রিয় করুন</string>
+    <string name="activate_doctor">ডাক্তার সক্রিয় করুন</string>
+    <string name="deactivate_doctor_title">এই ডাক্তারকে নিষ্ক্রিয় করবেন?</string>
+    <string name="deactivate_doctor_msg">%1$s রোগীদের কাছে দেখা যাবে না, নতুন বুকিং নেবে না এবং লগইন করতে পারবে না। পুরনো অ্যাপয়েন্টমেন্ট ও প্রেসক্রিপশন থাকবে। যেকোনো সময় আবার সক্রিয় করা যাবে।</string>
+    <string name="inactive_badge">নিষ্ক্রিয়</string>
+    <string name="admin_doctor_deactivated">ডাক্তার নিষ্ক্রিয় করা হয়েছে</string>
+    <string name="admin_doctor_activated">ডাক্তার সক্রিয় করা হয়েছে</string>
+    <string name="error_doctor_toggle">ডাক্তারের অবস্থা বদলানো যায়নি। আবার চেষ্টা করুন।</string>
 </resources>

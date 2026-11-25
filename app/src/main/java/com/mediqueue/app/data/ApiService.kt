@@ -118,6 +118,16 @@ interface ApiService {
     @PUT("api/admin/doctors/{id}")
     suspend fun updateDoctor(@Path("id") id: Long, @Body body: UpdateDoctorRequest): Response<DoctorDto>
 
+    /** All doctors, including deactivated ones */
+    @GET("api/admin/doctors")
+    suspend fun getAdminDoctors(): Response<List<DoctorDto>>
+
+    @POST("api/admin/doctors/{id}/deactivate")
+    suspend fun deactivateDoctor(@Path("id") id: Long): Response<DoctorDto>
+
+    @POST("api/admin/doctors/{id}/activate")
+    suspend fun activateDoctor(@Path("id") id: Long): Response<DoctorDto>
+
     @DELETE("api/admin/doctors/{id}")
     suspend fun deleteDoctor(@Path("id") id: Long): Response<Unit>
 

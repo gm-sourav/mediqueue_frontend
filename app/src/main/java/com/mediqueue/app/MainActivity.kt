@@ -401,7 +401,8 @@ class MainActivity : ComponentActivity() {
                                             phone = it.phone.orEmpty(),
                                             departmentId = it.departmentId,
                                             bio = it.bio.orEmpty(),
-                                            gender = it.gender.orEmpty()
+                                            gender = it.gender.orEmpty(),
+                                            active = it.active
                                         )
                                     },
                                     onAddDoctor = { screen = "add_doctor" },
@@ -430,8 +431,23 @@ class MainActivity : ComponentActivity() {
                                         phone = d.phone.orEmpty(),
                                         departmentId = d.departmentId,
                                         bio = d.bio.orEmpty(),
-                                        gender = d.gender.orEmpty()
+                                        gender = d.gender.orEmpty(),
+                                        active = d.active
                                     ),
+                                    onToggleActive = {
+                                        val makeActive = !d.active
+                                        avm.setDoctorActive(d.id, makeActive) { ok, err ->
+                                            if (ok) {
+                                                toast(
+                                                    if (makeActive) R.string.admin_doctor_activated
+                                                    else R.string.admin_doctor_deactivated
+                                                )
+                                                screen = "admin_doctors"
+                                            } else {
+                                                toast(err)
+                                            }
+                                        }
+                                    },
                                     onDelete = {
                                         avm.deleteDoctor(d.id) { ok, err ->
                                             if (ok) {

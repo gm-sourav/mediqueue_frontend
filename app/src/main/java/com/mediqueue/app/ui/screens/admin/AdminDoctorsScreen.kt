@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -51,7 +52,8 @@ data class AdminDoctor(
     val phone: String = "",
     val departmentId: Long = -1L,
     val bio: String = "",
-    val gender: String = ""
+    val gender: String = "",
+    val active: Boolean = true
 )
 
 @Composable
@@ -132,6 +134,7 @@ private fun DoctorRow(d: AdminDoctor, onClick: () -> Unit) {
             .background(MediColors.Card)
             .border(1.dp, MediColors.Border, shape)
             .clickable(onClick = onClick)
+            .alpha(if (d.active) 1f else 0.6f)
             .padding(14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -146,6 +149,15 @@ private fun DoctorRow(d: AdminDoctor, onClick: () -> Unit) {
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
+            if (!d.active) {
+                Spacer(Modifier.height(3.dp))
+                Text(
+                    stringResource(R.string.inactive_badge),
+                    color = MediColors.Danger,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
             Spacer(Modifier.height(3.dp))
             Text(
                 d.department + " · " + stringResource(R.string.years_short, localizedNumber(d.experienceYears)),

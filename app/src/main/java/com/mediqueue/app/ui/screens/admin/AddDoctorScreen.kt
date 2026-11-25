@@ -58,6 +58,7 @@ fun AddDoctorScreen(
     onBack: () -> Unit,
     editing: AdminDoctor? = null,
     onDelete: () -> Unit = {},
+    onToggleActive: () -> Unit = {},
     onCreate: (
         name: String,
         email: String,
@@ -87,6 +88,7 @@ fun AddDoctorScreen(
     var departmentId by rememberSaveable(key) { mutableLongStateOf(editing?.departmentId ?: -1L) }
     var gender by rememberSaveable(key) { mutableStateOf(editing?.gender.orEmpty()) }
     var confirmDelete by rememberSaveable { mutableStateOf(false) }
+    var confirmDeactivate by rememberSaveable { mutableStateOf(false) }
     var photo by rememberSaveable { mutableStateOf<Uri?>(null) }
     var submitted by rememberSaveable { mutableStateOf(false) }
 
@@ -320,22 +322,64 @@ fun AddDoctorScreen(
                 )
             }
             if (isEdit) {
+                val isActive = editing?.active != false
                 Spacer(Modifier.height(10.dp))
+                // Main action: deactivate (history is kept) or activate again
                 OutlinedButton(
-                    onClick = { confirmDelete = true },
+                    onClick = { if (isActive) confirmDeactivate = true else onToggleActive() },
                     enabled = !isSubmitting,
                     shape = RoundedCornerShape(16.dp),
-                    border = BorderStroke(1.dp, MediColors.Danger),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MediColors.Danger),
+                    border = BorderStroke(1.dp, if (isActive) MediColors.Danger else MediColors.Teal),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = if (isActive) MediColors.Danger else MediColors.Teal
+                    ),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(52.dp)
                 ) {
-                    Text(stringResource(R.string.delete_doctor), fontSize = 14.sp)
+                    Text(
+                        stringResource(if (isActive) R.string.deactivate_doctor else R.string.activate_doctor),
+                        fontSize = 14.sp
+                    )
+                }
+                // Permanent delete only works for a doctor with no appointments
+                Spacer(Modifier.height(4.dp))
+                TextButton(
+                    onClick = { confirmDelete = true },
+                    enabled = !isSubmitting,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        stringResource(R.string.delete_doctor),
+                        color = MediColors.Muted,
+                        fontSize = 13.sp
+                    )
                 }
             }
             Spacer(Modifier.height(16.dp))
         }
+    }
+
+    if (confirmDeactivate) {
+        AlertDialog(
+            onDismissRequest = { confirmDeactivate = false },
+            title = { Text(stringResource(R.string.deactivate_doctor_title)) },
+            text = { Text(stringResource(R.string.deactivate_doctor_msg, editing?.name.orEmpty())) },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmDeactivate = false
+                    onToggleActive()
+                }) {
+                    Text(stringResource(R.string.deactivate_doctor), color = MediColors.Danger)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmDeactivate = false }) {
+                    Text(stringResource(R.string.cancel_action))
+                }
+            },
+            containerColor = MediColors.Card
+        )
     }
 
     if (confirmDelete) {

@@ -360,7 +360,7 @@
     <string name="admin_doctor_photo_hint">Optional photo, shown to patients</string>
     <string name="admin_edit_doctor_title">Edit doctor</string>
     <string name="save_changes">Save changes</string>
-    <string name="delete_doctor">Delete doctor</string>
+    <string name="delete_doctor">Delete permanently</string>
     <string name="delete_doctor_title">Delete this doctor?</string>
     <string name="delete_doctor_msg">%1$s will be removed with the login account and slots. This cannot be undone.</string>
     <string name="delete_action">Delete</string>
@@ -407,4 +407,14 @@
     <string name="reminder_channel">Appointment reminders</string>
     <string name="reminder_title">Appointment reminder</string>
     <string name="reminder_text">Your appointment with %1$s is at %2$s.</string>
+
+    <!-- deactivate doctor -->
+    <string name="deactivate_doctor">Deactivate doctor</string>
+    <string name="activate_doctor">Activate doctor</string>
+    <string name="deactivate_doctor_title">Deactivate this doctor?</string>
+    <string name="deactivate_doctor_msg">%1$s will be hidden from patients, cannot receive new bookings and cannot log in. Old appointments and prescriptions are kept. You can activate again any time.</string>
+    <string name="inactive_badge">Inactive</string>
+    <string name="admin_doctor_deactivated">Doctor deactivated</string>
+    <string name="admin_doctor_activated">Doctor activated</string>
+    <string name="error_doctor_toggle">Could not change doctor status. Try again.</string>
 </resources>

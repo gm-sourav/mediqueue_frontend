@@ -53,7 +53,8 @@ data class DoctorDto(
     val experienceYears: Int,
     val fee: Double,
     val photoUrl: String?,
-    val gender: String? = null
+    val gender: String? = null,
+    val active: Boolean = true
 )
 
 data class SlotDto(

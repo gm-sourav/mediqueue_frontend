@@ -73,7 +73,7 @@ class AdminViewModel : ViewModel() {
         errorRes = null
         val (deps, docs) = coroutineScope {
             val a = async { call { ApiClient.api.getDepartments() } }
-            val b = async { call { ApiClient.api.getDoctors() } }
+            val b = async { call { ApiClient.api.getAdminDoctors() } }
             // Stats are only decoration on the home screen. If they fail, the rest still works.
             val c = async {
                 runCatching { ApiClient.api.getAdminStats().takeIf { it.isSuccessful }?.body() }.getOrNull()
@@ -181,6 +181,33 @@ class AdminViewModel : ViewModel() {
                     onDone(
                         false,
                         if (res.code() in 400..499) R.string.error_doctor_update else R.string.error_generic
+                    )
+                }
+            } catch (_: IOException) {
+                onDone(false, R.string.error_network)
+            } catch (_: Exception) {
+                onDone(false, R.string.error_generic)
+            } finally {
+                isSubmitting = false
+            }
+        }
+    }
+
+    /** Deactivate (hide from patients, block login, keep history) or activate again */
+    fun setDoctorActive(id: Long, active: Boolean, onDone: (success: Boolean, errorRes: Int?) -> Unit) {
+        if (isSubmitting) return
+        isSubmitting = true
+        viewModelScope.launch {
+            try {
+                val res = if (active) ApiClient.api.activateDoctor(id) else ApiClient.api.deactivateDoctor(id)
+                if (res.isSuccessful) {
+                    fetchAll()
+                    onDone(true, null)
+                } else {
+                    if (res.code() == 401 || res.code() == 403) unauthorized = true
+                    onDone(
+                        false,
+                        if (res.code() in 400..499) R.string.error_doctor_toggle else R.string.error_generic
                     )
                 }
             } catch (_: IOException) {
