@@ -45,9 +45,20 @@ object ApiClient {
                 session.token?.let { builder.addHeader("Authorization", "Bearer $it") }
                 chain.proceed(builder.build())
             }
-            .addInterceptor(HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
-            })
+            .apply {
+                // Log only in debug builds (release must never print tokens / passwords)
+                if (com.mediqueue.app.BuildConfig.DEBUG) {
+                    addInterceptor(HttpLoggingInterceptor().apply {
+                        level = HttpLoggingInterceptor.Level.BODY
+                        redactHeader("Authorization")
+                    })
+                }
+            }
+            // Free Render server may be asleep: first request can take ~60 s
+            .connectTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
+            .readTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
+            .writeTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
+            .retryOnConnectionFailure(true)
             .build()
     }
 
